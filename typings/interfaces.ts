@@ -1,3 +1,13 @@
+export interface PlaylistMetadata {
+	_id: string;
+	cover: {
+		name: string;
+		uri?: string;
+	}
+	name: string;
+	songs: number;
+}
+
 export interface SongMetadata {
 	channel: {
 		id: string;
@@ -26,6 +36,8 @@ export interface SongMetadata {
 		}[];
 		view_count: string;
 	}
+	path?: string;
+	playlistsIDs?: string[];
 	title: string;
 	url: string;
 }

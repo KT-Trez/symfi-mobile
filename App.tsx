@@ -1,7 +1,8 @@
 import axios from 'axios';
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import BottomTabs from './src/navigation/BottomTabs';
+import {Provider as PaperProvider} from 'react-native-paper';
+import BottomTabNavigator from './src/components/navigators/BottomTabNavigator';
 
 
 Object.assign(axios.defaults, {
@@ -14,8 +15,10 @@ Object.assign(axios.defaults, {
 
 export default function App() {
 	return (
-		<NavigationContainer>
-			<BottomTabs/>
-		</NavigationContainer>
+		<PaperProvider>
+			<NavigationContainer>
+				<BottomTabNavigator/>
+			</NavigationContainer>
+		</PaperProvider>
 	);
 }
