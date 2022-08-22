@@ -1,14 +1,12 @@
-node_modules/
-.expo/
-dist/
-npm-debug.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.orig.*
-web-build/
+# dependencies
+/.expo/
+/node_modules/
+/package-lock.json
 
-# macOS
-.DS_Store
+# dist
+/dist/
+/web-build/
+
+# editors
+/.idea
+

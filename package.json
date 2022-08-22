@@ -1,26 +1,42 @@
 {
-  "name": "musicly",
-  "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
-  "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+  "author": {
+    "name": "Bartlomiej 'Trez' Was",
+    "email": "bartlomiej_was@onet.pl"
+  },
+  "bugs": {
+    "email": "kt.bugs@onet.pl",
+    "url": ""
   },
   "dependencies": {
+    "@expo/webpack-config": "^0.17.0",
+    "@react-navigation/bottom-tabs": "^6.3.2",
+    "axios": "^0.27.2",
     "expo": "~46.0.8",
     "expo-status-bar": "~1.4.0",
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-native": "0.69.4",
-    "react-native-web": "~0.18.7"
+    "react-native-web": "~0.18.7",
+    "realm": "^10.19.5",
+    "youtubei.js": "^1.4.5"
   },
+  "description": "",
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.69.1",
+    "@types/usetube": "^2.1.0",
     "typescript": "~4.3.5"
   },
-  "private": true
+  "license": "MIT",
+  "main": "node_modules/expo/AppEntry.js",
+  "name": "musicly",
+  "private": true,
+  "scripts": {
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "start": "expo start",
+    "web": "expo start --web"
+  },
+  "version": "1.0.0"
 }

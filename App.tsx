@@ -1,20 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import axios from 'axios';
+import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import BottomTabs from './src/navigation/BottomTabs';
+
+
+Object.assign(axios.defaults, {
+	baseURL: 'https://musicly-api.herokuapp.com/',
+	timeout: 20000
+})
+//axios.defaults.baseURL = 'http://localhost:3000';
+//axios.defaults.timeout = 20000;
+
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+	return (
+		<NavigationContainer>
+			<BottomTabs/>
+		</NavigationContainer>
+	);
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
