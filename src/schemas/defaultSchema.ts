@@ -9,13 +9,14 @@ interface UpdateOptions {
 }
 
 export default abstract class DefaultSchema {
-	private db: DataStore;
+	private db: DataStore | undefined;
+	protected abstract readonly store: string;
 
-	constructor(name: string) {
+	init() {
 		this.db = new DataStore({
 			autoload: true,
 			corruptAlertThreshold: 0,
-			filename: name,
+			filename: this.store,
 			storage: {
 				async getItem(key: string, cb): Promise<string | null> {
 					const item = await AsyncStorage.getItem(key);
@@ -37,11 +38,16 @@ export default abstract class DefaultSchema {
 			},
 			timestampData: true
 		});
+
+		return this;
 	}
 
 	public count(query: object) {
 		return new Promise((resolve, reject) => {
-			this.db.count(query, (err, count) => {
+			if (!this.db)
+				reject('Database not initialized.');
+
+			this.db!.count(query, (err, count) => {
 				if (err)
 					reject(err);
 
@@ -52,7 +58,10 @@ export default abstract class DefaultSchema {
 
 	public insert<DBObject extends object>(item: DBObject) {
 		return new Promise((resolve, reject) => {
-			this.db.insert(item, (err, doc) => {
+			if (!this.db)
+				reject('Database not initialized.');
+
+			this.db!.insert(item, (err, doc) => {
 				if (err)
 					reject(err);
 
@@ -63,7 +72,10 @@ export default abstract class DefaultSchema {
 
 	public find<DBObject>(query: object): Promise<DBObject> {
 		return new Promise((resolve, reject) => {
-			this.db.find(query, (err: Error, docs: DBObject) => {
+			if (!this.db)
+				reject('Database not initialized.');
+
+			this.db!.find(query, (err: Error, docs: DBObject) => {
 				if (err)
 					reject(err);
 
@@ -74,7 +86,10 @@ export default abstract class DefaultSchema {
 
 	public update(query: object, update: object, options: UpdateOptions) {
 		return new Promise((resolve, reject) => {
-			this.db.update(query,  update, options, (err, numAffected, affectedDocuments, upsert) => {
+			if (!this.db)
+				reject('Database not initialized.');
+
+			this.db!.update(query, update, options, (err, numAffected, affectedDocuments, upsert) => {
 				if (err)
 					reject(err);
 

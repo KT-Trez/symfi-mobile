@@ -5,7 +5,8 @@ import {Appbar, Divider, Text} from 'react-native-paper';
 import {SongMetadata} from '../../../../typings/interfaces';
 import {SongsDatabase} from '../../../schemas/schemas';
 import AddSongModal from '../../elements/AddSongModal';
-import PlaylistContentItem from '../../elements/PlaylistContentItem';
+import AudioPlayer from '../../elements/AudioPlayer';
+import PlaylistContentItem from '../../elements/flatlist-items/PlaylistContentItem';
 
 
 function PlaylistContent() {
@@ -14,16 +15,18 @@ function PlaylistContent() {
 	const playlistID = route.params?.playlistID;
 
 	const [allSongs, setAllSongs] = useState<{ id: string, name: string }[]>([]);
-	const [songAddVisible, setSongAddVisible] = useState(false);
 	const [songs, setSongs] = useState<SongMetadata[]>([]);
 
+	const [currentSongID, setCurrentSongID] = useState<string | undefined>();
+	const [songAddVisible, setSongAddVisible] = useState(false);
+
 	const getPlaylist = useCallback(async () => {
-		const db = new SongsDatabase('songs');
+		const db = new SongsDatabase().init();
 		setSongs(await db.find<SongMetadata[]>({'playlistsIDs': playlistID}));
 	}, []);
 
 	const getSongs = useCallback(async () => {
-		const db = new SongsDatabase('songs');
+		const db = new SongsDatabase().init();
 		setAllSongs((await db.find<SongMetadata[]>({$not: {'playlistsIDs': playlistID}})).map(song => {
 			return {id: song.id, name: song.title}
 		}));
@@ -48,10 +51,13 @@ function PlaylistContent() {
 				<Appbar.Content title={playlistID}/>
 				<Appbar.Action icon={'plus'} onPress={showSongAddMenu}/>
 			</Appbar.Header>
+
+			<AudioPlayer audioID={currentSongID} songs={songs}/>
+
 			<FlatList data={songs}
 					  ItemSeparatorComponent={Divider}
 					  ListEmptyComponent={<Text style={css.textError}>This playlist is empty.</Text>}
-					  renderItem={({item}) => <PlaylistContentItem item={item}/>}/>
+					  renderItem={({item}) => <PlaylistContentItem item={item} loadResource={setCurrentSongID}/>}/>
 
 			<AddSongModal hideModal={hideSongAddMenu}
 						  isVisible={songAddVisible}

@@ -12,7 +12,7 @@ function PlaylistsMenu() {
 	const [isVisible, setIsVisible] = useState(false);
 
 	const getAlbums = useCallback(async () => {
-		const db = new PlaylistDatabase('playlists');
+		const db = new PlaylistDatabase().init();
 		setAlbums(await db.find<PlaylistMetadata[]>({}));
 	}, []);
 

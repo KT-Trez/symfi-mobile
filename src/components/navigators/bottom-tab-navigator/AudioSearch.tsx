@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, {useState} from 'react';
-import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
 import {Appbar, Divider, Searchbar} from 'react-native-paper';
 import {SongMetadata} from '../../../../typings/interfaces';
-import SearchResultItem from '../../elements/SearchResultItem';
+import SearchResultItem from '../../elements/flatlist-items/SearchResultItem';
 
 
 function AudioSearch() {
@@ -27,8 +27,8 @@ function AudioSearch() {
 
 				setSongs(response.data);
 			} catch (err) {
-				// todo: handle errors feedback
-				console.error(err.toJSON());
+				console.error(err);
+				ToastAndroid.showWithGravity('Server returned error code: ' + err.status, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
 			} finally {
 				setIsLoading(false);
 			}

@@ -1,31 +1,18 @@
-import {Audio} from 'expo-av';
-import * as FileSystem from 'expo-file-system';
-import React, {useState} from 'react';
+import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Text} from 'react-native-paper';
-import {SongMetadata} from '../../../typings/interfaces';
+import {SongMetadata} from '../../../../typings/interfaces';
 
 
 interface PlaylistContentItemProps {
 	item: SongMetadata;
+	loadResource: (id: string) => void;
 }
 
-function PlaylistContentItem({item}: PlaylistContentItemProps) {
-	const [player, setPlayer] = useState<Audio.Sound>();
-
-	const playAudio = async () => {
-		setPlayer(new Audio.Sound());
-
-		console.log((await FileSystem.getInfoAsync(item.path!)));
-
-		await player?.loadAsync({uri: item.path!}, {shouldPlay: true})
-
-		await player?.playAsync();
+function PlaylistContentItem({item, loadResource}: PlaylistContentItemProps) {
+	const playAudio = () => {
+	  loadResource(item.id);
 	};
-
-	//useEffect(() => {
-	//	return player ? () => player!.unloadAsync() : undefined;
-	//}, [player]);
 
 	return (
 		<TouchableOpacity onPress={playAudio} style={css.container}>

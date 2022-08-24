@@ -1,9 +1,9 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
 import {Appbar, Searchbar, Text} from 'react-native-paper';
-import {SongMetadata} from '../../../typings/interfaces';
-import SavedAudioItem from '../../components/elements/SavedAudioItem';
-import {SongsDatabase} from '../../schemas/schemas';
+import {SongMetadata} from '../../../../typings/interfaces';
+import {SongsDatabase} from '../../../schemas/schemas';
+import SavedAudioItem from '../../elements/flatlist-items/SavedAudioItem';
 
 
 function SavedAudio() {
@@ -13,7 +13,7 @@ function SavedAudio() {
 	const [songs, setSongs] = useState<SongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
-		const db = new SongsDatabase('songs');
+		const db = new SongsDatabase().init();
 		const songsArr = await db.find<SongMetadata[]>({});
 		setSongs(songsArr);
 		setFilteredSongs(songsArr);

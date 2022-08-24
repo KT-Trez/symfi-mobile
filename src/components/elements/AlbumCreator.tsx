@@ -21,7 +21,7 @@ function AlbumCreator({hideCreator, isVisible, showCreator, reloadList}: AlbumCr
 
 		const albumID = new Date().getTime() + Math.round(Math.random() * 1000).toString();
 
-		const db = new PlaylistDatabase('playlists');
+		const db = new PlaylistDatabase().init();
 		await db.insert<PlaylistMetadata>({
 			_id: albumID,
 			cover: {

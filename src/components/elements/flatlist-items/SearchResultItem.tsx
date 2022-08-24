@@ -2,9 +2,10 @@ import {MaterialIcons} from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, Image, LayoutChangeEvent, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {SongMetadata} from '../../../typings/interfaces';
-import {SongsDatabase} from '../../schemas/schemas';
+import {Image, LayoutChangeEvent, StyleSheet, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator} from 'react-native-paper';
+import {SongMetadata} from '../../../../typings/interfaces';
+import {SongsDatabase} from '../../../schemas/schemas';
 
 
 interface SearchResultItemProps {
@@ -13,6 +14,7 @@ interface SearchResultItemProps {
 
 function SearchResultItem({item}: SearchResultItemProps) {
 	const [isDownloaded, setIsDownloaded] = useState(false);
+	const [isDownloading, setIsDownloading] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 
 	const [loadingFailed, setLoadingFailed] = useState(false);
@@ -21,7 +23,7 @@ function SearchResultItem({item}: SearchResultItemProps) {
 
 	// todo: measure performance, remove if unnecessary
 	const checkDownloadedStatus = useCallback(async () => {
-		const db = new SongsDatabase('songs');
+		const db = new SongsDatabase().init();
 		const songRecord = await db.find<SongMetadata[]>({id: item.id});
 		if (songRecord.length > 0)
 			setIsDownloaded(true);
@@ -30,24 +32,27 @@ function SearchResultItem({item}: SearchResultItemProps) {
 	const downloadSong = useCallback(async () => {
 		const perm = await MediaLibrary.requestPermissionsAsync();
 		if (perm.status != MediaLibrary.PermissionStatus.GRANTED)
-			return // todo: add informative toast
+			return ToastAndroid.showWithGravity('No permission to save audio file.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
 
-		//const permStorageWrite = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(FileSystem.cacheDirectory + item.id + '.wav');
-		//if (!permStorageWrite.granted)
-		//	return // todo: add informative toast
+		setIsDownloading(true);
 
 		try {
 			const savePath = FileSystem.cacheDirectory + item.id + '.wav';
-			const {status, uri} = await FileSystem.downloadAsync('https://musicly-api.herokuapp.com/download/youtube?audioID=' + item.id, savePath);
+			const {
+				status,
+				uri
+			} = await FileSystem.downloadAsync('https://musicly-api.herokuapp.com/download/youtube?audioID=' + item.id, savePath);
 
 			const asset = await MediaLibrary.createAssetAsync(uri);
+			const assetMetadata = await FileSystem.getInfoAsync(uri);
 
 			Object.assign(item, {
 				path: asset.uri,
-				playlistsIDs: []
+				playlistsIDs: [],
+				size: assetMetadata.size
 			});
 
-			const db = new SongsDatabase('songs');
+			const db = new SongsDatabase().init();
 			await db.insert<SongMetadata>(item);
 
 			await checkDownloadedStatus();
@@ -55,6 +60,9 @@ function SearchResultItem({item}: SearchResultItemProps) {
 			console.info(status, uri);
 		} catch (err) {
 			console.error(err);
+			ToastAndroid.showWithGravity('Error, audio file NOT downloaded.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
+		} finally {
+			setIsDownloading(false);
 		}
 	}, []);
 
@@ -99,8 +107,12 @@ function SearchResultItem({item}: SearchResultItemProps) {
 					{item.metadata.short_view_count_text.simple_text} • {item.metadata.published}
 				</Text>
 			</View>
-			<TouchableOpacity disabled={isDownloaded} onPress={downloadSong} style={css.addButtonContainer}>
-				<MaterialIcons name={!isDownloaded ? 'file-download' : 'file-download-done'} size={28}/>
+			<TouchableOpacity disabled={isDownloaded || isDownloading} onPress={downloadSong} style={css.addButtonContainer}>
+				{!isDownloading ?
+					<MaterialIcons name={!isDownloaded ? 'file-download' : 'file-download-done'} size={28}/>
+					:
+					<ActivityIndicator/>
+				}
 			</TouchableOpacity>
 		</View>
 	);

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
 import {Text} from 'react-native-paper';
-import {SongMetadata} from '../../../typings/interfaces';
+import {SongMetadata} from '../../../../typings/interfaces';
 
 
 interface SongItemProps {

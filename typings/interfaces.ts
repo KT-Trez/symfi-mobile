@@ -38,6 +38,7 @@ export interface SongMetadata {
 	}
 	path?: string;
 	playlistsIDs?: string[];
+	size?: number;
 	title: string;
 	url: string;
 }
