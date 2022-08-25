@@ -64,7 +64,7 @@ function AudioSearch() {
 
 const css = StyleSheet.create({
 	activityIndicator: {
-		marginTop: 5
+		marginTop: 10
 	},
 	container: {
 		flex: 1

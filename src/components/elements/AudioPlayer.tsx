@@ -1,4 +1,5 @@
 import {Audio, AVPlaybackStatus, InterruptionModeAndroid, InterruptionModeIOS, PitchCorrectionQuality} from 'expo-av';
+import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Surface, Text} from 'react-native-paper';
@@ -37,14 +38,9 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 				setProgress(progressFloat);
 		}
 
-		// todo: progress
-		const hDiff = Math.floor(status.positionMillis / 3600 / 1000);
-		const minDiff = Math.floor(status.positionMillis / 60 / 1000);
-		const secDiff = Math.floor(status.positionMillis / 1000);
-
-		const timestamp = (hDiff > 0 ? hDiff + ':' : '') + doubleDigits(minDiff) + ':' + doubleDigits(secDiff);
-		if (timestamp != progressSimpleText)
-			setProgressSimpleText(timestamp);
+		const timestamp = moment.utc(status.positionMillis).format('HH:mm:ss');
+		if (timestamp !== progressSimpleText)
+			setProgressSimpleText(timestamp.slice(0, 2) === '00' ? timestamp.slice(3, timestamp.length) : timestamp);
 
 		if (status.didJustFinish) {
 			cleanControls();
@@ -61,12 +57,6 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 			else
 				endPlayback();
 		}
-	};
-
-	const doubleDigits = (number: number) => {
-		if (number.toString().length === 1)
-			return '0' + number;
-		return number;
 	};
 
 	const cleanControls = () => {
@@ -87,6 +77,12 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 
 		setIsVisible(false);
 		setSong(undefined);
+	};
+
+	const nextSong = () => {
+		if (!song)
+			return;
+		setSong(songs[(songs.indexOf(song) + 1) % songs.length]);
 	};
 
 	const pause = async () => {
@@ -115,6 +111,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 
 		await AudioPlayer.current.loadAsync({uri: song!.musicly.file.path}, {
 			pitchCorrectionQuality: PitchCorrectionQuality.High,
+			progressUpdateIntervalMillis: 900,
 			shouldCorrectPitch: true
 		}, true);
 		const status = await AudioPlayer.current.getStatusAsync();
@@ -122,6 +119,13 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 		if (status.isLoaded)
 			if (!status.isPlaying)
 				AudioPlayer.current.playAsync();
+	};
+
+	const previousSong = () => {
+		if (!song)
+			return;
+		const currentIndex = songs.indexOf(song);
+		setSong(songs[currentIndex - 1 >= 0 ? currentIndex - 1 : songs.length - 1]);
 	};
 
 	const toggleAutoplay = () => {
@@ -170,11 +174,12 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 				<IconButton icon={'repeat'} iconColor={autoplay ? '#03a9f4' : undefined} onPress={toggleAutoplay}
 							size={30}/>
 				<View style={css.containerButtonsInner}>
-					<IconButton icon={'skip-previous-circle-outline'} size={40}/>
+					<IconButton icon={'skip-previous-circle-outline'} onPress={previousSong} size={40}/>
 					<IconButton icon={!isPaused ? 'pause-circle-outline' : 'play-circle-outline'}
+								onLongPress={endPlayback}
 								onPress={pause}
 								size={50}/>
-					<IconButton icon={'skip-next-circle-outline'} size={40}/>
+					<IconButton icon={'skip-next-circle-outline'} onPress={nextSong} size={40}/>
 				</View>
 				<IconButton icon={'shuffle'} iconColor={shuffle ? '#03a9f4' : undefined} onPress={toggleShuffle}
 							size={30}/>
@@ -207,6 +212,7 @@ const css = StyleSheet.create({
 		justifyContent: 'center'
 	},
 	containerProgress: {
+		alignItems: 'center',
 		flexDirection: 'row'
 	},
 	progressBar: {

@@ -48,7 +48,7 @@ function PlaylistContent() {
 	return (
 		<View>
 			<Appbar.Header elevated mode={'small'}>
-				<Appbar.Content title={playlistID}/>
+				<Appbar.Content title={songs.length + (songs.length !== 1 ? ' songs' : ' song')}/>
 				<Appbar.Action icon={'plus'} onPress={showSongAddMenu}/>
 			</Appbar.Header>
 

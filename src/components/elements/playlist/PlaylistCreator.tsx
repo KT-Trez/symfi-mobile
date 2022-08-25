@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button, FAB, Modal, Portal, Text, TextInput} from 'react-native-paper';
-import {PlaylistMetadata} from '../../../typings/interfaces';
-import {PlaylistDatabase} from '../../schemas/schemas';
+import {PlaylistMetadata} from '../../../../typings/interfaces';
+import {PlaylistDatabase} from '../../../schemas/schemas';
 
 
 interface AlbumCreatorProps {
@@ -12,7 +12,7 @@ interface AlbumCreatorProps {
 	showCreator: () => void;
 }
 
-function AlbumCreator({hideCreator, isVisible, showCreator, reloadList}: AlbumCreatorProps) {
+function PlaylistCreator({hideCreator, isVisible, showCreator, reloadList}: AlbumCreatorProps) {
 	const [name, setName] = useState('');
 
 	const createAlbum = async () => {
@@ -45,12 +45,12 @@ function AlbumCreator({hideCreator, isVisible, showCreator, reloadList}: AlbumCr
 		<React.Fragment>
 			<Portal>
 				<Modal contentContainerStyle={css.modalContainer} onDismiss={hideCreator} visible={isVisible}>
-					<Text style={css.title} variant={'titleMedium'}>Create new album</Text>
+					<Text style={css.title} variant={'titleMedium'}>Create new playlist</Text>
 					<TextInput dense
-							   label={'Name'}
+							   label={'type in name'}
 							   mode={'outlined'}
 							   onChangeText={setName}
-							   placeholder={'Lovely music about Cristiana\'s beauty'}/>
+							   placeholder={'oh lovely Cristiana'}/>
 					<View style={css.buttonContainer}>
 						<Button onPress={hideCreator}>Back</Button>
 						<Button onPress={createAlbum}>Create</Button>
@@ -85,4 +85,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default AlbumCreator;
+export default PlaylistCreator;

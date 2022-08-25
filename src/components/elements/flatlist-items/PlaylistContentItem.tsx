@@ -1,8 +1,7 @@
 import React, {useRef} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Text} from 'react-native-paper';
 import {PlaylistData, SavedSongMetadata} from '../../../../typings/interfaces';
 import {PlaylistDatabase, SongsDatabase} from '../../../schemas/schemas';
+import SongEntry from '../SongEntry';
 
 
 interface PlaylistContentItemProps {
@@ -29,32 +28,12 @@ function PlaylistContentItem({item, loadResource, playlistID, refreshPlaylist}: 
 	};
 
 	return (
-		<TouchableOpacity onLongPress={removeFromPlayList} onPress={playAudio} style={css.container}>
-			<View style={css.titleContainer}>
-				<Text numberOfLines={1} variant={'bodyLarge'}>{item.title}</Text>
-				<Text numberOfLines={1} variant={'labelSmall'}>{item.channel.name}</Text>
-			</View>
-			<View style={css.infoContainer}>
-				<Text numberOfLines={1} variant={'labelSmall'}>{item.metadata.short_view_count_text.simple_text}</Text>
-				<Text numberOfLines={1} variant={'labelSmall'}>{item.metadata.duration.simple_text}</Text>
-			</View>
-		</TouchableOpacity>
+		<SongEntry imageOnLongPress={removeFromPlayList}
+				   imageOnPress={playAudio}
+				   item={item}
+				   textOnLongPress={removeFromPlayList}
+				   textOnPress={playAudio}/>
 	);
 }
-
-const css = StyleSheet.create({
-	container: {
-		flexDirection: 'row',
-		padding: 5
-	},
-	infoContainer: {
-		alignItems: 'flex-end',
-		flex: 1,
-		justifyContent: 'flex-end'
-	},
-	titleContainer: {
-		flex: 4
-	}
-});
 
 export default PlaylistContentItem;

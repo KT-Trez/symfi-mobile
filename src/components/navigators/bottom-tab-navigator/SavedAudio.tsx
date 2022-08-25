@@ -15,10 +15,14 @@ function SavedAudio() {
 	const [deleteSongID, setDeleteSongID] = useState<string | undefined>();
 	const [playingSongID, setPlayingSongID] = useState<string | undefined>();
 
+	const [isRefreshing, setIsRefreshing] = useState(false);
+
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
+		setIsRefreshing(true);
 		setSongs(await songsDB.current.find<SavedSongMetadata[]>({}));
+		setIsRefreshing(false);
 	}, []);
 
 	useEffect(() => {
@@ -40,7 +44,9 @@ function SavedAudio() {
 						  songs={songs}/>
 
 			<SearchSavedAudio data={songs}
+							  isRefreshing={isRefreshing}
 							  keyExtractor={(item) => item.id}
+							  refreshData={getSongs}
 							  renderItem={({item}) => <SavedAudioItem item={item}
 																	  loadToAudioPlayer={setPlayingSongID}
 																	  removeResource={setDeleteSongID}/>}

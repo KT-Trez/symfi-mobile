@@ -5,13 +5,15 @@ import {Divider, Searchbar, Text} from 'react-native-paper';
 
 interface SearchListProps {
 	data: any[];
+	isRefreshing: boolean;
 	keyExtractor: ((item: any, index: number) => string) | undefined;
+	refreshData: () => void;
 	renderItem: ListRenderItem<any>;
 	searchbarText: string;
 	searchEmptyText: string;
 }
 
-function SearchSavedAudio({data, keyExtractor, renderItem, searchbarText, searchEmptyText}: SearchListProps) {
+function SearchSavedAudio({data, isRefreshing, keyExtractor, refreshData, renderItem, searchbarText, searchEmptyText}: SearchListProps) {
 	const [searchData, setSearchData] = useState<any[]>([]);
 	const [searchQuery, setSearchQuery] = useState('');
 
@@ -36,6 +38,8 @@ function SearchSavedAudio({data, keyExtractor, renderItem, searchbarText, search
 					  ItemSeparatorComponent={Divider}
 					  ListEmptyComponent={<Text style={css.textError}>{searchEmptyText}</Text>}
 					  keyExtractor={keyExtractor}
+					  onRefresh={refreshData}
+					  refreshing={isRefreshing}
 					  renderItem={renderItem}/>
 		</React.Fragment>
 	);

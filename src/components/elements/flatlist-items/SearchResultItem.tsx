@@ -15,7 +15,6 @@ interface SearchResultItemProps {
 function SearchResultItem({item}: SearchResultItemProps) {
 	const [isDownloaded, setIsDownloaded] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
-	const [isLoading, setIsLoading] = useState(true);
 
 	const [loadingFailed, setLoadingFailed] = useState(false);
 
@@ -38,10 +37,7 @@ function SearchResultItem({item}: SearchResultItemProps) {
 
 		try {
 			const savePath = FileSystem.cacheDirectory + item.id + '.wav';
-			const {
-				status,
-				uri
-			} = await FileSystem.downloadAsync('https://musicly-api.herokuapp.com/download/youtube?audioID=' + item.id, savePath);
+			const {uri} = await FileSystem.downloadAsync('https://musicly-api.herokuapp.com/download/youtube?audioID=' + item.id, savePath);
 
 			const asset = await MediaLibrary.createAssetAsync(uri);
 			const assetMetadata = await FileSystem.getInfoAsync(uri);
@@ -49,7 +45,7 @@ function SearchResultItem({item}: SearchResultItemProps) {
 			const savedAudio = Object.assign(item, {
 				musicly: {
 					cover: {
-						color: Math.floor(Math.random()*16777215).toString(16),
+						color: Math.floor(Math.random() * 16777215).toString(16),
 						name: item.title + '_' + item.id,
 						uri: undefined
 					},
@@ -70,8 +66,6 @@ function SearchResultItem({item}: SearchResultItemProps) {
 			await db.insert<SavedSongMetadata>(savedAudio);
 
 			await checkDownloadedStatus();
-
-			console.info(status, uri);
 		} catch (err) {
 			console.error(err);
 			ToastAndroid.showWithGravity('Error, audio file NOT downloaded.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
@@ -80,8 +74,11 @@ function SearchResultItem({item}: SearchResultItemProps) {
 		}
 	}, []);
 
-	const scaleImage = (event: LayoutChangeEvent) => {
-		setImageDimensions({height: event.nativeEvent.layout.height, width: event.nativeEvent.layout.width})
+	const scaleImage = (id: number, event: LayoutChangeEvent) => {
+		if (id === 0 && !imageDimensions.width)
+			setImageDimensions({height: imageDimensions.height, width: event.nativeEvent.layout.width});
+		else if (id === 1 && !imageDimensions.height)
+			setImageDimensions({height: event.nativeEvent.layout.height, width: imageDimensions.width});
 	};
 
 	useEffect(() => {
@@ -90,38 +87,32 @@ function SearchResultItem({item}: SearchResultItemProps) {
 
 	return (
 		<View style={css.container}>
-			<View onLayout={scaleImage} style={css.imageContainer}>
+			<View onLayout={(event) => scaleImage(0, event)} style={css.imageContainer}>
 				{item.metadata.thumbnails.length === 0 ?
 					<View style={css.imageBroken}>
 						<MaterialIcons color='gray' name='broken-image' size={30}/>
 					</View>
 					:
-					isLoading ?
-						<ActivityIndicator size={'small'}/>
+					loadingFailed ?
+						<MaterialIcons color='gray' name='error-outline' size={30}/>
 						:
-						loadingFailed ?
-							<MaterialIcons color='gray' name='error-outline' size={30}/>
-							:
-							<Image
-								onError={() => setLoadingFailed(true)}
-								onLoadEnd={() => setIsLoading(false)}
-								resizeMode={'contain'}
-								resizeMethod={'resize'}
-								source={{
-									height: imageDimensions.height,
-									uri: item.metadata.thumbnails[0].url,
-									width: imageDimensions.width,
-								}}/>
+						<Image onError={() => setLoadingFailed(true)}
+							   resizeMode={'contain'}
+							   resizeMethod={'resize'}
+							   source={{uri: item.metadata.thumbnails[0].url}}
+							   style={{height: imageDimensions.height, width: imageDimensions.width}}/>
 				}
 			</View>
-			<View style={css.metadataContainer}>
+			<View onLayout={(event) => scaleImage(1, event)} style={css.metadataContainer}>
 				<Text numberOfLines={2} style={css.textTitle}>{item.title + '\n'}</Text>
 				<Text numberOfLines={1} style={css.textAuthor}>{item.channel.name}</Text>
 				<Text numberOfLines={1} style={css.textInfo}>
 					{item.metadata.short_view_count_text.simple_text} • {item.metadata.published}
 				</Text>
 			</View>
-			<TouchableOpacity disabled={isDownloaded || isDownloading} onPress={downloadSong} style={css.addButtonContainer}>
+			<TouchableOpacity disabled={isDownloaded || isDownloading}
+							  onPress={downloadSong}
+							  style={css.addButtonContainer}>
 				{!isDownloading ?
 					<MaterialIcons name={!isDownloaded ? 'file-download' : 'file-download-done'} size={28}/>
 					:
@@ -145,8 +136,7 @@ const css = StyleSheet.create({
 	imageContainer: {
 		alignItems: 'center',
 		flex: 2,
-		justifyContent: 'center',
-		padding: 5
+		justifyContent: 'center'
 	},
 	imageBroken: {
 		alignItems: 'center',
@@ -157,7 +147,7 @@ const css = StyleSheet.create({
 	},
 	metadataContainer: {
 		flex: 4,
-		padding: 5
+		paddingLeft: 10
 	},
 	textAuthor: {
 		color: '#212121',
