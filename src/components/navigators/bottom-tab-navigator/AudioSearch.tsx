@@ -2,14 +2,14 @@ import axios from 'axios';
 import React, {useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
 import {Appbar, Divider, Searchbar} from 'react-native-paper';
-import {SongMetadata} from '../../../../typings/interfaces';
+import {SavedSongMetadata} from '../../../../typings/interfaces';
 import SearchResultItem from '../../elements/flatlist-items/SearchResultItem';
 
 
 function AudioSearch() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
-	const [songs, setSongs] = useState<SongMetadata[]>([]);
+	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const search = async () => {
 		setIsLoading(true);

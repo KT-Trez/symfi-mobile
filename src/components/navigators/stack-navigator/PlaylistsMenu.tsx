@@ -12,7 +12,7 @@ function PlaylistsMenu() {
 	const [isVisible, setIsVisible] = useState(false);
 
 	const getAlbums = useCallback(async () => {
-		const db = new PlaylistDatabase().init();
+		const db = PlaylistDatabase.getInstance();
 		setAlbums(await db.find<PlaylistMetadata[]>({}));
 	}, []);
 
@@ -27,7 +27,7 @@ function PlaylistsMenu() {
 			</Appbar.Header>
 			<FlatList data={albums}
 					  ItemSeparatorComponent={Divider}
-					  keyExtractor={item => item._id}
+					  keyExtractor={item => item.id}
 					  ListEmptyComponent={<Text style={css.textError}>You have no created playlists yet.</Text>}
 					  renderItem={({item}) => <Album item={item}/>}/>
 			<AlbumCreator hideCreator={() => setIsVisible(false)}

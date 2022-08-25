@@ -1,27 +1,25 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
-import {Appbar, Searchbar, Text} from 'react-native-paper';
-import {SongMetadata} from '../../../../typings/interfaces';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {Appbar} from 'react-native-paper';
+import {SavedSongMetadata} from '../../../../typings/interfaces';
 import {SongsDatabase} from '../../../schemas/schemas';
-import SavedAudioItem from '../../elements/flatlist-items/SavedAudioItem';
+import AudioPlayer from '../../elements/AudioPlayer';
+import DeleteDialog from '../../elements/saved-audio/DeleteDialog';
+import SavedAudioItem from '../../elements/saved-audio/SavedAudioItem';
+import SearchSavedAudio from '../../elements/saved-audio/SearchSavedAudio';
 
 
 function SavedAudio() {
-	const [filteredSongs, setFilteredSongs] = useState<SongMetadata[]>([]);
+	const songsDB = useRef(SongsDatabase.getInstance());
 
-	const [searchQuery, setSearchQuery] = useState('');
-	const [songs, setSongs] = useState<SongMetadata[]>([]);
+	const [deleteSongID, setDeleteSongID] = useState<string | undefined>();
+	const [playingSongID, setPlayingSongID] = useState<string | undefined>();
+
+	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
-		const db = new SongsDatabase().init();
-		const songsArr = await db.find<SongMetadata[]>({});
-		setSongs(songsArr);
-		setFilteredSongs(songsArr);
+		setSongs(await songsDB.current.find<SavedSongMetadata[]>({}));
 	}, []);
-
-	useEffect(() => {
-		setFilteredSongs([...songs.filter(song => song.title.toLowerCase().match(searchQuery) || song.channel.name.toLowerCase().match(searchQuery))]);
-	}, [songs]);
 
 	useEffect(() => {
 		getSongs();
@@ -30,23 +28,24 @@ function SavedAudio() {
 	return (
 		<View style={css.container}>
 			<Appbar.Header elevated mode={'small'}>
-				<Appbar.Content title={'Audio files saved by you'}/>
+				<Appbar.Content title={'Hold to delete'}/>
 			</Appbar.Header>
 
-			<SafeAreaView>
-				<Searchbar
-					onChangeText={setSearchQuery}
-					//loading={isLoading}
-					placeholder={'Search for saved song'}
-					style={css.searchbar}
-					value={searchQuery}/>
-			</SafeAreaView>
+			<AudioPlayer audioID={playingSongID} setAudioID={setPlayingSongID} songs={songs}/>
 
-			<FlatList
-				data={filteredSongs}
-				ListEmptyComponent={<Text style={css.textError}>You have no saved songs yet.</Text>}
-				keyExtractor={item => item.id}
-				renderItem={SavedAudioItem}/>
+			<DeleteDialog deleteSongID={deleteSongID}
+						  playSongID={playingSongID}
+						  refreshSongsList={getSongs}
+						  setDeleteSongID={setDeleteSongID}
+						  songs={songs}/>
+
+			<SearchSavedAudio data={songs}
+							  keyExtractor={(item) => item.id}
+							  renderItem={({item}) => <SavedAudioItem item={item}
+																	  loadToAudioPlayer={setPlayingSongID}
+																	  removeResource={setDeleteSongID}/>}
+							  searchbarText={'Search for saved song'}
+							  searchEmptyText={'You have no saved songs yet.'}/>
 		</View>
 	);
 }

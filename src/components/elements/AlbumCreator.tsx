@@ -21,14 +21,19 @@ function AlbumCreator({hideCreator, isVisible, showCreator, reloadList}: AlbumCr
 
 		const albumID = new Date().getTime() + Math.round(Math.random() * 1000).toString();
 
-		const db = new PlaylistDatabase().init();
+		const db = PlaylistDatabase.getInstance();
 		await db.insert<PlaylistMetadata>({
-			_id: albumID,
+			id: albumID,
 			cover: {
-				name: albumID + '_cover_' + name
+				name: albumID + '_cover_' + name,
+				uri: undefined
+			},
+			flags: {
+				hasCover: false
 			},
 			name,
-			songs: 0
+			order: await PlaylistDatabase.getInstance().count({}),
+			songsCount: 0
 		});
 
 		if (reloadList)

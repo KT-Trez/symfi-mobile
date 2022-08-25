@@ -4,7 +4,7 @@ import * as MediaLibrary from 'expo-media-library';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Image, LayoutChangeEvent, StyleSheet, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
-import {SongMetadata} from '../../../../typings/interfaces';
+import {SavedSongMetadata, SongMetadata} from '../../../../typings/interfaces';
 import {SongsDatabase} from '../../../schemas/schemas';
 
 
@@ -23,8 +23,8 @@ function SearchResultItem({item}: SearchResultItemProps) {
 
 	// todo: measure performance, remove if unnecessary
 	const checkDownloadedStatus = useCallback(async () => {
-		const db = new SongsDatabase().init();
-		const songRecord = await db.find<SongMetadata[]>({id: item.id});
+		const db = SongsDatabase.getInstance();
+		const songRecord = await db.find<SavedSongMetadata[]>({id: item.id});
 		if (songRecord.length > 0)
 			setIsDownloaded(true);
 	}, []);
@@ -46,14 +46,28 @@ function SearchResultItem({item}: SearchResultItemProps) {
 			const asset = await MediaLibrary.createAssetAsync(uri);
 			const assetMetadata = await FileSystem.getInfoAsync(uri);
 
-			Object.assign(item, {
-				path: asset.uri,
-				playlistsIDs: [],
-				size: assetMetadata.size
+			const savedAudio = Object.assign(item, {
+				musicly: {
+					cover: {
+						color: Math.floor(Math.random()*16777215).toString(16),
+						name: item.title + '_' + item.id,
+						uri: undefined
+					},
+					file: {
+						path: asset.uri,
+						size: assetMetadata.size ?? 0
+					},
+					flags: {
+						hasCover: false,
+						isFavourite: false
+					},
+					playlists: [],
+					wasPlayed: 0
+				}
 			});
 
-			const db = new SongsDatabase().init();
-			await db.insert<SongMetadata>(item);
+			const db = SongsDatabase.getInstance();
+			await db.insert<SavedSongMetadata>(savedAudio);
 
 			await checkDownloadedStatus();
 

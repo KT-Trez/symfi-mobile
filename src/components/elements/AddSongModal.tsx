@@ -18,11 +18,11 @@ function AddSongModal({hideModal, isVisible, playlistID, refreshPlaylist, select
 	const [searchedSongs, setSearchedSongs] = useState<{ id: string, name: string }[]>([]);
 
 	const addToPlaylist = async (itemID: string) => {
-		const songsDB = new SongsDatabase().init();
-		await songsDB.update({id: itemID}, {$push: {playlistsIDs: playlistID}}, {});
+		const songsDB = SongsDatabase.getInstance();
+		await songsDB.update({id: itemID}, {$push: {'musicly.playlists': {id: playlistID, isFavourite: false}}}, {});
 
-		const playlistDB = new PlaylistDatabase().init();
-		await playlistDB.update({_id: playlistID}, {$inc: {songs: 1}}, {});
+		const playlistDB = PlaylistDatabase.getInstance();
+		await playlistDB.update({id: playlistID}, {$inc: {songsCount: 1}}, {});
 
 		if (refreshPlaylist)
 			refreshPlaylist();

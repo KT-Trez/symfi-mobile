@@ -2,21 +2,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DataStore from 'react-native-local-mongodb';
 
 
+interface RemoveOptions {
+	multi?: boolean;
+}
+
 interface UpdateOptions {
 	multi?: boolean;
 	returnUpdatedDocs?: boolean;
 	upsert?: boolean;
 }
 
-export default abstract class DefaultSchema {
-	private db: DataStore | undefined;
-	protected abstract readonly store: string;
+export default class DefaultSchema {
+	private readonly db: DataStore;
 
-	init() {
+	constructor(name: string) {
 		this.db = new DataStore({
 			autoload: true,
 			corruptAlertThreshold: 0,
-			filename: this.store,
+			filename: name,
 			storage: {
 				async getItem(key: string, cb): Promise<string | null> {
 					const item = await AsyncStorage.getItem(key);
@@ -39,10 +42,9 @@ export default abstract class DefaultSchema {
 			timestampData: true
 		});
 
-		return this;
 	}
 
-	public count(query: object) {
+	public count(query: object): Promise<number> {
 		return new Promise((resolve, reject) => {
 			if (!this.db)
 				reject('Database not initialized.');
@@ -80,6 +82,24 @@ export default abstract class DefaultSchema {
 					reject(err);
 
 				resolve(docs);
+			});
+		});
+	}
+
+	public async findOne(query: object) {
+		return await this.db.findOneAsync(query);
+	}
+
+	public async remove(query: object, options: RemoveOptions) {
+		return new Promise((resolve, reject) => {
+			if (!this.db)
+				reject('Database not initialized.');
+
+			this.db!.remove(query, options, (err, count) => {
+				if (err)
+					reject(err);
+
+				resolve(count);
 			});
 		});
 	}

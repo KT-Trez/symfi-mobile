@@ -5,24 +5,30 @@
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/adaptive-icon.png"
       },
-      "package": "pl.org.was.musicly"
+      "package": "pl.org.was.musicly",
+      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
     },
     "assetBundlePatterns": [
       "**/*"
     ],
+    "description": "Music player that lets you download, manage and play your favourite music anywhere you are.",
     "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true
     },
-    "orientation": "portrait",
     "name": "Musicly",
+    "orientation": "portrait",
+    "owner": "kt-trez",
+    "privacy": "hidden",
     "slug": "musicly",
     "splash": {
       "backgroundColor": "#ffffff",
       "image": "./assets/splash.png",
-      "resizeMode": "contain"
+      "resizeMode": "cover"
     },
     "updates": {
+      "checkAutomatically": "ON_LOAD",
+      "enabled": true,
       "fallbackToCacheTimeout": 0
     },
     "userInterfaceStyle": "light",

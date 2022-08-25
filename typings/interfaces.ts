@@ -1,11 +1,41 @@
+export interface PlaylistData {
+	id: string;
+	isFavourite: boolean;
+	order: number;
+}
+
 export interface PlaylistMetadata {
-	_id: string;
+	id: string;
 	cover: {
 		name: string;
-		uri?: string;
-	}
+		uri: string | undefined;
+	},
+	flags: {
+		hasCover: boolean;
+	},
 	name: string;
-	songs: number;
+	order: number;
+	songsCount: number;
+}
+
+export interface SavedSongMetadata extends SongMetadata {
+	musicly: {
+		cover: {
+			color: string;
+			name: string;
+			uri: string | undefined;
+		},
+		file: {
+			path: string;
+			size: number;
+		},
+		flags: {
+			hasCover: boolean;
+			isFavourite: boolean;
+		},
+		playlists: PlaylistData[];
+		wasPlayed: number;
+	}
 }
 
 export interface SongMetadata {
@@ -36,9 +66,6 @@ export interface SongMetadata {
 		}[];
 		view_count: string;
 	}
-	path?: string;
-	playlistsIDs?: string[];
-	size?: number;
 	title: string;
 	url: string;
 }

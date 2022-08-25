@@ -2,7 +2,7 @@ import {useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, Divider, Text} from 'react-native-paper';
-import {SongMetadata} from '../../../../typings/interfaces';
+import {SavedSongMetadata} from '../../../../typings/interfaces';
 import {SongsDatabase} from '../../../schemas/schemas';
 import AddSongModal from '../../elements/AddSongModal';
 import AudioPlayer from '../../elements/AudioPlayer';
@@ -15,19 +15,19 @@ function PlaylistContent() {
 	const playlistID = route.params?.playlistID;
 
 	const [allSongs, setAllSongs] = useState<{ id: string, name: string }[]>([]);
-	const [songs, setSongs] = useState<SongMetadata[]>([]);
+	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const [currentSongID, setCurrentSongID] = useState<string | undefined>();
 	const [songAddVisible, setSongAddVisible] = useState(false);
 
 	const getPlaylist = useCallback(async () => {
-		const db = new SongsDatabase().init();
-		setSongs(await db.find<SongMetadata[]>({'playlistsIDs': playlistID}));
+		const db = SongsDatabase.getInstance();
+		setSongs(await db.find<SavedSongMetadata[]>({'musicly.playlists.id': playlistID}));
 	}, []);
 
 	const getSongs = useCallback(async () => {
-		const db = new SongsDatabase().init();
-		setAllSongs((await db.find<SongMetadata[]>({$not: {'playlistsIDs': playlistID}})).map(song => {
+		const db = SongsDatabase.getInstance();
+		setAllSongs((await db.find<SavedSongMetadata[]>({$not: {'musicly.playlists.id': playlistID}})).map(song => {
 			return {id: song.id, name: song.title}
 		}));
 	}, []);
@@ -52,12 +52,12 @@ function PlaylistContent() {
 				<Appbar.Action icon={'plus'} onPress={showSongAddMenu}/>
 			</Appbar.Header>
 
-			<AudioPlayer audioID={currentSongID} songs={songs}/>
+			<AudioPlayer audioID={currentSongID} setAudioID={setCurrentSongID} songs={songs}/>
 
 			<FlatList data={songs}
 					  ItemSeparatorComponent={Divider}
 					  ListEmptyComponent={<Text style={css.textError}>This playlist is empty.</Text>}
-					  renderItem={({item}) => <PlaylistContentItem item={item} loadResource={setCurrentSongID}/>}/>
+					  renderItem={({item}) => <PlaylistContentItem item={item} loadResource={setCurrentSongID} playlistID={playlistID} refreshPlaylist={getPlaylist}/>}/>
 
 			<AddSongModal hideModal={hideSongAddMenu}
 						  isVisible={songAddVisible}
