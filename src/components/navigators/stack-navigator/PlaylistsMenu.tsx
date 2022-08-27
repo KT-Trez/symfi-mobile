@@ -10,14 +10,14 @@ import PlaylistCreator from '../../elements/playlist/PlaylistCreator';
 function PlaylistsMenu() {
 	const playlistsDB = useRef(PlaylistDatabase.getInstance());
 
-	const [albums, setAlbums] = useState<PlaylistMetadata[]>([]);
+	const [playlists, setPlaylists] = useState<PlaylistMetadata[]>([]);
 
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [isVisible, setIsVisible] = useState(false);
 
 	const getAlbums = useCallback(async () => {
 		setIsRefreshing(true);
-		setAlbums(await playlistsDB.current.find<PlaylistMetadata[]>({}));
+		setPlaylists(await playlistsDB.current.find<PlaylistMetadata[]>({}));
 		setIsRefreshing(false);
 	}, []);
 
@@ -31,18 +31,18 @@ function PlaylistsMenu() {
 				<Appbar.Content title={'Your playlists'}/>
 			</Appbar.Header>
 
-			<FlatList data={albums}
+			<PlaylistCreator hideCreator={() => setIsVisible(false)}
+							 isVisible={isVisible}
+							 reloadList={getAlbums}
+							 showCreator={() => setIsVisible(true)}/>
+
+			<FlatList data={playlists}
 					  ItemSeparatorComponent={Divider}
 					  keyExtractor={item => item.id}
 					  ListEmptyComponent={<Text style={css.textError}>You have no created playlists yet.</Text>}
 					  onRefresh={getAlbums}
 					  refreshing={isRefreshing}
 					  renderItem={({item}) => <Album item={item}/>}/>
-
-			<PlaylistCreator hideCreator={() => setIsVisible(false)}
-							 isVisible={isVisible}
-							 reloadList={getAlbums}
-							 showCreator={() => setIsVisible(true)}/>
 		</View>
 	);
 }

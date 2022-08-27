@@ -13,7 +13,8 @@ function Album({item}: AlbumProps) {
 	const navigation = React.useContext(NavigationContext);
 
 	return (
-		<TouchableOpacity onPress={() => navigation?.navigate('playlist-content', {playlistID: item.id})} style={css.container}>
+		<TouchableOpacity onPress={() => navigation?.navigate('playlist-content', {playlistID: item.id})}
+						  style={css.container}>
 			<View style={css.imageContainer}>
 				{item.cover.uri ?
 					<Avatar.Image size={50} source={() => item.cover.uri}/>
@@ -21,6 +22,7 @@ function Album({item}: AlbumProps) {
 					<Avatar.Text label={item.cover.name.split('_')[2].slice(0, 1)} size={50}/>
 				}
 			</View>
+
 			<View style={css.textContainer}>
 				<Text variant={'titleMedium'}>{item.name}</Text>
 				<Text variant={'labelMedium'}>{item.songsCount} {item.songsCount !== 1 ? 'songs' : 'song'}</Text>

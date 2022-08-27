@@ -64,14 +64,14 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 
 		setProgress(0);
 		setProgressSimpleText(undefined);
-
-		setAutoplay(false);
-		setShuffle(false);
 	};
 
 	const endPlayback = async () => {
 		await AudioPlayer.current.unloadAsync();
 		cleanControls();
+
+		setAutoplay(false);
+		setShuffle(false);
 
 		setAudioID(undefined);
 
@@ -105,7 +105,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 			staysActiveInBackground: true
 		});
 
-		const {isLoaded} = await AudioPlayer.current.getStatusAsync()
+		const {isLoaded} = await AudioPlayer.current.getStatusAsync();
 		if (isLoaded)
 			await AudioPlayer.current.unloadAsync();
 

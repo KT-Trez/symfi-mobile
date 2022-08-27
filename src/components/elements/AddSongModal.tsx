@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
 import {Divider, Modal, Portal, Searchbar, Text} from 'react-native-paper';
+import {SavedSongMetadata} from '../../../typings/interfaces';
 import {PlaylistDatabase, SongsDatabase} from '../../schemas/schemas';
 
 
@@ -8,39 +9,65 @@ interface AddSongModalProps {
 	hideModal: () => void;
 	isVisible: boolean;
 	playlistID: string;
-	refreshPlaylist?: () => void;
-	selectOptions: { id: string, name: string }[];
-	showModal: () => void;
+	refreshPlaylist: () => void;
 }
 
-function AddSongModal({hideModal, isVisible, playlistID, refreshPlaylist, selectOptions}: AddSongModalProps) {
+function AddSongModal({hideModal, isVisible, playlistID, refreshPlaylist}: AddSongModalProps) {
+	const playlistsDB = useRef(PlaylistDatabase.getInstance());
+	const songsDB = useRef(SongsDatabase.getInstance());
+
+	const [isBlocked, setIsBlocked] = useState(false);
+
 	const [searchQuery, setSearchQuery] = useState('');
-	const [searchedSongs, setSearchedSongs] = useState<{ id: string, name: string }[]>([]);
+	const [searchedSongs, setSearchedSongs] = useState<SavedSongMetadata[]>([]);
+
+	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
+
+	const getSongs = useCallback(async () => {
+		const songsArr = await songsDB.current.find<SavedSongMetadata[]>({$not: {'musicly.playlists.id': playlistID}});
+		setSongs(songsArr);
+		if (songsArr.length !== searchedSongs.length)
+			setSearchedSongs([...songsArr]);
+	}, []);
 
 	const addToPlaylist = async (itemID: string) => {
-		const songsDB = SongsDatabase.getInstance();
-		await songsDB.update({id: itemID}, {$push: {'musicly.playlists': {id: playlistID, isFavourite: false}}}, {});
+		if (isBlocked)
+			return;
+		setIsBlocked(true);
 
-		const playlistDB = PlaylistDatabase.getInstance();
-		await playlistDB.update({id: playlistID}, {$inc: {songsCount: 1}}, {});
+		await songsDB.current.update({id: itemID}, {
+			$push: {
+				'musicly.playlists': {
+					id: playlistID,
+					isFavourite: false,
+					order: (await playlistsDB.current.findOne({id: playlistID})).songsCount + 1
+				}
+			}
+		}, {});
+		await playlistsDB.current.update({id: playlistID}, {$inc: {songsCount: 1}}, {});
 
-		if (refreshPlaylist)
-			refreshPlaylist();
-		hideModal();
+		setSearchedSongs(arr => arr.filter(song => song.id !== itemID));
+		await getSongs();
+
+		refreshPlaylist();
+		setIsBlocked(false);
 	};
 
 	useEffect(() => {
-		setSearchedSongs([...selectOptions.filter(option => option.name.toLowerCase().match(searchQuery))])
+		setSearchedSongs([...songs.filter(song => song.title.toLowerCase().match(searchQuery) || song.channel.name.toLowerCase().match(searchQuery))]);
 	}, [searchQuery]);
 
 	useEffect(() => {
-		setSearchedSongs(selectOptions);
-	}, [selectOptions]);
+		if (isVisible)
+			getSongs();
+	}, [isVisible]);
 
 	return (
 		<Portal>
 			<Modal contentContainerStyle={css.modalContainer} onDismiss={hideModal} visible={isVisible}>
+
 				<Text variant={'titleMedium'}>Add song to playlist</Text>
+
 				<SafeAreaView>
 					<Searchbar elevation={0}
 							   onChangeText={setSearchQuery}
@@ -48,6 +75,7 @@ function AddSongModal({hideModal, isVisible, playlistID, refreshPlaylist, select
 							   style={css.searchbar}
 							   value={searchQuery}/>
 				</SafeAreaView>
+
 				<FlatList data={searchedSongs}
 						  ItemSeparatorComponent={Divider}
 						  ListEmptyComponent={<Text style={css.textError}>No search results.</Text>}
@@ -55,7 +83,7 @@ function AddSongModal({hideModal, isVisible, playlistID, refreshPlaylist, select
 						  renderItem={({item}) => {
 							  return (
 								  <TouchableOpacity onPress={() => addToPlaylist(item.id)} style={css.searchItem}>
-									  <Text numberOfLines={1}>{item.name}</Text>
+									  <Text numberOfLines={1}>{item.title}</Text>
 								  </TouchableOpacity>
 							  )
 						  }}/>
@@ -75,8 +103,6 @@ const css = StyleSheet.create({
 	},
 	searchItem: {
 		padding: 10
-		//marginBottom: 10,
-		//marginTop: 10
 	},
 	textError: {
 		margin: 15,

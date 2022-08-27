@@ -40,15 +40,15 @@ function AudioSearch() {
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={'Search'}/>
 			</Appbar.Header>
+
 			<SafeAreaView>
-				<Searchbar
-					onChangeText={setSearchQuery}
-					onEndEditing={search}
-					//loading={isLoading}
-					placeholder={'Search for music'}
-					style={css.searchbar}
-					value={searchQuery}/>
+				<Searchbar onChangeText={setSearchQuery}
+						   onEndEditing={search}
+						   placeholder={'Search for music'}
+						   style={css.searchbar}
+						   value={searchQuery}/>
 			</SafeAreaView>
+
 			{isLoading ?
 				<ActivityIndicator size={'large'} style={css.activityIndicator}/>
 				:
