@@ -6,20 +6,20 @@ import SongEntry from '../SongEntry';
 interface SongItemProps {
 	item: SavedSongMetadata;
 	loadToAudioPlayer: (id: string) => void;
-	removeResource: (id: string) => void;
+	loadToRemove: (id: string) => void;
 }
 
-function SavedAudioItem({item, loadToAudioPlayer, removeResource}: SongItemProps) {
+function SavedAudioItem({item, loadToAudioPlayer, loadToRemove}: SongItemProps) {
 	const changeCover = () => {
 
 	};
 
-	const deleteAudio = () => {
-		removeResource(item.id);
-	};
-
 	const playAudio = () => {
 		loadToAudioPlayer(item.id);
+	};
+
+	const removeAudio = () => {
+		loadToRemove(item.id);
 	};
 
 	return (
@@ -27,7 +27,7 @@ function SavedAudioItem({item, loadToAudioPlayer, removeResource}: SongItemProps
 				   imageOnPress={playAudio}
 				   item={item}
 				   textOnPress={playAudio}
-				   textOnLongPress={deleteAudio}/>
+				   textOnLongPress={removeAudio}/>
 	);
 }
 

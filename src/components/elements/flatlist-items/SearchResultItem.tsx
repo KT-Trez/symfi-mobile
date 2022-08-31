@@ -55,9 +55,11 @@ function SearchResultItem({item}: SearchResultItemProps) {
 					},
 					flags: {
 						hasCover: false,
+						isDownloaded: true,
 						isFavourite: false
 					},
 					playlists: [],
+					version: 1,
 					wasPlayed: 0
 				}
 			});

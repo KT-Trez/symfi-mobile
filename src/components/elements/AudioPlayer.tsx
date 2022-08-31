@@ -25,7 +25,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 	const [song, setSong] = useState<SavedSongMetadata | undefined>(undefined);
 	const [songsLeft, setSongsLeft] = useState<SavedSongMetadata[]>([]);
 
-	const [autoplay, setAutoplay] = useState(false);
+	const [autoplay, setAutoplay] = useState(true);
 	const [shuffle, setShuffle] = useState(false);
 
 	const audioStatus = async (status: AVPlaybackStatus) => {
@@ -109,7 +109,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 		if (isLoaded)
 			await AudioPlayer.current.unloadAsync();
 
-		await AudioPlayer.current.loadAsync({uri: song!.musicly.file.path}, {
+		await AudioPlayer.current.loadAsync({uri: song!.musicly.file.path!}, {
 			pitchCorrectionQuality: PitchCorrectionQuality.High,
 			progressUpdateIntervalMillis: 900,
 			shouldCorrectPitch: true
@@ -171,7 +171,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 				<Text numberOfLines={1} variant={'labelSmall'}>{song?.channel.name ?? '- no music -'}</Text>
 			</View>
 			<View style={css.containerButtons}>
-				<IconButton icon={'repeat'} iconColor={autoplay ? '#03a9f4' : undefined} onPress={toggleAutoplay}
+				<IconButton icon={'motion-play-outline'} iconColor={autoplay ? '#03a9f4' : undefined} onPress={toggleAutoplay}
 							size={30}/>
 				<View style={css.containerButtonsInner}>
 					<IconButton icon={'skip-previous-circle-outline'} onPress={previousSong} size={40}/>

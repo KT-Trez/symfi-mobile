@@ -4,16 +4,17 @@ import {Appbar, Divider} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../../typings/interfaces';
 import {PlaylistDatabase} from '../../../schemas/schemas';
 import Album from '../../elements/Album';
+import EditDialog from '../../elements/playlist/EditDialog';
 import PlaylistCreator from '../../elements/playlist/PlaylistCreator';
 
 
 function PlaylistsMenu() {
 	const playlistsDB = useRef(PlaylistDatabase.getInstance());
 
+	const [deletePlaylistID, setDeletePlaylistID] = useState<string | undefined>(undefined);
 	const [playlists, setPlaylists] = useState<PlaylistMetadata[]>([]);
 
 	const [isRefreshing, setIsRefreshing] = useState(false);
-	const [isVisible, setIsVisible] = useState(false);
 
 	const getAlbums = useCallback(async () => {
 		setIsRefreshing(true);
@@ -31,10 +32,9 @@ function PlaylistsMenu() {
 				<Appbar.Content title={'Your playlists'}/>
 			</Appbar.Header>
 
-			<PlaylistCreator hideCreator={() => setIsVisible(false)}
-							 isVisible={isVisible}
-							 reloadList={getAlbums}
-							 showCreator={() => setIsVisible(true)}/>
+			<EditDialog playlistID={deletePlaylistID} refreshPlaylistsList={getAlbums} setPlaylistID={setDeletePlaylistID}/>
+
+			<PlaylistCreator reloadList={getAlbums}/>
 
 			<FlatList data={playlists}
 					  ItemSeparatorComponent={Divider}
@@ -42,7 +42,7 @@ function PlaylistsMenu() {
 					  ListEmptyComponent={<Text style={css.textError}>You have no created playlists yet.</Text>}
 					  onRefresh={getAlbums}
 					  refreshing={isRefreshing}
-					  renderItem={({item}) => <Album item={item}/>}/>
+					  renderItem={({item}) => <Album item={item} loadToRemove={setDeletePlaylistID}/>}/>
 		</View>
 	);
 }

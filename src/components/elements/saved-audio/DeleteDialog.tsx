@@ -38,7 +38,9 @@ function DeleteDialog({deleteSongID, playSongID, refreshSongsList, setDeleteSong
 		if (deleteSong?.id === playSongID)
 			return ToastAndroid.showWithGravity('Song is currently playing', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
 
-		const asset = await MediaLibrary.getAssetInfoAsync(deleteSong!.musicly.file.path);
+		// todo: update schema
+		// todo: check if resource is downloaded
+		const asset = await MediaLibrary.getAssetInfoAsync(deleteSong!.musicly.file.path!);
 		await MediaLibrary.deleteAssetsAsync(asset);
 
 		await songsDB.current.remove({id: deleteSong!.id}, {});

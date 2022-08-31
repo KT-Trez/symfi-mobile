@@ -49,7 +49,7 @@ function SavedAudio() {
 							  refreshData={getSongs}
 							  renderItem={({item}) => <SavedAudioItem item={item}
 																	  loadToAudioPlayer={setPlayingSongID}
-																	  removeResource={setDeleteSongID}/>}
+																	  loadToRemove={setDeleteSongID}/>}
 							  searchbarText={'Search for saved song'}
 							  searchEmptyText={'You have no saved songs yet.'}/>
 		</View>

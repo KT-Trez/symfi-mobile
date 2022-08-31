@@ -26,7 +26,7 @@ function SongEntry({imageOnLongPress, imageOnPress, item, textOnLongPress, textO
 			<TouchableOpacity onLongPress={textOnLongPress} onPress={textOnPress} style={css.containerText}>
 				<View style={css.containerTitle}>
 					<Text numberOfLines={1} variant={'titleMedium'}>{item.title}</Text>
-					<Text numberOfLines={1} variant={'labelSmall'}>{Math.round(item.musicly.file.size / 1024 / 1024 * 100) / 100}MB • {item.channel.name}</Text>
+					<Text numberOfLines={1} variant={'labelSmall'}>{Math.round(item.musicly.file.size ?? 0 / 1024 / 1024 * 100) / 100}MB • {item.channel.name}</Text>
 				</View>
 				<View style={css.containerMetadata}>
 					<Text variant={'bodySmall'}>{item.metadata.short_view_count_text.simple_text}</Text>

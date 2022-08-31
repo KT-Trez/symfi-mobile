@@ -16,6 +16,7 @@ export interface PlaylistMetadata {
 	name: string;
 	order: number;
 	songsCount: number;
+	version: number;
 }
 
 export interface SavedSongMetadata extends SongMetadata {
@@ -26,14 +27,16 @@ export interface SavedSongMetadata extends SongMetadata {
 			uri: string | undefined;
 		},
 		file: {
-			path: string;
-			size: number;
+			path: string | undefined;
+			size: number | undefined;
 		},
 		flags: {
 			hasCover: boolean;
+			isDownloaded: boolean;
 			isFavourite: boolean;
 		},
 		playlists: PlaylistData[];
+		version: number;
 		wasPlayed: number;
 	}
 }

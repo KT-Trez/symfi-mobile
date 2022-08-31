@@ -7,13 +7,18 @@ import {PlaylistMetadata} from '../../../typings/interfaces';
 
 interface AlbumProps {
 	item: PlaylistMetadata;
+	loadToRemove: (id: string) => void;
 }
 
-function Album({item}: AlbumProps) {
+function Album({item, loadToRemove}: AlbumProps) {
 	const navigation = React.useContext(NavigationContext);
 
+	const remove = () => {
+		loadToRemove(item.id);
+	};
+
 	return (
-		<TouchableOpacity onPress={() => navigation?.navigate('playlist-content', {playlistID: item.id})}
+		<TouchableOpacity onLongPress={remove} onPress={() => navigation?.navigate('playlist-content', {playlistID: item.id})}
 						  style={css.container}>
 			<View style={css.imageContainer}>
 				{item.cover.uri ?

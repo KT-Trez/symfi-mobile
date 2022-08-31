@@ -6,14 +6,17 @@ import {PlaylistDatabase} from '../../../schemas/schemas';
 
 
 interface AlbumCreatorProps {
-	hideCreator: () => void;
-	isVisible: boolean;
 	reloadList?: () => void;
-	showCreator: () => void;
 }
 
-function PlaylistCreator({hideCreator, isVisible, showCreator, reloadList}: AlbumCreatorProps) {
+function PlaylistCreator({reloadList}: AlbumCreatorProps) {
+	const [isVisible, setIsVisible] = useState(false);
+
 	const [name, setName] = useState('');
+
+	const hideCreator = () => setIsVisible(false);
+
+	const showCreator = () => setIsVisible(true);
 
 	const createAlbum = async () => {
 		if (!name)
@@ -33,7 +36,8 @@ function PlaylistCreator({hideCreator, isVisible, showCreator, reloadList}: Albu
 			},
 			name,
 			order: await PlaylistDatabase.getInstance().count({}),
-			songsCount: 0
+			songsCount: 0,
+			version: 1
 		});
 
 		if (reloadList)
@@ -42,25 +46,24 @@ function PlaylistCreator({hideCreator, isVisible, showCreator, reloadList}: Albu
 	};
 
 	return (
-		<React.Fragment>
-			<Portal>
-				<Modal contentContainerStyle={css.modalContainer} onDismiss={hideCreator} visible={isVisible}>
-					<Text style={css.title} variant={'titleMedium'}>Create new playlist</Text>
-					<TextInput dense
-							   label={'type in name'}
-							   mode={'outlined'}
-							   onChangeText={setName}
-							   placeholder={'oh lovely Cristiana'}/>
-					<View style={css.buttonContainer}>
-						<Button onPress={hideCreator}>Back</Button>
-						<Button onPress={createAlbum}>Create</Button>
-					</View>
-				</Modal>
-			</Portal>
+		<Portal>
+			<Modal contentContainerStyle={css.modalContainer} onDismiss={hideCreator} visible={isVisible}>
+				<Text style={css.title} variant={'titleMedium'}>Create new playlist</Text>
+				<TextInput dense
+						   label={'type in name'}
+						   mode={'outlined'}
+						   onChangeText={setName}
+						   placeholder={'oh lovely Cristiana'}/>
+				<View style={css.buttonContainer}>
+					<Button onPress={hideCreator}>Back</Button>
+					<Button onPress={createAlbum}>Create</Button>
+				</View>
+			</Modal>
+
 			<FAB icon={'plus'}
 				 onPress={showCreator}
 				 style={css.fab}/>
-		</React.Fragment>
+		</Portal>
 	);
 }
 
@@ -71,7 +74,7 @@ const css = StyleSheet.create({
 		marginTop: 15
 	},
 	fab: {
-		bottom: 10,
+		bottom: 60,
 		position: 'absolute',
 		right: 10
 	},

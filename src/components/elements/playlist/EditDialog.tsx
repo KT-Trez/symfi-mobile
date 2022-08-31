@@ -5,19 +5,19 @@ import {PlaylistDatabase, SongsDatabase} from '../../../schemas/schemas';
 
 
 interface DeleteDialogProps {
-	playlistID: string;
+	playlistID: string | undefined;
 	refreshPlaylistsList: () => void;
+	setPlaylistID: (id: string | undefined) => void;
 }
 
-function DeleteDialog({playlistID, refreshPlaylistsList}: DeleteDialogProps) {
-	// todo: !IMPORTANT - test and implement
-
+function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: DeleteDialogProps) {
 	const playlistsDB = useRef(PlaylistDatabase.getInstance());
 	const songsDB = useRef(SongsDatabase.getInstance());
 
 	const [isVisible, setIsVisible] = useState(false);
 
 	const hideDialog = () => {
+		setPlaylistID(undefined);
 		setIsVisible(false);
 	};
 
@@ -60,4 +60,4 @@ function DeleteDialog({playlistID, refreshPlaylistsList}: DeleteDialogProps) {
 	);
 }
 
-export default DeleteDialog;
+export default EditDialog;

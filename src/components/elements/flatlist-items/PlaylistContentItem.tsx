@@ -16,6 +16,10 @@ function PlaylistContentItem({item, loadResource, playlistID, refreshPlaylist}: 
 	const songsDB = useRef(SongsDatabase.getInstance());
 
 	const playAudio = () => {
+		// todo: update flag for existing resources
+		//if (!item.musicly.flags.isDownloaded)
+		//	return;
+
 		loadResource(item.id);
 	};
 
