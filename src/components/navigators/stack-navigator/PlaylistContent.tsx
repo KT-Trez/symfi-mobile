@@ -1,18 +1,20 @@
-import {useRoute} from '@react-navigation/native';
+import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, Divider, Text} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../../typings/interfaces';
+import {RootStackParamList} from '../../../../typings/navigation';
 import {SongsDatabase} from '../../../schemas/schemas';
 import AddSongModal from '../../elements/AddSongModal';
 import AudioPlayer from '../../elements/AudioPlayer';
 import PlaylistContentItem from '../../elements/flatlist-items/PlaylistContentItem';
 
 
+type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'PlaylistContent'>;
+
 function PlaylistContent() {
-	const route = useRoute();
-	//@ts-ignore
-	const playlistID = route.params?.playlistID;
+	const route = useRoute<ProfileScreenRouteProp>();
+	const playlistID = route.params?.id;
 	const songsDB = useRef(SongsDatabase.getInstance());
 
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
@@ -49,7 +51,9 @@ function PlaylistContent() {
 			<FlatList data={songs}
 					  ItemSeparatorComponent={Divider}
 					  ListEmptyComponent={<Text style={css.textError}>This playlist is empty.</Text>}
-					  renderItem={({item}) => <PlaylistContentItem item={item} loadResource={setCurrentSongID} playlistID={playlistID} refreshPlaylist={getSongs}/>}/>
+					  renderItem={({item}) => <PlaylistContentItem item={item} loadResource={setCurrentSongID}
+																   playlistID={playlistID}
+																   refreshPlaylist={getSongs}/>}/>
 		</View>
 
 	);

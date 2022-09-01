@@ -1,3 +1,4 @@
+import {NavigationContext} from '@react-navigation/native';
 import React, {useEffect, useRef, useState} from 'react';
 import {Button, Dialog, Paragraph, Portal} from 'react-native-paper';
 import {PlaylistData, SavedSongMetadata} from '../../../../typings/interfaces';
@@ -11,10 +12,17 @@ interface DeleteDialogProps {
 }
 
 function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: DeleteDialogProps) {
+	const navigation = React.useContext(NavigationContext);
+
 	const playlistsDB = useRef(PlaylistDatabase.getInstance());
 	const songsDB = useRef(SongsDatabase.getInstance());
 
 	const [isVisible, setIsVisible] = useState(false);
+
+	const editPlaylist = () => {
+		navigation?.navigate('PlaylistEdit', {id: playlistID, refreshList: refreshPlaylistsList});
+		hideDialog();
+	};
 
 	const hideDialog = () => {
 		setPlaylistID(undefined);
@@ -47,13 +55,14 @@ function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: DeleteDia
 	return (
 		<Portal>
 			<Dialog dismissable={true} onDismiss={hideDialog} visible={isVisible}>
-				<Dialog.Title>Delete</Dialog.Title>
+				<Dialog.Title>Manage</Dialog.Title>
 				<Dialog.Content>
-					<Paragraph>Do you want to delete this playlist?</Paragraph>
+					<Paragraph>Do you want to delete/edit this playlist?</Paragraph>
 				</Dialog.Content>
 				<Dialog.Actions>
 					<Button onPress={hideDialog}>Cancel</Button>
 					<Button onPress={removePlaylist}>Delete</Button>
+					<Button onPress={editPlaylist}>Edit</Button>
 				</Dialog.Actions>
 			</Dialog>
 		</Portal>

@@ -18,7 +18,7 @@ function Album({item, loadToRemove}: AlbumProps) {
 	};
 
 	return (
-		<TouchableOpacity onLongPress={remove} onPress={() => navigation?.navigate('playlist-content', {playlistID: item.id})}
+		<TouchableOpacity onLongPress={remove} onPress={() => navigation?.navigate('PlaylistContent', {id: item.id})}
 						  style={css.container}>
 			<View style={css.imageContainer}>
 				{item.cover.uri ?

@@ -1,10 +1,12 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../../../typings/navigation';
+import PlaylistEdit from '../stack-navigator/PlaylistEdit';
 import PlaylistsMenu from '../stack-navigator/PlaylistsMenu';
 import PlaylistContent from '../stack-navigator/PlaylistContent';
 
 
-const {Navigator, Screen} = createNativeStackNavigator();
+const {Navigator, Screen} = createNativeStackNavigator<RootStackParamList>();
 
 function StackNavigator() {
 	const defaultOptions = {
@@ -14,10 +16,13 @@ function StackNavigator() {
 	return (
 		<Navigator>
 			<Screen component={PlaylistsMenu}
-					name={'playlists-menu'}
+					name={'PlaylistMenu'}
 					options={defaultOptions}/>
 			<Screen component={PlaylistContent}
-					name={'playlist-content'}
+					name={'PlaylistContent'}
+					options={defaultOptions}/>
+			<Screen component={PlaylistEdit}
+					name={'PlaylistEdit'}
 					options={defaultOptions}/>
 		</Navigator>
 	);

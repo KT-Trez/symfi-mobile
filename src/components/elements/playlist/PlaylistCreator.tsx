@@ -1,22 +1,18 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Button, FAB, Modal, Portal, Text, TextInput} from 'react-native-paper';
+import {Button, Modal, Portal, Text, TextInput} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../../typings/interfaces';
 import {PlaylistDatabase} from '../../../schemas/schemas';
 
 
 interface AlbumCreatorProps {
+	hide: () => void;
+	isVisible: boolean;
 	reloadList?: () => void;
 }
 
-function PlaylistCreator({reloadList}: AlbumCreatorProps) {
-	const [isVisible, setIsVisible] = useState(false);
-
+function PlaylistCreator({hide, isVisible, reloadList}: AlbumCreatorProps) {
 	const [name, setName] = useState('');
-
-	const hideCreator = () => setIsVisible(false);
-
-	const showCreator = () => setIsVisible(true);
 
 	const createAlbum = async () => {
 		if (!name)
@@ -42,28 +38,26 @@ function PlaylistCreator({reloadList}: AlbumCreatorProps) {
 
 		if (reloadList)
 			reloadList();
-		hideCreator();
+		hide();
 	};
 
 	return (
-		<Portal>
-			<Modal contentContainerStyle={css.modalContainer} onDismiss={hideCreator} visible={isVisible}>
-				<Text style={css.title} variant={'titleMedium'}>Create new playlist</Text>
-				<TextInput dense
-						   label={'type in name'}
-						   mode={'outlined'}
-						   onChangeText={setName}
-						   placeholder={'oh lovely Cristiana'}/>
-				<View style={css.buttonContainer}>
-					<Button onPress={hideCreator}>Back</Button>
-					<Button onPress={createAlbum}>Create</Button>
-				</View>
-			</Modal>
-
-			<FAB icon={'plus'}
-				 onPress={showCreator}
-				 style={css.fab}/>
-		</Portal>
+		<React.Fragment>
+			<Portal>
+				<Modal contentContainerStyle={css.modalContainer} onDismiss={hide} visible={isVisible}>
+					<Text style={css.title} variant={'titleMedium'}>Create new playlist</Text>
+					<TextInput dense
+							   label={'type in name'}
+							   mode={'outlined'}
+							   onChangeText={setName}
+							   placeholder={'oh lovely Cristiana'}/>
+					<View style={css.buttonContainer}>
+						<Button onPress={hide}>Back</Button>
+						<Button onPress={createAlbum}>Create</Button>
+					</View>
+				</Modal>
+			</Portal>
+		</React.Fragment>
 	);
 }
 
@@ -72,11 +66,6 @@ const css = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'flex-end',
 		marginTop: 15
-	},
-	fab: {
-		bottom: 60,
-		position: 'absolute',
-		right: 10
 	},
 	modalContainer: {
 		backgroundColor: 'white',
