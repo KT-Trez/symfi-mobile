@@ -1,7 +1,7 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {Appbar, Divider, Text} from 'react-native-paper';
+import {Appbar, Divider, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../../typings/interfaces';
 import {RootStackParamList} from '../../../../typings/navigation';
 import {SongsDatabase} from '../../../schemas/schemas';
@@ -13,6 +13,7 @@ import PlaylistContentItem from '../../elements/flatlist-items/PlaylistContentIt
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'PlaylistContent'>;
 
 function PlaylistContent() {
+	const {colors} = useTheme();
 	const route = useRoute<ProfileScreenRouteProp>();
 	const playlistID = route.params?.id;
 	const songsDB = useRef(SongsDatabase.getInstance());
@@ -35,7 +36,7 @@ function PlaylistContent() {
 	}, []);
 
 	return (
-		<View style={css.container}>
+		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={songs.length + (songs.length !== 1 ? ' songs' : ' song')}/>
 				<Appbar.Action icon={'plus'} onPress={showModal}/>

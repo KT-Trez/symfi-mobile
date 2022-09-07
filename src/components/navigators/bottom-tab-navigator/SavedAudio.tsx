@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Appbar} from 'react-native-paper';
+import {Appbar, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../../typings/interfaces';
 import {SongsDatabase} from '../../../schemas/schemas';
 import AudioPlayer from '../../elements/AudioPlayer';
@@ -10,6 +10,7 @@ import SearchSavedAudio from '../../elements/saved-audio/SearchSavedAudio';
 
 
 function SavedAudio() {
+	const {colors} = useTheme();
 	const songsDB = useRef(SongsDatabase.getInstance());
 
 	const [deleteSongID, setDeleteSongID] = useState<string | undefined>();
@@ -30,7 +31,7 @@ function SavedAudio() {
 	}, []);
 
 	return (
-		<View style={css.container}>
+		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={'Hold to delete'}/>
 			</Appbar.Header>

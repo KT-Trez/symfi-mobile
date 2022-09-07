@@ -1,12 +1,14 @@
 import axios from 'axios';
 import React, {useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
-import {Appbar, Divider, Searchbar} from 'react-native-paper';
+import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../../typings/interfaces';
 import SearchResultItem from '../../elements/flatlist-items/SearchResultItem';
 
 
 function AudioSearch() {
+	const {colors} = useTheme();
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
@@ -36,7 +38,7 @@ function AudioSearch() {
 	};
 
 	return (
-		<View style={css.container}>
+		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={'Search'}/>
 			</Appbar.Header>
@@ -54,7 +56,6 @@ function AudioSearch() {
 				:
 				<FlatList
 					data={songs}
-					ItemSeparatorComponent={Divider}
 					keyExtractor={item => item.id}
 					renderItem={({item}) => <SearchResultItem item={item}/>}/>
 			}

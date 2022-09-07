@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {FlatList, ListRenderItem, SafeAreaView, StyleSheet} from 'react-native';
-import {Divider, Searchbar, Text} from 'react-native-paper';
+import {Searchbar, Text} from 'react-native-paper';
 
 
 interface SearchListProps {
@@ -35,7 +35,6 @@ function SearchSavedAudio({data, isRefreshing, keyExtractor, refreshData, render
 			</SafeAreaView>
 
 			<FlatList data={searchData}
-					  ItemSeparatorComponent={Divider}
 					  ListEmptyComponent={<Text style={css.textError}>{searchEmptyText}</Text>}
 					  keyExtractor={keyExtractor}
 					  onRefresh={refreshData}

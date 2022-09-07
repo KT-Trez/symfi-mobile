@@ -2,16 +2,17 @@
   "expo": {
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
+        "backgroundColor": "#000000",
         "foregroundImage": "./assets/adaptive-icon.png"
       },
+      "backgroundColor": "#1c1b1f",
       "package": "pl.org.was.musicly",
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
     },
     "assetBundlePatterns": [
       "**/*"
     ],
-    "description": "Music player that lets you download, manage and play your favourite music anywhere you are.",
+    "description": "Mobile app that lets you download, manage and play your favourite music anywhere you are.",
     "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true

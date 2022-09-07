@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
-import {Divider, Modal, Portal, Searchbar, Text} from 'react-native-paper';
+import {Divider, Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import {PlaylistDatabase, SongsDatabase} from '../../schemas/schemas';
 
@@ -13,6 +13,7 @@ interface AddSongModalProps {
 }
 
 function AddSongModal({hideModal, isVisible, playlistID, refreshPlaylist}: AddSongModalProps) {
+	const {colors} = useTheme();
 	const playlistsDB = useRef(PlaylistDatabase.getInstance());
 	const songsDB = useRef(SongsDatabase.getInstance());
 
@@ -64,8 +65,7 @@ function AddSongModal({hideModal, isVisible, playlistID, refreshPlaylist}: AddSo
 
 	return (
 		<Portal>
-			<Modal contentContainerStyle={css.modalContainer} onDismiss={hideModal} visible={isVisible}>
-
+			<Modal contentContainerStyle={[css.modalContainer, {backgroundColor: colors.elevation.level3}]} onDismiss={hideModal} visible={isVisible}>
 				<Text variant={'titleMedium'}>Add song to playlist</Text>
 
 				<SafeAreaView>

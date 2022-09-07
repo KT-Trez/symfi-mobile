@@ -1,7 +1,7 @@
 import {NavigationContext} from '@react-navigation/native';
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Avatar, Text} from 'react-native-paper';
+import {Avatar, Text, useTheme} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../typings/interfaces';
 
 
@@ -11,6 +11,7 @@ interface AlbumProps {
 }
 
 function Album({item, loadToRemove}: AlbumProps) {
+	const {colors} = useTheme();
 	const navigation = React.useContext(NavigationContext);
 
 	const remove = () => {
@@ -18,8 +19,9 @@ function Album({item, loadToRemove}: AlbumProps) {
 	};
 
 	return (
-		<TouchableOpacity onLongPress={remove} onPress={() => navigation?.navigate('PlaylistContent', {id: item.id})}
-						  style={css.container}>
+		<TouchableOpacity onLongPress={remove}
+						  onPress={() => navigation?.navigate('PlaylistContent', {id: item.id})}
+						  style={[css.container, {backgroundColor: colors.elevation.level1}]}>
 			<View style={css.imageContainer}>
 				{item.cover.uri ?
 					<Avatar.Image size={50}
@@ -41,7 +43,8 @@ function Album({item, loadToRemove}: AlbumProps) {
 
 const css = StyleSheet.create({
 	container: {
-		flexDirection: 'row'
+		flexDirection: 'row',
+		margin: 5
 	},
 	imageContainer: {
 		flex: 1,

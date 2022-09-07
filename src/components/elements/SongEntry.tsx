@@ -1,7 +1,7 @@
 import {MaterialIcons} from '@expo/vector-icons';
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 
 
@@ -14,8 +14,10 @@ interface SongEntryProps {
 }
 
 function SongEntry({imageOnLongPress, imageOnPress, item, textOnLongPress, textOnPress}: SongEntryProps) {
+	const {colors} = useTheme();
+
 	return (
-		<View style={css.container}>
+		<View style={[css.container, {backgroundColor: colors.elevation.level1}]}>
 			<TouchableOpacity onLongPress={imageOnLongPress} onPress={imageOnPress} style={css.containerImageChange}>
 				{item.musicly.flags.hasCover ?
 					<Image source={{uri: item.musicly.cover.uri}}
@@ -28,7 +30,7 @@ function SongEntry({imageOnLongPress, imageOnPress, item, textOnLongPress, textO
 				<View style={css.containerTitle}>
 					<Text numberOfLines={1} variant={'titleMedium'}>{item.title}</Text>
 					<Text numberOfLines={1} variant={'labelSmall'}>
-						{Math.round(item.musicly.file.size ?? 0 / 1024 / 1024 * 100) / 100}MB • {item.channel.name}
+						{Math.round((item.musicly.file.size ?? 0) / 1024 / 1024 * 100) / 100}MB • {item.channel.name}
 					</Text>
 				</View>
 				<View style={css.containerMetadata}>
@@ -43,7 +45,8 @@ function SongEntry({imageOnLongPress, imageOnPress, item, textOnLongPress, textO
 const css = StyleSheet.create({
 	container: {
 		alignItems: 'center',
-		flexDirection: 'row'
+		flexDirection: 'row',
+		margin: 5
 	},
 	containerImageChange: {
 		alignItems: 'center',

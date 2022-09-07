@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Button, Modal, Portal, Text, TextInput} from 'react-native-paper';
+import {Button, Modal, Portal, Text, TextInput, useTheme} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../../typings/interfaces';
 import {PlaylistDatabase} from '../../../schemas/schemas';
 
@@ -12,6 +12,7 @@ interface AlbumCreatorProps {
 }
 
 function PlaylistCreator({hide, isVisible, reloadList}: AlbumCreatorProps) {
+	const {colors} = useTheme();
 	const [name, setName] = useState('');
 
 	const createAlbum = async () => {
@@ -44,7 +45,7 @@ function PlaylistCreator({hide, isVisible, reloadList}: AlbumCreatorProps) {
 	return (
 		<React.Fragment>
 			<Portal>
-				<Modal contentContainerStyle={css.modalContainer} onDismiss={hide} visible={isVisible}>
+				<Modal contentContainerStyle={[css.modalContainer, {backgroundColor: colors.elevation.level3}]} onDismiss={hide} visible={isVisible}>
 					<Text style={css.title} variant={'titleMedium'}>Create new playlist</Text>
 					<TextInput dense
 							   label={'type in name'}

@@ -1,7 +1,7 @@
+import {DarkTheme, NavigationContainer} from '@react-navigation/native';
 import axios from 'axios';
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {Provider as PaperProvider} from 'react-native-paper';
+import {MD3DarkTheme, Provider as PaperProvider} from 'react-native-paper';
 import BottomTabNavigator from './src/components/navigators/BottomTabNavigator';
 
 
@@ -12,8 +12,8 @@ Object.assign(axios.defaults, {
 
 export default function App() {
 	return (
-		<PaperProvider>
-			<NavigationContainer>
+		<PaperProvider theme={MD3DarkTheme}>
+			<NavigationContainer theme={DarkTheme}>
 				<BottomTabNavigator/>
 			</NavigationContainer>
 		</PaperProvider>

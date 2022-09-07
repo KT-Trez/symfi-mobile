@@ -1,7 +1,7 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Image, SafeAreaView, StyleSheet, View} from 'react-native';
-import {ActivityIndicator, Appbar, Avatar, Button, Surface, Text, TextInput} from 'react-native-paper';
+import {ActivityIndicator, Appbar, Avatar, Button, Surface, Text, TextInput, useTheme} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../../typings/interfaces';
 import {RootStackParamList} from '../../../../typings/navigation';
 import useAssetRemoval from '../../../hooks/useAssetRemoval';
@@ -12,6 +12,7 @@ import {PlaylistDatabase} from '../../../schemas/schemas';
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'PlaylistEdit'>;
 
 function PlaylistEdit() {
+	const {colors} = useTheme();
 	const route = useRoute<ProfileScreenRouteProp>();
 	const playlistID = route.params?.id;
 
@@ -77,7 +78,7 @@ function PlaylistEdit() {
 	}, []);
 
 	return (
-		<View style={css.container}>
+		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={'Edit playlist'}/>
 			</Appbar.Header>

@@ -2,8 +2,8 @@ import {MaterialIcons} from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Image, LayoutChangeEvent, StyleSheet, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
-import {ActivityIndicator} from 'react-native-paper';
+import {Image, LayoutChangeEvent, StyleSheet, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata, SongMetadata} from '../../../../typings/interfaces';
 import {SongsDatabase} from '../../../schemas/schemas';
 
@@ -13,6 +13,8 @@ interface SearchResultItemProps {
 }
 
 function SearchResultItem({item}: SearchResultItemProps) {
+	const {colors} = useTheme();
+
 	const [isDownloaded, setIsDownloaded] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 
@@ -78,9 +80,9 @@ function SearchResultItem({item}: SearchResultItemProps) {
 
 	const scaleImage = (id: number, event: LayoutChangeEvent) => {
 		if (id === 0 && !imageDimensions.width)
-			setImageDimensions({height: imageDimensions.height, width: event.nativeEvent.layout.width});
+			setImageDimensions({height: imageDimensions.height, width: event.nativeEvent.layout.width - 2});
 		else if (id === 1 && !imageDimensions.height)
-			setImageDimensions({height: event.nativeEvent.layout.height, width: imageDimensions.width});
+			setImageDimensions({height: event.nativeEvent.layout.height - 2, width: imageDimensions.width});
 	};
 
 	useEffect(() => {
@@ -88,8 +90,9 @@ function SearchResultItem({item}: SearchResultItemProps) {
 	}, []);
 
 	return (
-		<View style={css.container}>
-			<View onLayout={(event) => scaleImage(0, event)} style={css.imageContainer}>
+		<View style={[css.container, {backgroundColor: colors.elevation.level1}]}>
+			<View onLayout={(event) => scaleImage(0, event)}
+				  style={css.imageContainer}>
 				{item.metadata.thumbnails.length === 0 ?
 					<View style={css.imageBroken}>
 						<MaterialIcons color='gray' name='broken-image' size={30}/>
@@ -106,9 +109,9 @@ function SearchResultItem({item}: SearchResultItemProps) {
 				}
 			</View>
 			<View onLayout={(event) => scaleImage(1, event)} style={css.metadataContainer}>
-				<Text numberOfLines={2} style={css.textTitle}>{item.title + '\n'}</Text>
-				<Text numberOfLines={1} style={css.textAuthor}>{item.channel.name}</Text>
-				<Text numberOfLines={1} style={css.textInfo}>
+				<Text numberOfLines={2} variant={'titleSmall'}>{item.title + '\n'}</Text>
+				<Text numberOfLines={1} variant={'bodySmall'}>{item.channel.name}</Text>
+				<Text numberOfLines={1} variant={'labelSmall'}>
 					{item.metadata.short_view_count_text.simple_text} • {item.metadata.published}
 				</Text>
 			</View>
@@ -116,7 +119,7 @@ function SearchResultItem({item}: SearchResultItemProps) {
 							  onPress={downloadSong}
 							  style={css.addButtonContainer}>
 				{!isDownloading ?
-					<MaterialIcons name={!isDownloaded ? 'file-download' : 'file-download-done'} size={28}/>
+					<MaterialIcons color={colors.secondary} name={!isDownloaded ? 'file-download' : 'file-download-done'} size={28}/>
 					:
 					<ActivityIndicator/>
 				}
@@ -133,11 +136,12 @@ const css = StyleSheet.create({
 	},
 	container: {
 		alignItems: 'center',
-		flexDirection: 'row'
+		flexDirection: 'row',
+		margin: 5
 	},
 	imageContainer: {
 		alignItems: 'center',
-		flex: 2,
+		flex: 3,
 		justifyContent: 'center'
 	},
 	imageBroken: {
@@ -149,20 +153,8 @@ const css = StyleSheet.create({
 	},
 	metadataContainer: {
 		flex: 4,
+		padding: 5,
 		paddingLeft: 10
-	},
-	textAuthor: {
-		color: '#212121',
-		fontSize: 14
-	},
-	textInfo: {
-		color: '#757575',
-		fontSize: 12
-	},
-	textTitle: {
-		color: '#212121',
-		fontSize: 14,
-		fontWeight: 'bold'
 	}
 });
 

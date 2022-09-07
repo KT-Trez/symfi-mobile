@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-import {Appbar, Divider, FAB} from 'react-native-paper';
+import {Appbar, FAB, useTheme} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../../typings/interfaces';
 import {PlaylistDatabase} from '../../../schemas/schemas';
 import Album from '../../elements/Album';
@@ -10,6 +10,7 @@ import PlaylistCreator from '../../elements/playlist/PlaylistCreator';
 
 function PlaylistsMenu() {
 	const playlistsDB = useRef(PlaylistDatabase.getInstance());
+	const {colors} = useTheme();
 
 	const [deletePlaylistID, setDeletePlaylistID] = useState<string | undefined>(undefined);
 	const [playlists, setPlaylists] = useState<PlaylistMetadata[]>([]);
@@ -32,8 +33,8 @@ function PlaylistsMenu() {
 	}, []);
 
 	return (
-		<View style={css.container}>
-			<Appbar.Header elevated mode={'small'}>
+		<View style={[css.container, {backgroundColor: colors.background}]}>
+			<Appbar.Header dark={true} elevated mode={'small'}>
 				<Appbar.Content title={'Your playlists'}/>
 			</Appbar.Header>
 
@@ -46,7 +47,6 @@ function PlaylistsMenu() {
 							 reloadList={getAlbums}/>
 
 			<FlatList data={playlists}
-					  ItemSeparatorComponent={Divider}
 					  keyExtractor={item => item.id}
 					  ListEmptyComponent={<Text style={css.textError}>You have no created playlists yet.</Text>}
 					  onRefresh={getAlbums}
