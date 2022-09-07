@@ -16,17 +16,20 @@ interface SongEntryProps {
 function SongEntry({imageOnLongPress, imageOnPress, item, textOnLongPress, textOnPress}: SongEntryProps) {
 	return (
 		<View style={css.container}>
-			<TouchableOpacity onLongPress={imageOnLongPress} onPress={imageOnPress} style={css.containerImage}>
+			<TouchableOpacity onLongPress={imageOnLongPress} onPress={imageOnPress} style={css.containerImageChange}>
 				{item.musicly.flags.hasCover ?
-					<Image source={{uri: item.musicly.cover.uri}}/>
+					<Image source={{uri: item.musicly.cover.uri}}
+						   style={css.image}/>
 					:
-					<MaterialIcons color={ '#' + item.musicly.cover.color} name='image' size={30}/>
+					<MaterialIcons color={'#' + item.musicly.cover.color} name='image' size={30}/>
 				}
 			</TouchableOpacity>
 			<TouchableOpacity onLongPress={textOnLongPress} onPress={textOnPress} style={css.containerText}>
 				<View style={css.containerTitle}>
 					<Text numberOfLines={1} variant={'titleMedium'}>{item.title}</Text>
-					<Text numberOfLines={1} variant={'labelSmall'}>{Math.round(item.musicly.file.size ?? 0 / 1024 / 1024 * 100) / 100}MB • {item.channel.name}</Text>
+					<Text numberOfLines={1} variant={'labelSmall'}>
+						{Math.round(item.musicly.file.size ?? 0 / 1024 / 1024 * 100) / 100}MB • {item.channel.name}
+					</Text>
 				</View>
 				<View style={css.containerMetadata}>
 					<Text variant={'bodySmall'}>{item.metadata.short_view_count_text.simple_text}</Text>
@@ -40,13 +43,13 @@ function SongEntry({imageOnLongPress, imageOnPress, item, textOnLongPress, textO
 const css = StyleSheet.create({
 	container: {
 		alignItems: 'center',
-		flexDirection: 'row',
-		padding: 10
+		flexDirection: 'row'
 	},
-	containerImage: {
+	containerImageChange: {
 		alignItems: 'center',
 		flex: 2,
-		justifyContent: 'center'
+		justifyContent: 'center',
+		padding: 5
 	},
 	containerMetadata: {
 		alignItems: 'flex-end',
@@ -55,10 +58,15 @@ const css = StyleSheet.create({
 	},
 	containerText: {
 		flex: 6,
-		flexDirection: 'row'
+		flexDirection: 'row',
+		padding: 10
 	},
 	containerTitle: {
 		flex: 2
+	},
+	image: {
+		aspectRatio: 1.77,
+		width: '100%'
 	}
 });
 

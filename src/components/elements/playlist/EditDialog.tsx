@@ -20,7 +20,7 @@ function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: DeleteDia
 	const [isVisible, setIsVisible] = useState(false);
 
 	const editPlaylist = () => {
-		navigation?.navigate('PlaylistEdit', {id: playlistID, refreshList: refreshPlaylistsList});
+		navigation?.navigate('PlaylistEdit', {id: playlistID});
 		hideDialog();
 	};
 

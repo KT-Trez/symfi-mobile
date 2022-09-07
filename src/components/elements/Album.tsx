@@ -1,6 +1,6 @@
 import {NavigationContext} from '@react-navigation/native';
 import React from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Avatar, Text} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../typings/interfaces';
 
@@ -22,9 +22,12 @@ function Album({item, loadToRemove}: AlbumProps) {
 						  style={css.container}>
 			<View style={css.imageContainer}>
 				{item.cover.uri ?
-					<Avatar.Image size={50} source={() => item.cover.uri}/>
+					<Avatar.Image size={50}
+								  source={
+									  ({size}) => <Image source={{height: size, uri: item.cover.uri, width: size}}
+														 style={css.image}/>}/>
 					:
-					<Avatar.Text label={item.cover.name.split('_')[2].slice(0, 1)} size={50}/>
+					<Avatar.Text label={item.cover.name.split('_')[2].slice(0, 1).toUpperCase()} size={50}/>
 				}
 			</View>
 
@@ -43,6 +46,9 @@ const css = StyleSheet.create({
 	imageContainer: {
 		flex: 1,
 		padding: 10
+	},
+	image: {
+		borderRadius: 25
 	},
 	textContainer: {
 		flex: 4,

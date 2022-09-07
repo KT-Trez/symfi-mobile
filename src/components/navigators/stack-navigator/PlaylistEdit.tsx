@@ -1,10 +1,11 @@
-import {MaterialIcons} from '@expo/vector-icons';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Image, SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {ActivityIndicator, Appbar, Button, Surface, Text, TextInput} from 'react-native-paper';
+import {Image, SafeAreaView, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, Appbar, Avatar, Button, Surface, Text, TextInput} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../../typings/interfaces';
 import {RootStackParamList} from '../../../../typings/navigation';
+import useAssetRemoval from '../../../hooks/useAssetRemoval';
+import useImagePicker from '../../../hooks/useImagePicker';
 import {PlaylistDatabase} from '../../../schemas/schemas';
 
 
@@ -25,11 +26,42 @@ function PlaylistEdit() {
 		setName('');
 	};
 
+	const changeCover = async () => {
+		const [uri, isCanceled] = await useImagePicker(playlistID, [1, 1]);
+
+		if (isCanceled)
+			return;
+
+		await playlistDB.current.update({id: playlistID}, {
+			$set: {
+				'cover.uri': uri,
+				'flags.hasCover': true
+			}
+		}, {});
+		await getPlaylist();
+	};
+
+
 	const getPlaylist = useCallback(async () => {
 		setIsLoading(true);
 		setPlaylist(await playlistDB.current.findOne({id: playlistID}) as PlaylistMetadata);
 		setIsLoading(false);
 	}, []);
+
+	const removeCover = async () => {
+		if (!playlist || !playlist.flags.hasCover)
+			return;
+
+		await useAssetRemoval(playlist.cover.uri!);
+
+		await playlistDB.current.update({id: playlistID}, {
+			$set: {
+				'cover.uri': undefined,
+				'flags.hasCover': false
+			}
+		}, {});
+		await getPlaylist();
+	};
 
 	const saveName = useCallback(async () => {
 		if (!name)
@@ -37,8 +69,6 @@ function PlaylistEdit() {
 
 		await playlistDB.current.update({id: playlistID}, {$set: {name: name}}, {});
 		setPlaylist(await playlistDB.current.findOne({id: playlistID}) as PlaylistMetadata);
-
-		route.params.refreshList();
 	}, [name]);
 
 	useEffect(() => {
@@ -54,7 +84,7 @@ function PlaylistEdit() {
 
 			{!isLoading ?
 				<React.Fragment>
-					<Surface style={css.containerInfo}>
+					<Surface style={css.containerNameChange}>
 						<Text variant={'titleMedium'}>Change name:</Text>
 
 						<SafeAreaView>
@@ -71,16 +101,27 @@ function PlaylistEdit() {
 							<Button onPress={saveName}>Save</Button>
 						</View>
 					</Surface>
-					<TouchableOpacity style={css.containerImage}>
+
+					<Surface style={css.containerImageChange}>
 						{playlist?.flags.hasCover ?
-							<Image source={{uri: playlist.cover.uri}}/>
+							<Avatar.Image size={50}
+										  source={
+											  ({size}) => <Image resizeMode={'center'}
+																 source={{
+																	 height: size,
+																	 uri: playlist.cover.uri,
+																	 width: size
+																 }}
+																 style={css.image}/>}/>
 							:
-							<View style={css.containerImageMissing}>
-								<MaterialIcons color={'gray'} name='image' size={30}/>
-								<Text style={css.textMissingCover} variant={'labelSmall'}>Add cover</Text>
-							</View>
+							<Avatar.Icon icon={'file-image-plus-outline'} size={50}/>
 						}
-					</TouchableOpacity>
+
+						<View style={css.containerButtons}>
+							<Button onPress={removeCover}>Remove</Button>
+							<Button onPress={changeCover}>{playlist?.flags.hasCover ? 'Change' : 'Add'}</Button>
+						</View>
+					</Surface>
 				</React.Fragment>
 				:
 				<ActivityIndicator size={'large'} style={css.activityIndicator}/>
@@ -100,10 +141,10 @@ const css = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'flex-end'
 	},
-	containerImage: {
+	containerImageChange: {
 		alignItems: 'center',
-		flex: 1,
-		justifyContent: 'center',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
 		margin: 5,
 		padding: 10
 	},
@@ -111,9 +152,12 @@ const css = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
-	containerInfo: {
+	containerNameChange: {
 		margin: 5,
 		padding: 10
+	},
+	image: {
+		borderRadius: 50
 	},
 	textMissingCover: {
 		color: 'gray'

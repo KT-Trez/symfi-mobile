@@ -1,10 +1,12 @@
-import {PermissionStatus} from 'expo-media-library';
 import * as MediaLibrary from 'expo-media-library';
+import {PermissionStatus} from 'expo-media-library';
 import React, {useEffect, useRef, useState} from 'react';
 import {ToastAndroid} from 'react-native';
 import {Button, Dialog, Paragraph, Portal} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../../typings/interfaces';
+import useAssetRemoval from '../../../hooks/useAssetRemoval';
 import {SongsDatabase} from '../../../schemas/schemas';
+
 
 interface DeleteDialogProps {
 	deleteSongID: string | undefined;
@@ -42,6 +44,8 @@ function DeleteDialog({deleteSongID, playSongID, refreshSongsList, setDeleteSong
 		// todo: check if resource is downloaded
 		const asset = await MediaLibrary.getAssetInfoAsync(deleteSong!.musicly.file.path!);
 		await MediaLibrary.deleteAssetsAsync(asset);
+		if (deleteSong.musicly.flags.hasCover)
+			await useAssetRemoval(deleteSong.musicly.cover.uri!);
 
 		await songsDB.current.remove({id: deleteSong!.id}, {});
 

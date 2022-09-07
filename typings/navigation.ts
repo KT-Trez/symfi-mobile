@@ -1,5 +1,5 @@
 export type RootStackParamList = {
 	PlaylistContent: { id: string, };
-	PlaylistEdit: { id: string, refreshList: () => void };
+	PlaylistEdit: { id: string };
 	PlaylistMenu: undefined;
 };

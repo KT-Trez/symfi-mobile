@@ -1,9 +1,9 @@
-import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React from 'react';
 import {RootStackParamList} from '../../../../typings/navigation';
+import PlaylistContent from '../stack-navigator/PlaylistContent';
 import PlaylistEdit from '../stack-navigator/PlaylistEdit';
 import PlaylistsMenu from '../stack-navigator/PlaylistsMenu';
-import PlaylistContent from '../stack-navigator/PlaylistContent';
 
 
 const {Navigator, Screen} = createNativeStackNavigator<RootStackParamList>();
