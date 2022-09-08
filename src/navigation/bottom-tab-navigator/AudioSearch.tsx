@@ -2,8 +2,8 @@ import axios from 'axios';
 import React, {useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
 import {Appbar, Searchbar, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../../typings/interfaces';
-import SearchResultItem from '../../elements/flatlist-items/SearchResultItem';
+import {SavedSongMetadata} from '../../../typings/interfaces';
+import SearchResultItem from '../../components/elements/flatlist-items/SearchResultItem';
 
 
 function AudioSearch() {

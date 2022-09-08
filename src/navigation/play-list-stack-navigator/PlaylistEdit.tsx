@@ -2,27 +2,31 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Image, SafeAreaView, StyleSheet, View} from 'react-native';
 import {ActivityIndicator, Appbar, Avatar, Button, Surface, Text, TextInput, useTheme} from 'react-native-paper';
-import {PlaylistMetadata} from '../../../../typings/interfaces';
-import {RootStackParamList} from '../../../../typings/navigation';
-import useAssetRemoval from '../../../hooks/useAssetRemoval';
-import useImagePicker from '../../../hooks/useImagePicker';
-import {PlaylistDatabase} from '../../../schemas/schemas';
+import {PlaylistMetadata} from '../../../typings/interfaces';
+import {RootPlayListsStackParamList} from '../../../typings/navigation';
+import useAssetRemoval from '../../hooks/useAssetRemoval';
+import useImagePicker from '../../hooks/useImagePicker';
+import {PlaylistDatabase} from '../../schemas/schemas';
 
 
-type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'PlaylistEdit'>;
+type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistEdit'>;
 
 function PlaylistEdit() {
+	// constants
 	const {colors} = useTheme();
 	const route = useRoute<ProfileScreenRouteProp>();
 	const playlistID = route.params?.id;
 
 	const playlistDB = useRef(PlaylistDatabase.getInstance());
 
-	const [playlist, setPlaylist] = useState<PlaylistMetadata | undefined>();
-	const [name, setName] = useState('');
-
+	// flags
 	const [isLoading, setIsLoading] = useState(false);
 
+	// playlist metadata
+	const [name, setName] = useState('');
+	const [playlist, setPlaylist] = useState<PlaylistMetadata | undefined>();
+
+	// methods
 	const cancelName = () => {
 		setName('');
 	};
@@ -41,7 +45,6 @@ function PlaylistEdit() {
 		}, {});
 		await getPlaylist();
 	};
-
 
 	const getPlaylist = useCallback(async () => {
 		setIsLoading(true);
@@ -72,11 +75,13 @@ function PlaylistEdit() {
 		setPlaylist(await playlistDB.current.findOne({id: playlistID}) as PlaylistMetadata);
 	}, [name]);
 
+	// effects
 	useEffect(() => {
 		if (playlistID)
 			getPlaylist();
 	}, []);
 
+	// todo: implement available, reusable components
 	return (
 		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
@@ -103,7 +108,7 @@ function PlaylistEdit() {
 						</View>
 					</Surface>
 
-					<Surface style={css.containerImageChange}>
+					<Surface style={css.containerCoverChange}>
 						{playlist?.flags.hasCover ?
 							<Avatar.Image size={50}
 										  source={
@@ -142,7 +147,7 @@ const css = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'flex-end'
 	},
-	containerImageChange: {
+	containerCoverChange: {
 		alignItems: 'center',
 		flexDirection: 'row',
 		justifyContent: 'space-between',

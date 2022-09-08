@@ -12,7 +12,7 @@ interface AddSongModalProps {
 	refreshPlaylist: () => void;
 }
 
-function AddSongModal({hideModal, isVisible, playlistID, refreshPlaylist}: AddSongModalProps) {
+function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: AddSongModalProps) {
 	const {colors} = useTheme();
 	const playlistsDB = useRef(PlaylistDatabase.getInstance());
 	const songsDB = useRef(SongsDatabase.getInstance());
@@ -110,4 +110,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default AddSongModal;
+export default SongsManager;

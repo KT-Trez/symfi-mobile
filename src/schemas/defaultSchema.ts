@@ -41,7 +41,6 @@ export default class DefaultSchema {
 			},
 			timestampData: true
 		});
-
 	}
 
 	public count(query: object): Promise<number> {

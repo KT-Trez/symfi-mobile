@@ -7,19 +7,19 @@ import {PlaylistMetadata} from '../../../typings/interfaces';
 
 interface AlbumProps {
 	item: PlaylistMetadata;
-	loadToRemove: (id: string) => void;
+	loadToManage: (id: string) => void;
 }
 
-function Album({item, loadToRemove}: AlbumProps) {
+function PlayList({item, loadToManage}: AlbumProps) {
 	const {colors} = useTheme();
 	const navigation = React.useContext(NavigationContext);
 
-	const remove = () => {
-		loadToRemove(item.id);
+	const managePlayList = () => {
+		loadToManage(item.id);
 	};
 
 	return (
-		<TouchableOpacity onLongPress={remove}
+		<TouchableOpacity onLongPress={managePlayList}
 						  onPress={() => navigation?.navigate('PlaylistContent', {id: item.id})}
 						  style={[css.container, {backgroundColor: colors.elevation.level1}]}>
 			<View style={css.imageContainer}>
@@ -60,4 +60,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default Album;
+export default PlayList;

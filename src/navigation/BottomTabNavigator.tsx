@@ -1,9 +1,9 @@
 import {MaterialIcons} from '@expo/vector-icons';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import SavedAudio from './bottom-tab-navigator/SavedAudio';
-import StackNavigator from './bottom-tab-navigator/StackNavigator';
 import AudioSearch from './bottom-tab-navigator/AudioSearch';
+import PlayListStackNavigator from './bottom-tab-navigator/PlayListStackNavigator';
+import SongsStackNavigator from './bottom-tab-navigator/SongsStackNavigator';
 
 
 const {Navigator, Screen} = createBottomTabNavigator();
@@ -11,7 +11,7 @@ const {Navigator, Screen} = createBottomTabNavigator();
 function BottomTabNavigator() {
 	return (
 		<Navigator initialRouteName={'playlists'}>
-			<Screen component={StackNavigator}
+			<Screen component={PlayListStackNavigator}
 					name={'playlists'}
 					options={{
 						headerShown: false,
@@ -25,7 +25,7 @@ function BottomTabNavigator() {
 						tabBarLabel: 'Search',
 						tabBarIcon: ({color, size}) => (<MaterialIcons color={color} name={'search'} size={size}/>)
 					}}/>
-			<Screen component={SavedAudio}
+			<Screen component={SongsStackNavigator}
 					name={'saved-audio'}
 					options={{
 						headerShown: false,

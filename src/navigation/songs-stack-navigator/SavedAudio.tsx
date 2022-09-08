@@ -1,20 +1,20 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Appbar, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../../typings/interfaces';
-import {SongsDatabase} from '../../../schemas/schemas';
-import AudioPlayer from '../../elements/AudioPlayer';
-import DeleteDialog from '../../elements/saved-audio/DeleteDialog';
-import SavedAudioItem from '../../elements/saved-audio/SavedAudioItem';
-import SearchSavedAudio from '../../elements/saved-audio/SearchSavedAudio';
+import {SavedSongMetadata} from '../../../typings/interfaces';
+import AudioPlayer from '../../components/elements/AudioPlayer';
+import EditDialog from '../../components/elements/saved-audio/EditDialog';
+import SavedAudioItem from '../../components/elements/saved-audio/SavedAudioItem';
+import SearchSavedAudio from '../../components/elements/saved-audio/SearchSavedAudio';
+import {SongsDatabase} from '../../schemas/schemas';
 
 
 function SavedAudio() {
 	const {colors} = useTheme();
 	const songsDB = useRef(SongsDatabase.getInstance());
 
-	const [deleteSongID, setDeleteSongID] = useState<string | undefined>();
-	const [playingSongID, setPlayingSongID] = useState<string | undefined>();
+	const [songToManageID, setSongToManageID] = useState<string | undefined>();
+	const [songToPlayID, setSongToPlayID] = useState<string | undefined>();
 
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -36,21 +36,21 @@ function SavedAudio() {
 				<Appbar.Content title={'Hold to delete'}/>
 			</Appbar.Header>
 
-			<AudioPlayer audioID={playingSongID} setAudioID={setPlayingSongID} songs={songs}/>
+			<AudioPlayer audioID={songToPlayID} setAudioID={setSongToPlayID} songs={songs}/>
 
-			<DeleteDialog deleteSongID={deleteSongID}
-						  playSongID={playingSongID}
-						  refreshSongsList={getSongs}
-						  setDeleteSongID={setDeleteSongID}
-						  songs={songs}/>
+			<EditDialog playingSongID={songToPlayID}
+						refreshSongsList={getSongs}
+						setSongID={setSongToManageID}
+						songID={songToManageID}
+						songs={songs}/>
 
 			<SearchSavedAudio data={songs}
 							  isRefreshing={isRefreshing}
 							  keyExtractor={(item) => item.id}
 							  refreshData={getSongs}
 							  renderItem={({item}) => <SavedAudioItem item={item}
-																	  loadToAudioPlayer={setPlayingSongID}
-																	  loadToRemove={setDeleteSongID}/>}
+																	  loadToManage={setSongToManageID}
+																	  loadToPlay={setSongToPlayID}/>}
 							  searchbarText={'Search for saved song'}
 							  searchEmptyText={'You have no saved songs yet.'}/>
 		</View>

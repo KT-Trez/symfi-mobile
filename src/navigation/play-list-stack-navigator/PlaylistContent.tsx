@@ -2,15 +2,15 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, Divider, Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../../typings/interfaces';
-import {RootStackParamList} from '../../../../typings/navigation';
-import {SongsDatabase} from '../../../schemas/schemas';
-import AddSongModal from '../../elements/AddSongModal';
-import AudioPlayer from '../../elements/AudioPlayer';
-import PlaylistContentItem from '../../elements/flatlist-items/PlaylistContentItem';
+import {SavedSongMetadata} from '../../../typings/interfaces';
+import {RootPlayListsStackParamList} from '../../../typings/navigation';
+import AudioPlayer from '../../components/elements/AudioPlayer';
+import PlaylistContentItem from '../../components/elements/flatlist-items/PlaylistContentItem';
+import {SongsDatabase} from '../../schemas/schemas';
+import SongsManager from '../../screens/play-list-content/SongsManager';
 
 
-type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'PlaylistContent'>;
+type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistContent'>;
 
 function PlaylistContent() {
 	const {colors} = useTheme();
@@ -44,7 +44,7 @@ function PlaylistContent() {
 
 			<AudioPlayer audioID={currentSongID} setAudioID={setCurrentSongID} songs={songs}/>
 
-			<AddSongModal hideModal={hideModal}
+			<SongsManager hideModal={hideModal}
 						  isVisible={isModalOpen}
 						  playlistID={playlistID}
 						  refreshPlaylist={getSongs}/>

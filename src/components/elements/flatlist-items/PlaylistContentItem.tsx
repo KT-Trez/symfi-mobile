@@ -32,11 +32,9 @@ function PlaylistContentItem({item, loadResource, playlistID, refreshPlaylist}: 
 	};
 
 	return (
-		<SongEntry imageOnLongPress={removeFromPlayList}
-				   imageOnPress={playAudio}
-				   item={item}
-				   textOnLongPress={removeFromPlayList}
-				   textOnPress={playAudio}/>
+		<SongEntry item={item}
+				   onLongPress={removeFromPlayList}
+				   onPress={playAudio}/>
 	);
 }
 

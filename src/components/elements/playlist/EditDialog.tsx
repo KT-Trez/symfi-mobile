@@ -29,7 +29,7 @@ function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: DeleteDia
 		setIsVisible(false);
 	};
 
-	const removePlaylist = async () => {
+	const removePlayList = async () => {
 		if (!playlistID)
 			return;
 
@@ -52,6 +52,7 @@ function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: DeleteDia
 			showDialog();
 	}, [playlistID]);
 
+	// todo: implement manage dialog
 	return (
 		<Portal>
 			<Dialog dismissable={true} onDismiss={hideDialog} visible={isVisible}>
@@ -61,7 +62,7 @@ function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: DeleteDia
 				</Dialog.Content>
 				<Dialog.Actions>
 					<Button onPress={hideDialog}>Cancel</Button>
-					<Button onPress={removePlaylist}>Delete</Button>
+					<Button onPress={removePlayList}>Delete</Button>
 					<Button onPress={editPlaylist}>Edit</Button>
 				</Dialog.Actions>
 			</Dialog>

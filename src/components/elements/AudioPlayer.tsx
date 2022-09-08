@@ -5,7 +5,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Surface, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
-import useRandomIntInclusive from '../hooks/useRandomIntInclusive';
+import useRandomIntInclusive from '../../hooks/useRandomIntInclusive';
 
 
 interface AudioPlayerProps {
@@ -59,7 +59,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 			} else if (autoplay)
 				setSong(songs[(songs.indexOf(song!) + 1) % songs.length]);
 			else
-				endPlayback();
+				await endPlayback();
 		}
 	};
 
@@ -130,7 +130,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 		if (status.isLoaded) {
 			setDuration(Math.round((status.durationMillis ?? 0) / 1000));
 			if (!status.isPlaying)
-				AudioPlayer.current.playAsync();
+				await AudioPlayer.current.playAsync();
 		}
 	};
 

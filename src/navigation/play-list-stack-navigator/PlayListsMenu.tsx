@@ -1,18 +1,18 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {Appbar, FAB, useTheme} from 'react-native-paper';
-import {PlaylistMetadata} from '../../../../typings/interfaces';
-import {PlaylistDatabase} from '../../../schemas/schemas';
-import Album from '../../elements/Album';
-import EditDialog from '../../elements/playlist/EditDialog';
-import PlaylistCreator from '../../elements/playlist/PlaylistCreator';
+import {PlaylistMetadata} from '../../../typings/interfaces';
+import EditDialog from '../../components/elements/playlist/EditDialog';
+import PlaylistCreator from '../../components/elements/playlist/PlaylistCreator';
+import {PlaylistDatabase} from '../../schemas/schemas';
+import PlayList from '../../screens/play-lists-menu/PlayList';
 
 
-function PlaylistsMenu() {
+function PlayListsMenu() {
 	const playlistsDB = useRef(PlaylistDatabase.getInstance());
 	const {colors} = useTheme();
 
-	const [deletePlaylistID, setDeletePlaylistID] = useState<string | undefined>(undefined);
+	const [playListToManage, setPlayListToManage] = useState<string | undefined>(undefined);
 	const [playlists, setPlaylists] = useState<PlaylistMetadata[]>([]);
 
 	const [isRefreshing, setIsRefreshing] = useState(false);
@@ -38,9 +38,9 @@ function PlaylistsMenu() {
 				<Appbar.Content title={'Your playlists'}/>
 			</Appbar.Header>
 
-			<EditDialog playlistID={deletePlaylistID}
+			<EditDialog playlistID={playListToManage}
 						refreshPlaylistsList={getAlbums}
-						setPlaylistID={setDeletePlaylistID}/>
+						setPlaylistID={setPlayListToManage}/>
 
 			<PlaylistCreator hide={hideCreator}
 							 isVisible={creatorVisible}
@@ -52,7 +52,7 @@ function PlaylistsMenu() {
 					  onRefresh={getAlbums}
 					  refreshing={isRefreshing}
 					  style={{position: 'relative'}}
-					  renderItem={({item}) => <Album item={item} loadToRemove={setDeletePlaylistID}/>}/>
+					  renderItem={({item}) => <PlayList item={item} loadToManage={setPlayListToManage}/>}/>
 
 			<FAB icon={'plus'}
 				 onPress={showCreator}
@@ -77,4 +77,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default PlaylistsMenu;
+export default PlayListsMenu;

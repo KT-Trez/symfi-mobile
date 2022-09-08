@@ -6,27 +6,27 @@ import {SavedSongMetadata} from '../../../typings/interfaces';
 
 
 interface SongEntryProps {
-	imageOnLongPress?: () => void;
-	imageOnPress?: () => void;
 	item: SavedSongMetadata;
-	textOnLongPress?: () => void;
-	textOnPress?: () => void;
+	onLongPress?: () => void;
+	onPress?: () => void;
 }
 
-function SongEntry({imageOnLongPress, imageOnPress, item, textOnLongPress, textOnPress}: SongEntryProps) {
+function SongEntry({item, onLongPress, onPress}: SongEntryProps) {
 	const {colors} = useTheme();
 
 	return (
-		<View style={[css.container, {backgroundColor: colors.elevation.level1}]}>
-			<TouchableOpacity onLongPress={imageOnLongPress} onPress={imageOnPress} style={css.containerImageChange}>
+		<TouchableOpacity onLongPress={onLongPress}
+						  onPress={onPress}
+						  style={[css.container, {backgroundColor: colors.elevation.level1}]}>
+			<View style={css.containerCoverChange}>
 				{item.musicly.flags.hasCover ?
 					<Image source={{uri: item.musicly.cover.uri}}
 						   style={css.image}/>
 					:
 					<MaterialIcons color={'#' + item.musicly.cover.color} name='image' size={30}/>
 				}
-			</TouchableOpacity>
-			<TouchableOpacity onLongPress={textOnLongPress} onPress={textOnPress} style={css.containerText}>
+			</View>
+			<View style={css.containerText}>
 				<View style={css.containerTitle}>
 					<Text numberOfLines={1} variant={'titleMedium'}>{item.title}</Text>
 					<Text numberOfLines={1} variant={'labelSmall'}>
@@ -37,8 +37,8 @@ function SongEntry({imageOnLongPress, imageOnPress, item, textOnLongPress, textO
 					<Text variant={'bodySmall'}>{item.metadata.short_view_count_text.simple_text}</Text>
 					<Text variant={'bodySmall'}>{item.metadata.duration.simple_text}</Text>
 				</View>
-			</TouchableOpacity>
-		</View>
+			</View>
+		</TouchableOpacity>
 	);
 }
 
@@ -48,7 +48,7 @@ const css = StyleSheet.create({
 		flexDirection: 'row',
 		margin: 5
 	},
-	containerImageChange: {
+	containerCoverChange: {
 		alignItems: 'center',
 		flex: 2,
 		justifyContent: 'center',

@@ -1,47 +1,27 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import {SavedSongMetadata} from '../../../../typings/interfaces';
-import useImagePicker from '../../../hooks/useImagePicker';
-import {SongsDatabase} from '../../../schemas/schemas';
 import SongEntry from '../SongEntry';
 
 
 interface SongItemProps {
 	item: SavedSongMetadata;
-	loadToAudioPlayer: (id: string) => void;
-	loadToRemove: (id: string) => void;
+	loadToManage: (id: string) => void;
+	loadToPlay: (id: string) => void;
 }
 
-function SavedAudioItem({item, loadToAudioPlayer, loadToRemove}: SongItemProps) {
-	const songsDB = useRef(SongsDatabase.getInstance());
-
-	const changeCover = async () => {
-		const [uri, isCanceled] = await useImagePicker(item.id, [16, 9]);
-
-		if (isCanceled)
-			return;
-
-		await songsDB.current.update({id: item.id}, {
-			$set: {
-				'musicly.cover.uri': uri,
-				'musicly.flags.hasCover': true
-			}
-		}, {});
+function SavedAudioItem({item, loadToPlay, loadToManage}: SongItemProps) {
+	const manageAudio = () => {
+		loadToManage(item.id);
 	};
 
 	const playAudio = () => {
-		loadToAudioPlayer(item.id);
-	};
-
-	const removeAudio = () => {
-		loadToRemove(item.id);
+		loadToPlay(item.id);
 	};
 
 	return (
-		<SongEntry imageOnLongPress={changeCover}
-				   imageOnPress={playAudio}
-				   item={item}
-				   textOnPress={playAudio}
-				   textOnLongPress={removeAudio}/>
+		<SongEntry item={item}
+				   onLongPress={manageAudio}
+				   onPress={playAudio}/>
 	);
 }
 
