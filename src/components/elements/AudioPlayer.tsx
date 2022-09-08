@@ -1,8 +1,9 @@
+import Slider from '@react-native-community/slider';
 import {Audio, AVPlaybackStatus, InterruptionModeAndroid, InterruptionModeIOS, PitchCorrectionQuality} from 'expo-av';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {IconButton, Surface, Text} from 'react-native-paper';
+import {IconButton, Surface, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import useRandomIntInclusive from '../hooks/useRandomIntInclusive';
 
@@ -15,10 +16,13 @@ interface AudioPlayerProps {
 
 function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 	const AudioPlayer = useRef(new Audio.Sound());
-
-	const [isVisible, setIsVisible] = useState(false);
+	const {colors} = useTheme();
 
 	const [isPaused, setIsPaused] = useState(false);
+	const [isVisible, setIsVisible] = useState(false);
+
+	// todo: smooth sliding and time feedback
+	const [duration, setDuration] = useState<number | undefined>(undefined);
 	const [progress, setProgress] = useState<number | undefined>();
 	const [progressSimpleText, setProgressSimpleText] = useState<string | undefined>();
 
@@ -33,9 +37,9 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 			return;
 
 		if (status.durationMillis) {
-			const progressFloat = status.positionMillis / status.durationMillis;
-			if (progressFloat >= (progress ?? 0) + 0.01)
-				setProgress(progressFloat);
+			const currentSecond = Math.round(status.positionMillis / 1000);
+			if (currentSecond >= (progress ?? 0) + 1)
+				setProgress(currentSecond);
 		}
 
 		const timestamp = moment.utc(status.positionMillis).format('HH:mm:ss');
@@ -62,7 +66,8 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 	const cleanControls = () => {
 		setIsPaused(false);
 
-		setProgress(0);
+		setDuration(undefined);
+		setProgress(undefined);
 		setProgressSimpleText(undefined);
 	};
 
@@ -77,6 +82,12 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 
 		setIsVisible(false);
 		setSong(undefined);
+	};
+
+	const moveTo = async (position: number) => {
+		const status = await AudioPlayer.current.getStatusAsync();
+		if (status.isLoaded && status.isPlaying)
+			await AudioPlayer.current.setPositionAsync(position * 1000);
 	};
 
 	const nextSong = () => {
@@ -116,9 +127,11 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 		}, true);
 		const status = await AudioPlayer.current.getStatusAsync();
 
-		if (status.isLoaded)
+		if (status.isLoaded) {
+			setDuration(Math.round((status.durationMillis ?? 0) / 1000));
 			if (!status.isPlaying)
 				AudioPlayer.current.playAsync();
+		}
 	};
 
 	const previousSong = () => {
@@ -171,24 +184,38 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 				<Text numberOfLines={1} variant={'labelSmall'}>{song?.channel.name ?? '- no music -'}</Text>
 			</View>
 			<View style={css.containerButtons}>
-				<IconButton icon={'motion-play-outline'} iconColor={autoplay ? '#03a9f4' : undefined} onPress={toggleAutoplay}
+				<IconButton icon={'motion-play-outline'}
+							iconColor={autoplay ? '#03a9f4' : undefined}
+							onPress={toggleAutoplay}
 							size={30}/>
 				<View style={css.containerButtonsInner}>
-					<IconButton icon={'skip-previous-circle-outline'} onPress={previousSong} size={40}/>
+					<IconButton icon={'skip-previous-circle-outline'}
+								onPress={previousSong}
+								size={40}/>
 					<IconButton icon={!isPaused ? 'pause-circle-outline' : 'play-circle-outline'}
 								onLongPress={endPlayback}
 								onPress={pause}
 								size={50}/>
-					<IconButton icon={'skip-next-circle-outline'} onPress={nextSong} size={40}/>
+					<IconButton icon={'skip-next-circle-outline'}
+								onPress={nextSong}
+								size={40}/>
 				</View>
-				<IconButton icon={'shuffle'} iconColor={shuffle ? '#03a9f4' : undefined} onPress={toggleShuffle}
+				<IconButton icon={'shuffle'}
+							iconColor={shuffle ? '#03a9f4' : undefined}
+							onPress={toggleShuffle}
 							size={30}/>
 			</View>
 			<View style={css.containerProgress}>
 				<Text style={css.progressText}>{progressSimpleText ?? '00:00'}</Text>
 				<View style={css.progressBar}>
-					{/* todo: fix progressBAR*/}
-					{/*<ProgressBar progress={progress}/>*/}
+					<Slider maximumValue={duration ?? 1}
+							maximumTrackTintColor={colors.primary}
+							minimumValue={0}
+							minimumTrackTintColor={colors.primary}
+							onSlidingComplete={moveTo}
+							style={{width: '100%'}}
+							thumbTintColor={colors.primary}
+							value={progress ?? 0}/>
 				</View>
 				<Text style={css.progressText}>{song?.metadata.duration.simple_text ?? '00:00'}</Text>
 			</View>

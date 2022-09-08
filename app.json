@@ -23,7 +23,7 @@
     "privacy": "hidden",
     "slug": "musicly",
     "splash": {
-      "backgroundColor": "#ffffff",
+      "backgroundColor": "#1c1b1f",
       "image": "./assets/splash.png",
       "resizeMode": "cover"
     },
