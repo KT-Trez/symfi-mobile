@@ -1,19 +1,21 @@
 import {MaterialIcons} from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Image, LayoutChangeEvent, StyleSheet, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata, SongMetadata} from '../../../../typings/interfaces';
-import {SongsDatabase} from '../../../schemas/schemas';
+import {SongMetadata} from '../../../typings/interfaces';
+import SongsController from '../../datastore/SongsController';
 
 
-interface SearchResultItemProps {
+interface SongProps {
 	item: SongMetadata;
 }
 
-function SearchResultItem({item}: SearchResultItemProps) {
+function Song({item}: SongProps) {
+	// todo: !IMPORTANT optimize
 	const {colors} = useTheme();
+	const songsDB = useRef(new SongsController());
 
 	const [isDownloaded, setIsDownloaded] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
@@ -24,9 +26,7 @@ function SearchResultItem({item}: SearchResultItemProps) {
 
 	// todo: measure performance, remove if unnecessary
 	const checkDownloadedStatus = useCallback(async () => {
-		const db = SongsDatabase.getInstance();
-		const songRecord = await db.find<SavedSongMetadata[]>({id: item.id});
-		if (songRecord.length > 0)
+		if (await songsDB.current.countAsync({id: item.id}) > 0)
 			setIsDownloaded(true);
 	}, []);
 
@@ -66,9 +66,7 @@ function SearchResultItem({item}: SearchResultItemProps) {
 				}
 			});
 
-			const db = SongsDatabase.getInstance();
-			await db.insert<SavedSongMetadata>(savedAudio);
-
+			await songsDB.current.db.insertAsync(savedAudio);
 			await checkDownloadedStatus();
 		} catch (err) {
 			console.error(err);
@@ -119,7 +117,8 @@ function SearchResultItem({item}: SearchResultItemProps) {
 							  onPress={downloadSong}
 							  style={css.addButtonContainer}>
 				{!isDownloading ?
-					<MaterialIcons color={colors.secondary} name={!isDownloaded ? 'file-download' : 'file-download-done'} size={28}/>
+					<MaterialIcons color={colors.secondary}
+								   name={!isDownloaded ? 'file-download' : 'file-download-done'} size={28}/>
 					:
 					<ActivityIndicator/>
 				}
@@ -158,4 +157,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default SearchResultItem;
+export default Song;

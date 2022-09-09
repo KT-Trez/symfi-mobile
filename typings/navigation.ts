@@ -6,5 +6,5 @@ export type RootPlayListsStackParamList = {
 
 export type RootSongsStackParamList = {
 	SongEdit: { id: string };
-	SongList: undefined;
+	SongsList: undefined;
 };

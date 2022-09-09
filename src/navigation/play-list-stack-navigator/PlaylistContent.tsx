@@ -4,9 +4,9 @@ import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, Divider, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import {RootPlayListsStackParamList} from '../../../typings/navigation';
-import AudioPlayer from '../../components/elements/AudioPlayer';
-import PlaylistContentItem from '../../components/elements/flatlist-items/PlaylistContentItem';
-import {SongsDatabase} from '../../schemas/schemas';
+import AudioPlayer from '../../components/AudioPlayer';
+import SongsController from '../../datastore/SongsController';
+import Song from '../../screens/play-list-content/Song';
 import SongsManager from '../../screens/play-list-content/SongsManager';
 
 
@@ -16,7 +16,7 @@ function PlaylistContent() {
 	const {colors} = useTheme();
 	const route = useRoute<ProfileScreenRouteProp>();
 	const playlistID = route.params?.id;
-	const songsDB = useRef(SongsDatabase.getInstance());
+	const songsDB = useRef(new SongsController());
 
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
@@ -24,7 +24,7 @@ function PlaylistContent() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const getSongs = useCallback(async () => {
-		setSongs(await songsDB.current.find<SavedSongMetadata[]>({'musicly.playlists.id': playlistID}));
+		setSongs(await songsDB.current.db.findAsync({'musicly.playlists.id': playlistID}) as SavedSongMetadata[]);
 	}, []);
 
 	const hideModal = () => setIsModalOpen(false);
@@ -52,9 +52,11 @@ function PlaylistContent() {
 			<FlatList data={songs}
 					  ItemSeparatorComponent={Divider}
 					  ListEmptyComponent={<Text style={css.textError}>This playlist is empty.</Text>}
-					  renderItem={({item}) => <PlaylistContentItem item={item} loadResource={setCurrentSongID}
-																   playlistID={playlistID}
-																   refreshPlaylist={getSongs}/>}/>
+					  renderItem={({item}) => <Song item={item}
+													loadToPlay={setCurrentSongID}
+													playlistID={playlistID}
+													refreshPlaylist={getSongs}/>}
+					  style={css.flatList}/>
 		</View>
 
 	);
@@ -63,6 +65,10 @@ function PlaylistContent() {
 const css = StyleSheet.create({
 	container: {
 		flex: 1
+	},
+	flatList: {
+		paddingBottom: 2.5,
+		paddingTop: 2.5
 	},
 	textError: {
 		margin: 15,

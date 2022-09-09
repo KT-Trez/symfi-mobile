@@ -4,8 +4,8 @@ import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Surface, Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
-import useRandomIntInclusive from '../../hooks/useRandomIntInclusive';
+import {SavedSongMetadata} from '../../typings/interfaces';
+import useRandomIntInclusive from '../hooks/useRandomIntInclusive';
 
 
 interface AudioPlayerProps {

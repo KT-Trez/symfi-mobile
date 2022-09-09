@@ -4,7 +4,7 @@ import React from 'react';
 import {MD3DarkTheme, Provider as PaperProvider} from 'react-native-paper';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 
-
+// todo: implement HTTPModule
 Object.assign(axios.defaults, {
 	baseURL: 'https://musicly-api.herokuapp.com/',
 	timeout: 20000

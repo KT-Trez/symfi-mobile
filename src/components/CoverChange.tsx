@@ -12,7 +12,7 @@ interface CoverChangeProps {
 	onRemove: () => void;
 }
 
-function CoverChangeMenu({aspectRatio, borderRadius, coverUri, hasCover, onChange, onRemove}: CoverChangeProps) {
+function CoverChange({aspectRatio, borderRadius, coverUri, hasCover, onChange, onRemove}: CoverChangeProps) {
 	return (
 		<Surface style={css.containerCoverChange}>
 			{hasCover ?
@@ -52,4 +52,4 @@ const css = StyleSheet.create({
 });
 
 
-export default CoverChangeMenu;
+export default CoverChange;

@@ -1,10 +1,27 @@
+import DataStore from 'react-native-local-mongodb';
 import DefaultDataStore from './Default';
 
 
 export class PlayListDatabase extends DefaultDataStore {
-	store = 'playlists';
+	static _db: DataStore;
+	static db = new PlayListDatabase().db;
+
+	get db() {
+		if (!PlayListDatabase._db)
+			PlayListDatabase._db = this.initDataStore();
+		return PlayListDatabase._db;
+	}
+
+	protected store = 'playlists';
 }
 
 export default class PlayListController extends PlayListDatabase {
-	static db = new PlayListController().db;
+	async updateCover(playListID: string, uri?: string) {
+		await this.db.update({id: playListID}, {
+			$set: {
+				'cover.uri': uri,
+				'flags.hasCover': !!uri
+			}
+		}, {});
+	}
 }

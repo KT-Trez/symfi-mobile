@@ -2,20 +2,21 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
 import {Divider, Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
-import {PlaylistDatabase, SongsDatabase} from '../../schemas/schemas';
+import PlayListController from '../../datastore/PlayListController';
+import SongsController from '../../datastore/SongsController';
 
 
-interface AddSongModalProps {
+interface SongsManagerProps {
 	hideModal: () => void;
 	isVisible: boolean;
 	playlistID: string;
 	refreshPlaylist: () => void;
 }
 
-function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: AddSongModalProps) {
+function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: SongsManagerProps) {
 	const {colors} = useTheme();
-	const playlistsDB = useRef(PlaylistDatabase.getInstance());
-	const songsDB = useRef(SongsDatabase.getInstance());
+	const playlistsDB = useRef(new PlayListController());
+	const songsDB = useRef(new SongsController());
 
 	const [isBlocked, setIsBlocked] = useState(false);
 
@@ -25,7 +26,7 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: AddSo
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
-		const songsArr = await songsDB.current.find<SavedSongMetadata[]>({$not: {'musicly.playlists.id': playlistID}});
+		const songsArr = await songsDB.current.db.findAsync({$not: {'musicly.playlists.id': playlistID}}) as SavedSongMetadata[];
 		setSongs(songsArr);
 		if (songsArr.length !== searchedSongs.length)
 			setSearchedSongs([...songsArr]);
@@ -36,16 +37,16 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: AddSo
 			return;
 		setIsBlocked(true);
 
-		await songsDB.current.update({id: itemID}, {
+		await playlistsDB.current.db.updateAsync({id: playlistID}, {$inc: {songsCount: 1}}, {});
+		await songsDB.current.db.updateAsync({id: itemID}, {
 			$push: {
 				'musicly.playlists': {
 					id: playlistID,
 					isFavourite: false,
-					order: (await playlistsDB.current.findOne({id: playlistID})).songsCount + 1
+					order: (await playlistsDB.current.db.findOneAsync({id: playlistID})).songsCount
 				}
 			}
 		}, {});
-		await playlistsDB.current.update({id: playlistID}, {$inc: {songsCount: 1}}, {});
 
 		setSearchedSongs(arr => arr.filter(song => song.id !== itemID));
 		await getSongs();
@@ -65,7 +66,9 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: AddSo
 
 	return (
 		<Portal>
-			<Modal contentContainerStyle={[css.modalContainer, {backgroundColor: colors.elevation.level3}]} onDismiss={hideModal} visible={isVisible}>
+			<Modal contentContainerStyle={[css.modal, {backgroundColor: colors.elevation.level3}]}
+				   onDismiss={hideModal}
+				   visible={isVisible}>
 				<Text variant={'titleMedium'}>Add song to playlist</Text>
 
 				<SafeAreaView>
@@ -93,7 +96,7 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: AddSo
 }
 
 const css = StyleSheet.create({
-	modalContainer: {
+	modal: {
 		backgroundColor: 'white',
 		margin: 10,
 		padding: 20

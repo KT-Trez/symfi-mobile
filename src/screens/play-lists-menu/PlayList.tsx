@@ -44,7 +44,9 @@ function PlayList({item, loadToManage}: AlbumProps) {
 const css = StyleSheet.create({
 	container: {
 		flexDirection: 'row',
-		margin: 5
+		margin: 5,
+		marginBottom: 2.5,
+		marginTop: 2.5
 	},
 	imageContainer: {
 		flex: 1,

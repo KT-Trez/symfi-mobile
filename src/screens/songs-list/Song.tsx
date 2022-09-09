@@ -1,15 +1,15 @@
 import React from 'react';
-import {SavedSongMetadata} from '../../../../typings/interfaces';
-import SongEntry from '../SongEntry';
+import {SavedSongMetadata} from '../../../typings/interfaces';
+import SongEntry from '../../components/SongEntry';
 
 
-interface SongItemProps {
+interface SongProps {
 	item: SavedSongMetadata;
 	loadToManage: (id: string) => void;
 	loadToPlay: (id: string) => void;
 }
 
-function SavedAudioItem({item, loadToPlay, loadToManage}: SongItemProps) {
+function Song({item, loadToPlay, loadToManage}: SongProps) {
 	const manageAudio = () => {
 		loadToManage(item.id);
 	};
@@ -25,4 +25,4 @@ function SavedAudioItem({item, loadToPlay, loadToManage}: SongItemProps) {
 	);
 }
 
-export default SavedAudioItem;
+export default Song;

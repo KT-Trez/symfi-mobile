@@ -3,10 +3,10 @@ import React, {useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
 import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
-import SearchResultItem from '../../components/elements/flatlist-items/SearchResultItem';
+import Song from '../../screens/songs-search/Song';
 
 
-function AudioSearch() {
+function SongsSearch() {
 	const {colors} = useTheme();
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +57,7 @@ function AudioSearch() {
 				<FlatList
 					data={songs}
 					keyExtractor={item => item.id}
-					renderItem={({item}) => <SearchResultItem item={item}/>}/>
+					renderItem={({item}) => <Song item={item}/>}/>
 			}
 		</View>
 	);
@@ -75,4 +75,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default AudioSearch;
+export default SongsSearch;

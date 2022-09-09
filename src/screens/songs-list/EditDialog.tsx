@@ -3,61 +3,68 @@ import * as MediaLibrary from 'expo-media-library';
 import {PermissionStatus} from 'expo-media-library';
 import React, {useEffect, useRef, useState} from 'react';
 import {ToastAndroid} from 'react-native';
-import {SavedSongMetadata} from '../../../../typings/interfaces';
-import useAssetRemoval from '../../../hooks/useAssetRemoval';
-import {SongsDatabase} from '../../../schemas/schemas';
-import ManageDialog from '../ManageDialog';
+import {SavedSongMetadata} from '../../../typings/interfaces';
+import ManageDialog from '../../components/ManageDialog';
+import SongsController from '../../datastore/SongsController';
+import useAssetRemoval from '../../hooks/useAssetRemoval';
 
 
-interface DeleteDialogProps {
+interface EditDialogProps {
 	playingSongID: string | undefined;
 	refreshSongsList: () => void;
 	setSongID: (id: string | undefined) => void;
 	songID: string | undefined;
-	// todo: remove useless params
-	songs: SavedSongMetadata[];
 }
 
-function EditDialog({playingSongID, refreshSongsList, setSongID, songID, songs}: DeleteDialogProps) {
+function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDialogProps) {
+	// constans
 	const navigation = React.useContext(NavigationContext);
 
-	const songsDB = useRef(SongsDatabase.getInstance());
+	const songsDB = useRef(new SongsController());
 
-	const [deleteSong, setDeleteSong] = useState<SavedSongMetadata | undefined>(undefined);
+	// flags
 	const [isVisible, setIsVisible] = useState(false);
 
-	const editResource = () => {
+	// methods
+	const editSong = () => {
 		navigation?.navigate('SongEdit', {id: songID});
 		hideDialog();
 	};
 
 	const hideDialog = () => {
-		setDeleteSong(undefined);
 		setSongID(undefined);
-
 		setIsVisible(false);
 	};
 
 	// todo: load song from DB
 	const removeSong = async () => {
-		if (!deleteSong)
+		// check if songID exists; get android permissions; check is song is currently playing
+		if (!songID)
 			return;
 
 		const {status} = await MediaLibrary.requestPermissionsAsync();
 		if (status !== PermissionStatus.GRANTED)
 			return ToastAndroid.showWithGravity('No permission to delete audio file', ToastAndroid.LONG, ToastAndroid.BOTTOM);
 
-		if (deleteSong?.id === playingSongID)
+		if (songID === playingSongID)
 			return ToastAndroid.showWithGravity('Song is currently playing', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
 
 		// todo: update schema
 		// todo: check if resource is downloaded
-		const asset = await MediaLibrary.getAssetInfoAsync(deleteSong!.musicly.file.path!);
-		await MediaLibrary.deleteAssetsAsync(asset);
-		if (deleteSong.musicly.flags.hasCover)
-			await useAssetRemoval(deleteSong.musicly.cover.uri!);
+		// get song and it's file metadata
+		const song = await songsDB.current.db.findOneAsync({id: songID}) as SavedSongMetadata;
+		const asset = await MediaLibrary.getAssetInfoAsync(song.musicly.file.path!);
 
-		await songsDB.current.remove({id: deleteSong!.id}, {});
+		// delete song and it's cover
+		await MediaLibrary.deleteAssetsAsync(asset);
+		if (song.musicly.flags.hasCover)
+			await useAssetRemoval(song.musicly.cover.uri!);
+
+		// todo: add method to controller
+		// new method should iterate through all song's playlists and decrease their songCount by 1
+
+		// remove from db
+		await songsDB.current.db.remove({id: songID}, {});
 
 		refreshSongsList();
 		hideDialog();
@@ -65,23 +72,19 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID, songs}:
 
 	const showDialog = () => setIsVisible(true);
 
-	useEffect(() => {
-		if (deleteSong)
-			showDialog();
-	}, [deleteSong]);
-
+	// effects
 	useEffect(() => {
 		if (songID)
-			setDeleteSong(songs.find(song => song.id === songID));
+			showDialog();
 	}, [songID]);
 
 	return (
 		<ManageDialog hide={hideDialog}
 					  isVisible={isVisible}
-					  name={'song'}
 					  onCancel={hideDialog}
 					  onDelete={removeSong}
-					  onEdit={editResource}/>
+					  onEdit={editSong}
+					  resourceName={'song'}/>
 	);
 }
 

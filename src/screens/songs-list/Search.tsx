@@ -3,7 +3,7 @@ import {FlatList, ListRenderItem, SafeAreaView, StyleSheet} from 'react-native';
 import {Searchbar, Text} from 'react-native-paper';
 
 
-interface SearchListProps {
+interface SearchProps {
 	data: any[];
 	isRefreshing: boolean;
 	keyExtractor: ((item: any, index: number) => string) | undefined;
@@ -13,7 +13,7 @@ interface SearchListProps {
 	searchEmptyText: string;
 }
 
-function SearchSavedAudio({data, isRefreshing, keyExtractor, refreshData, renderItem, searchbarText, searchEmptyText}: SearchListProps) {
+function Search({data, isRefreshing, keyExtractor, refreshData,	renderItem,	searchbarText,	searchEmptyText}: SearchProps) {
 	const [searchData, setSearchData] = useState<any[]>([]);
 	const [searchQuery, setSearchQuery] = useState('');
 
@@ -39,14 +39,20 @@ function SearchSavedAudio({data, isRefreshing, keyExtractor, refreshData, render
 					  keyExtractor={keyExtractor}
 					  onRefresh={refreshData}
 					  refreshing={isRefreshing}
-					  renderItem={renderItem}/>
+					  renderItem={renderItem}
+					  style={css.flatList}/>
 		</React.Fragment>
 	);
 }
 
 const css = StyleSheet.create({
 	searchbar: {
-		margin: 5
+		margin: 5,
+		marginBottom: 0
+	},
+	flatList: {
+		paddingBottom: 2.5,
+		paddingTop: 2.5
 	},
 	textError: {
 		margin: 5,
@@ -54,4 +60,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default SearchSavedAudio;
+export default Search;

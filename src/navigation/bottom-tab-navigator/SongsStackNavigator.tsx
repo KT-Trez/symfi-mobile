@@ -1,8 +1,8 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {RootSongsStackParamList} from '../../../typings/navigation';
-import SavedAudio from '../songs-stack-navigator/SavedAudio';
 import SongEdit from '../songs-stack-navigator/SongEdit';
+import SongsList from '../songs-stack-navigator/SongsList';
 
 
 const {Navigator, Screen} = createNativeStackNavigator<RootSongsStackParamList>();
@@ -14,8 +14,8 @@ function SongsStackNavigator() {
 
 	return (
 		<Navigator>
-			<Screen component={SavedAudio}
-					name={'SongList'}
+			<Screen component={SongsList}
+					name={'SongsList'}
 					options={defaultOptions}/>
 			<Screen component={SongEdit}
 					name={'SongEdit'}

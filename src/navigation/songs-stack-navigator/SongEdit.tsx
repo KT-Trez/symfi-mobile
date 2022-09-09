@@ -3,8 +3,8 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Text} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import {RootSongsStackParamList} from '../../../typings/navigation';
-import CoverChangeMenu from '../../components/elements/CoverChangeMenu';
-import LoadingView from '../../components/elements/LoadingView';
+import CoverChange from '../../components/CoverChange';
+import LoadingView from '../../components/LoadingView';
 import SongsController from '../../datastore/SongsController';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
 import useImagePicker from '../../hooks/useImagePicker';
@@ -62,12 +62,12 @@ function SongEdit() {
 
 	return (
 		<LoadingView isLoading={isLoading} title={'Edit song'}>
-			<CoverChangeMenu aspectRatio={1.77}
-							 borderRadius={0}
-							 coverUri={song?.musicly.cover.uri ?? undefined}
-							 hasCover={song?.musicly.flags.hasCover ?? false}
-							 onChange={changeCover}
-							 onRemove={removeCover}/>
+			<CoverChange aspectRatio={1.77}
+						 borderRadius={0}
+						 coverUri={song?.musicly.cover.uri}
+						 hasCover={song?.musicly.flags.hasCover ?? false}
+						 onChange={changeCover}
+						 onRemove={removeCover}/>
 
 			<Text>Song edit</Text>
 		</LoadingView>

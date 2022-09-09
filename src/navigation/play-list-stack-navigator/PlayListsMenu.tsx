@@ -2,15 +2,16 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {Appbar, FAB, useTheme} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../typings/interfaces';
-import EditDialog from '../../components/elements/playlist/EditDialog';
-import PlaylistCreator from '../../components/elements/playlist/PlaylistCreator';
-import {PlaylistDatabase} from '../../schemas/schemas';
+import PlayListController from '../../datastore/PlayListController';
+import Creator from '../../screens/play-lists-menu/Creator';
+import EditDialog from '../../screens/play-lists-menu/EditDialog';
 import PlayList from '../../screens/play-lists-menu/PlayList';
 
 
 function PlayListsMenu() {
-	const playlistsDB = useRef(PlaylistDatabase.getInstance());
+	// constants
 	const {colors} = useTheme();
+	const playlistsDB = useRef(new PlayListController());
 
 	const [playListToManage, setPlayListToManage] = useState<string | undefined>(undefined);
 	const [playlists, setPlaylists] = useState<PlaylistMetadata[]>([]);
@@ -20,7 +21,7 @@ function PlayListsMenu() {
 
 	const getAlbums = useCallback(async () => {
 		setIsRefreshing(true);
-		setPlaylists(await playlistsDB.current.find<PlaylistMetadata[]>({}));
+		setPlaylists(await playlistsDB.current.db.findAsync({}) as PlaylistMetadata[]);
 		setIsRefreshing(false);
 	}, []);
 
@@ -42,7 +43,7 @@ function PlayListsMenu() {
 						refreshPlaylistsList={getAlbums}
 						setPlaylistID={setPlayListToManage}/>
 
-			<PlaylistCreator hide={hideCreator}
+			<Creator hide={hideCreator}
 							 isVisible={creatorVisible}
 							 reloadList={getAlbums}/>
 
@@ -51,8 +52,8 @@ function PlayListsMenu() {
 					  ListEmptyComponent={<Text style={css.textError}>You have no created playlists yet.</Text>}
 					  onRefresh={getAlbums}
 					  refreshing={isRefreshing}
-					  style={{position: 'relative'}}
-					  renderItem={({item}) => <PlayList item={item} loadToManage={setPlayListToManage}/>}/>
+					  renderItem={({item}) => <PlayList item={item} loadToManage={setPlayListToManage}/>}
+					  style={css.flatList}/>
 
 			<FAB icon={'plus'}
 				 onPress={showCreator}
@@ -70,6 +71,10 @@ const css = StyleSheet.create({
 		bottom: 10,
 		position: 'absolute',
 		right: 10
+	},
+	flatList: {
+		paddingBottom: 2.5,
+		paddingTop: 2.5
 	},
 	textError: {
 		margin: 15,

@@ -1,3 +1,11 @@
+import {DownloadStatus} from './enums';
+
+
+export interface DownloadMetadata {
+	id: string;
+	status: DownloadStatus;
+}
+
 export interface PlaylistData {
 	id: string;
 	isFavourite: boolean;

@@ -2,7 +2,7 @@ import {MaterialIcons} from '@expo/vector-icons';
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
+import {SavedSongMetadata} from '../../typings/interfaces';
 
 
 interface SongEntryProps {
@@ -46,7 +46,9 @@ const css = StyleSheet.create({
 	container: {
 		alignItems: 'center',
 		flexDirection: 'row',
-		margin: 5
+		margin: 5,
+		marginBottom: 2.5,
+		marginTop: 2.5
 	},
 	containerCoverChange: {
 		alignItems: 'center',
