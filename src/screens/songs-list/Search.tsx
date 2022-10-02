@@ -35,7 +35,7 @@ function Search({data, isRefreshing, keyExtractor, refreshData,	renderItem,	sear
 			</SafeAreaView>
 
 			<FlatList data={searchData}
-					  ListEmptyComponent={<Text style={css.textError}>{searchEmptyText}</Text>}
+					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>{searchEmptyText}</Text>}
 					  keyExtractor={keyExtractor}
 					  onRefresh={refreshData}
 					  refreshing={isRefreshing}

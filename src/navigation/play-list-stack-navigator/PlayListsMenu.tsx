@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
-import {Appbar, FAB, useTheme} from 'react-native-paper';
+import {FlatList, StyleSheet, View} from 'react-native';
+import {Appbar, FAB, Text, useTheme} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../typings/interfaces';
 import PlayListController from '../../datastore/PlayListController';
 import Creator from '../../screens/play-lists-menu/Creator';
@@ -49,7 +49,7 @@ function PlayListsMenu() {
 
 			<FlatList data={playlists}
 					  keyExtractor={item => item.id}
-					  ListEmptyComponent={<Text style={css.textError}>You have no created playlists yet.</Text>}
+					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>You have no created playlists yet.</Text>}
 					  onRefresh={getAlbums}
 					  refreshing={isRefreshing}
 					  renderItem={({item}) => <PlayList item={item} loadToManage={setPlayListToManage}/>}

@@ -81,7 +81,7 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 
 				<FlatList data={searchedSongs}
 						  ItemSeparatorComponent={Divider}
-						  ListEmptyComponent={<Text style={css.textError}>No search results.</Text>}
+						  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>No search results.</Text>}
 						  keyExtractor={item => item.id}
 						  renderItem={({item}) => {
 							  return (

@@ -51,7 +51,7 @@ function PlaylistContent() {
 
 			<FlatList data={songs}
 					  ItemSeparatorComponent={Divider}
-					  ListEmptyComponent={<Text style={css.textError}>This playlist is empty.</Text>}
+					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>This playlist is empty.</Text>}
 					  renderItem={({item}) => <Song item={item}
 													loadToPlay={setCurrentSongID}
 													playlistID={playlistID}

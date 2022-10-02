@@ -2,7 +2,7 @@
   "expo": {
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#000000",
+        "backgroundColor": "#ffffff",
         "foregroundImage": "./assets/adaptive-icon.png"
       },
       "backgroundColor": "#1c1b1f",
