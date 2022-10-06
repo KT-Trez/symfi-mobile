@@ -1,3 +1,4 @@
+import {NavigationContext} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Appbar, useTheme} from 'react-native-paper';
@@ -11,6 +12,7 @@ import Song from '../../screens/songs-list/Song';
 
 function SongsList() {
 	const {colors} = useTheme();
+	const navigation = React.useContext(NavigationContext);
 	const songsDB = useRef(new SongsController());
 
 	const [songToManageID, setSongToManageID] = useState<string | undefined>();
@@ -34,6 +36,7 @@ function SongsList() {
 		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={'Hold to delete'}/>
+				<Appbar.Action icon={'cloud-sync-outline'} onPress={() => navigation?.navigate('Sync')}/>
 			</Appbar.Header>
 
 			<AudioPlayer audioID={songToPlayID} setAudioID={setSongToPlayID} songs={songs}/>

@@ -31,7 +31,7 @@ function LoadingView({children, isLoading, title}: LoadingPageProps) {
 
 const css = StyleSheet.create({
 	activityIndicator: {
-		marginTop: 10
+		marginTop: 25
 	},
 	container: {
 		flex: 1

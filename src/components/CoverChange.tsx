@@ -14,7 +14,7 @@ interface CoverChangeProps {
 
 function CoverChange({aspectRatio, borderRadius, coverUri, hasCover, onChange, onRemove}: CoverChangeProps) {
 	return (
-		<Surface style={css.containerCoverChange}>
+		<Surface style={css.container}>
 			{hasCover ?
 				<Avatar.Image size={50}
 							  source={
@@ -42,7 +42,7 @@ const css = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'flex-end'
 	},
-	containerCoverChange: {
+	container: {
 		alignItems: 'center',
 		flexDirection: 'row',
 		justifyContent: 'space-between',

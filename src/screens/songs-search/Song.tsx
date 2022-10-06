@@ -1,11 +1,11 @@
 import {MaterialIcons} from '@expo/vector-icons';
-import * as FileSystem from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Image, LayoutChangeEvent, StyleSheet, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, Text, useTheme} from 'react-native-paper';
+import {DownloadType} from '../../../typings/enums';
 import {SongMetadata} from '../../../typings/interfaces';
 import SongsController from '../../datastore/SongsController';
+import NetService from '../../services/NetService';
 
 
 interface SongProps {
@@ -31,42 +31,10 @@ function Song({item}: SongProps) {
 	}, []);
 
 	const downloadSong = useCallback(async () => {
-		const perm = await MediaLibrary.requestPermissionsAsync();
-		if (perm.status != MediaLibrary.PermissionStatus.GRANTED)
-			return ToastAndroid.showWithGravity('No permission to save audio file.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
-
 		setIsDownloading(true);
 
 		try {
-			const savePath = FileSystem.cacheDirectory + item.id + '.wav';
-			const {uri} = await FileSystem.downloadAsync('https://musicly-api.herokuapp.com/download/youtube?audioID=' + item.id, savePath);
-
-			const asset = await MediaLibrary.createAssetAsync(uri);
-			const assetMetadata = await FileSystem.getInfoAsync(uri);
-
-			const savedAudio = Object.assign(item, {
-				musicly: {
-					cover: {
-						color: Math.floor(Math.random() * 16777215).toString(16),
-						name: item.title + '_' + item.id,
-						uri: undefined
-					},
-					file: {
-						path: asset.uri,
-						size: assetMetadata.size ?? 0
-					},
-					flags: {
-						hasCover: false,
-						isDownloaded: true,
-						isFavourite: false
-					},
-					playlists: [],
-					version: 1,
-					wasPlayed: 0
-				}
-			});
-
-			await songsDB.current.db.insertAsync(savedAudio);
+			await new NetService().download(DownloadType.Audio, item);
 			await checkDownloadedStatus();
 		} catch (err) {
 			console.error(err);

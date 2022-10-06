@@ -35,6 +35,7 @@ export interface SavedSongMetadata extends SongMetadata {
 			uri: string | undefined;
 		},
 		file: {
+			downloadDate: Date;
 			path: string | undefined;
 			size: number | undefined;
 		},

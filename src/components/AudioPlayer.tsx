@@ -67,8 +67,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 		setIsPaused(false);
 
 		setDuration(undefined);
-		setProgress(undefined);
-		setProgressSimpleText(undefined);
+		resetProgress();
 	};
 
 	const endPlayback = async () => {
@@ -129,6 +128,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 
 		if (status.isLoaded) {
 			setDuration(Math.round((status.durationMillis ?? 0) / 1000));
+			resetProgress();
 			if (!status.isPlaying)
 				await AudioPlayer.current.playAsync();
 		}
@@ -139,6 +139,11 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 			return;
 		const currentIndex = songs.indexOf(song);
 		setSong(songs[currentIndex - 1 >= 0 ? currentIndex - 1 : songs.length - 1]);
+	};
+
+	const resetProgress = () => {
+		setProgress(undefined);
+		setProgressSimpleText(undefined);
 	};
 
 	const toggleAutoplay = () => {
@@ -157,6 +162,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 		if (audioID)
 			if (!song || song.id !== audioID) {
 				cleanControls();
+				resetProgress();
 				setSong(songs.find(song => song.id === audioID));
 			}
 	}, [audioID]);
