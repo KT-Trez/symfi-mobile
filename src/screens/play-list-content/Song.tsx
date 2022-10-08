@@ -24,7 +24,7 @@ function Song({item, loadToPlay, playlistID, refreshPlaylist}: SongProps) {
 		loadToPlay(item.id);
 	};
 
-	// todo: !IMPORTANT fix songs count
+	// IMPORTANT: fix songs count
 	const removeFromPlayList = async () => {
 		await songsDB.current.removePlayListFromSong(playlistID, item.id);
 		await playlistDB.current.db.updateAsync({id: playlistID}, {$inc: {songsCount: -1}}, {});

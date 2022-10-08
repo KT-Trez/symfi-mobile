@@ -28,14 +28,14 @@ export default class NetService {
 		this.baseUrl = baseUrl;
 	}
 
-	download(resourceType: DownloadType.Audio, metadata: SongMetadata, playLists?: PlaylistData[]): void
-	download(resourceType: DownloadType, ...args: any[]): void {
+	async download(resourceType: DownloadType.Audio, metadata: SongMetadata, playLists?: PlaylistData[]): Promise<void>
+	async download(resourceType: DownloadType, ...args: any[]): Promise<void> {
 		switch (resourceType) {
 			case DownloadType.Audio:
-				this.getAudio(args[0], args[1]);
+				await this.getAudio(args[0], args[1]);
 				break;
 			case DownloadType.Image:
-				this.getImage();
+				await this.getImage();
 				break;
 		}
 	}

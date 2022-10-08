@@ -35,7 +35,7 @@ function SongsList() {
 	return (
 		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
-				<Appbar.Content title={'Hold to delete'}/>
+				<Appbar.Content title={songs.length + ' Songs'}/>
 				<Appbar.Action icon={'cloud-sync-outline'} onPress={() => navigation?.navigate('Sync')}/>
 			</Appbar.Header>
 

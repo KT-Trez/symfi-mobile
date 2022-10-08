@@ -1,7 +1,7 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {Appbar, Divider, Text, useTheme} from 'react-native-paper';
+import {Appbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import {RootPlayListsStackParamList} from '../../../typings/navigation';
 import AudioPlayer from '../../components/AudioPlayer';
@@ -50,7 +50,6 @@ function PlaylistContent() {
 						  refreshPlaylist={getSongs}/>
 
 			<FlatList data={songs}
-					  ItemSeparatorComponent={Divider}
 					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>This playlist is empty.</Text>}
 					  renderItem={({item}) => <Song item={item}
 													loadToPlay={setCurrentSongID}

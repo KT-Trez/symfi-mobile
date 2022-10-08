@@ -22,7 +22,7 @@ function Sync() {
 
 	const exportData = async () => {
 		if (syncID)
-			return ToastAndroid.showWithGravity('Sync ID: ' + syncID, ToastAndroid.LONG, ToastAndroid.BOTTOM);
+			return ToastAndroid.showWithGravity('UID: ' + syncID, ToastAndroid.LONG, ToastAndroid.BOTTOM);
 
 		setIsLoading(true);
 
@@ -81,7 +81,7 @@ function Sync() {
 				await playlistsDB.current.db.updateAsync({id: playList.id}, playList, {upsert: true});
 
 			// todo: find a better way to download songs
-			// todo: !IMPORTANT update database in case of duplicated song
+			// IMPORTANT: update database in case of duplicated song
 			for (const song of res.data.songsList) {
 				const playLists = song.musicly.playlists;
 				delete song.musicly;

@@ -19,7 +19,7 @@ function PlayListsMenu() {
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [creatorVisible, setCreatorVisible] = useState(false);
 
-	const getAlbums = useCallback(async () => {
+	const getPlayLists = useCallback(async () => {
 		setIsRefreshing(true);
 		setPlaylists(await playlistsDB.current.db.findAsync({}) as PlaylistMetadata[]);
 		setIsRefreshing(false);
@@ -30,27 +30,27 @@ function PlayListsMenu() {
 	const showCreator = () => setCreatorVisible(true);
 
 	useEffect(() => {
-		getAlbums();
+		getPlayLists();
 	}, []);
 
 	return (
 		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header dark={true} elevated mode={'small'}>
-				<Appbar.Content title={'Your playlists'}/>
+				<Appbar.Content title={playlists.length + ' PlayLists'}/>
 			</Appbar.Header>
 
 			<EditDialog playlistID={playListToManage}
-						refreshPlaylistsList={getAlbums}
+						refreshPlaylistsList={getPlayLists}
 						setPlaylistID={setPlayListToManage}/>
 
 			<Creator hide={hideCreator}
 							 isVisible={creatorVisible}
-							 reloadList={getAlbums}/>
+							 reloadList={getPlayLists}/>
 
 			<FlatList data={playlists}
 					  keyExtractor={item => item.id}
-					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>You have no created playlists yet.</Text>}
-					  onRefresh={getAlbums}
+					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>You have no playLists yet.</Text>}
+					  onRefresh={getPlayLists}
 					  refreshing={isRefreshing}
 					  renderItem={({item}) => <PlayList item={item} loadToManage={setPlayListToManage}/>}
 					  style={css.flatList}/>
