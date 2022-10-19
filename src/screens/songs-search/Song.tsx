@@ -104,7 +104,9 @@ const css = StyleSheet.create({
 	container: {
 		alignItems: 'center',
 		flexDirection: 'row',
-		margin: 5
+		margin: 5,
+		marginBottom: 2.5,
+		marginTop: 2.5
 	},
 	imageContainer: {
 		alignItems: 'center',

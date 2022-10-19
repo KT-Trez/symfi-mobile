@@ -184,9 +184,10 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 
 	return (
 		<Surface style={[css.container, {display: isVisible ? 'flex' : 'none'}]}>
-			<Text variant={'titleMedium'}>Music controls</Text>
+			{/* todo: check which looks nicer */}
+			{/*<Text variant={'titleMedium'}>Music controls</Text>*/}
 			<View>
-				<Text numberOfLines={1} variant={'bodyLarge'}>{song?.title ?? '- no music -'}</Text>
+				<Text numberOfLines={2} variant={'bodyLarge'}>{song?.title ?? '- no music -'}</Text>
 				<Text numberOfLines={1} variant={'labelSmall'}>{song?.channel.name ?? '- no music -'}</Text>
 			</View>
 			<View style={css.containerButtons}>
@@ -232,6 +233,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 const css = StyleSheet.create({
 	container: {
 		margin: 5,
+		marginBottom: 0,
 		padding: 10
 	},
 	containerButtons: {

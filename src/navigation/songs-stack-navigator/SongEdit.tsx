@@ -5,9 +5,11 @@ import {SavedSongMetadata} from '../../../typings/interfaces';
 import {RootSongsStackParamList} from '../../../typings/navigation';
 import CoverChange from '../../components/CoverChange';
 import LoadingView from '../../components/LoadingView';
+import Setting from '../../components/Setting';
 import SongsController from '../../datastore/SongsController';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
 import useImagePicker from '../../hooks/useImagePicker';
+import ResourceManager from '../../services/ResourceManager';
 
 
 type ProfileScreenRouteProp = RouteProp<RootSongsStackParamList, 'SongEdit'>;
@@ -36,6 +38,12 @@ function SongEdit() {
 			return;
 
 		await songsDB.current.updateCover(songID, uri);
+		await getSong();
+	};
+
+	const getOriginalCover = async () => {
+		const songResource = await ResourceManager.Song.deserialize(songID);
+		await songResource.getRemoteCover(song?.metadata.thumbnails[0].url!);
 		await getSong();
 	};
 
@@ -69,7 +77,11 @@ function SongEdit() {
 						 onChange={changeCover}
 						 onRemove={removeCover}/>
 
-			<Text>Song edit</Text>
+			<Setting buttons={[
+				{fun: getOriginalCover, icon: 'file-download-outline', name: 'Original'}
+			]}>
+				<Text variant={'bodyMedium'}>Get original cover</Text>
+			</Setting>
 		</LoadingView>
 	);
 }

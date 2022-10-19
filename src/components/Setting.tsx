@@ -6,15 +6,16 @@ import {IconSource} from 'react-native-paper/lib/typescript/components/Icon';
 
 interface SettingProps {
 	buttons: { fun: () => void, icon?: IconSource, name: string }[];
+	buttonsColumn?: boolean;
 	children: JSX.Element | JSX.Element[];
 	style?: ViewProps['style'];
 }
 
-function Setting({buttons, children, style}: SettingProps) {
+function Setting({buttons, buttonsColumn, children, style}: SettingProps) {
 	return (
 		<Surface style={[css.container, style]}>
 			{children}
-			<View style={css.containerButtons}>
+			<View style={!buttonsColumn ? css.containerButtonsHorizontal : css.containerButtonsVertical}>
 				{buttons.map((button, i) =>
 					<Button icon={button.icon}
 							key={i}
@@ -35,8 +36,12 @@ const css = StyleSheet.create({
 		marginTop: 2.5,
 		padding: 10
 	},
-	containerButtons: {
+	containerButtonsHorizontal: {
 		flexDirection: 'row',
+		justifyContent: 'flex-end'
+	},
+	containerButtonsVertical: {
+		flexDirection: 'column',
 		justifyContent: 'flex-end'
 	}
 });

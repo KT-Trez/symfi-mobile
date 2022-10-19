@@ -1,4 +1,5 @@
 import DataStore from 'react-native-local-mongodb';
+import {PlaylistData} from '../../typings/interfaces';
 import DefaultDataStore from './Default';
 
 
@@ -16,6 +17,16 @@ export class PlayListDatabase extends DefaultDataStore {
 }
 
 export default class PlayListController extends PlayListDatabase {
+	async decreaseSongsCount(playLists: PlaylistData[]) {
+		for (const playList of playLists) {
+			await this.db.updateAsync({id: playList.id}, {
+				$inc: {
+					songsCount: -1
+				}
+			}, {})
+		}
+	}
+
 	async updateCover(playListID: string, uri?: string) {
 		await this.db.update({id: playListID}, {
 			$set: {

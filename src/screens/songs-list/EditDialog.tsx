@@ -5,6 +5,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {ToastAndroid} from 'react-native';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import ManageDialog from '../../components/ManageDialog';
+import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
 
@@ -17,9 +18,10 @@ interface EditDialogProps {
 }
 
 function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDialogProps) {
-	// constans
+	// constants
 	const navigation = React.useContext(NavigationContext);
 
+	const playlistsDB = useRef(new PlayListController());
 	const songsDB = useRef(new SongsController());
 
 	// flags
@@ -51,23 +53,28 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 
 		// todo: update schema
 		// todo: check if resource is downloaded
-		// get song and it's file metadata
-		const song = await songsDB.current.db.findOneAsync({id: songID}) as SavedSongMetadata;
-		const asset = await MediaLibrary.getAssetInfoAsync(song.musicly.file.path!);
+		try {
+			// get song and it's file metadata
+			const song = await songsDB.current.db.findOneAsync({id: songID}) as SavedSongMetadata;
+			const asset = await MediaLibrary.getAssetInfoAsync(song.musicly.file.id!);
 
-		// delete song and it's cover
-		await MediaLibrary.deleteAssetsAsync(asset);
-		if (song.musicly.flags.hasCover)
-			await useAssetRemoval(song.musicly.cover.uri!);
+			// delete song and it's cover
+			await MediaLibrary.deleteAssetsAsync(asset);
+			if (song.musicly.flags.hasCover)
+				await useAssetRemoval(song.musicly.cover.uri!);
 
-		// todo: add method to controller
-		// new method should iterate through all song's playlists and decrease their songCount by 1
+			// decrease songsCount in playLists
+			await playlistsDB.current.decreaseSongsCount(song.musicly.playlists);
+		} catch (err) {
+			// handle missing id in old db entries
+			ToastAndroid.showWithGravity('Insufficient data, please delete audio file manually from file system', ToastAndroid.LONG, ToastAndroid.BOTTOM);
+		} finally {
+			// remove from db
+			await songsDB.current.db.remove({id: songID}, {});
 
-		// remove from db
-		await songsDB.current.db.remove({id: songID}, {});
-
-		refreshSongsList();
-		hideDialog();
+			refreshSongsList();
+			hideDialog();
+		}
 	};
 
 	const showDialog = () => setIsVisible(true);

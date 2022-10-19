@@ -13,8 +13,13 @@ export default class FileSystemService {
 		return MediaLibrary.PermissionStatus.GRANTED;
 	}
 
-	static async saveAsset(uri: string) {
-		await MediaLibrary.createAssetAsync(uri);
-		return await FileSystem.getInfoAsync(uri);
+	static async saveAsset(saveURI: string) {
+		const asset = await MediaLibrary.createAssetAsync(saveURI);
+		const {size} = await FileSystem.getInfoAsync(saveURI);
+		return {
+			id: asset.id,
+			size,
+			uri: asset.uri
+		};
 	}
 }

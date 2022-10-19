@@ -51,8 +51,9 @@ export default class NetService {
 
 		// todo: refactor saving to db; make it optional
 		const assetMetadata = await FileSystemService.saveAsset(uri);
-		const audio = new SongData(metadata, {
+		const audio = new SongData(metadata.id, metadata, {
 			fileStats: {
+				id: assetMetadata.id,
 				path: assetMetadata.uri,
 				size: assetMetadata.size!
 			},

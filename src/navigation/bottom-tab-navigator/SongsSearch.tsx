@@ -71,7 +71,8 @@ const css = StyleSheet.create({
 		flex: 1
 	},
 	searchbar: {
-		margin: 5
+		margin: 5,
+		marginBottom: 2.5
 	}
 });
 
