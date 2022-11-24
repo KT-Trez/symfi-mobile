@@ -7,12 +7,21 @@
       },
       "backgroundColor": "#1c1b1f",
       "package": "pl.org.was.musicly",
-      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "assetBundlePatterns": [
       "**/*"
     ],
+    "backgroundColor": "#1c1b1f",
     "description": "Mobile app that lets you download, manage and play your favourite music anywhere you are.",
+    "extra": {
+      "eas": {
+        "projectId": "c3d32469-5a23-400a-a37b-2537f76ea04a"
+      }
+    },
     "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true
@@ -20,7 +29,13 @@
     "name": "Musicly",
     "orientation": "portrait",
     "owner": "kt-trez",
+    "platforms": [
+      "android"
+    ],
     "privacy": "hidden",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "slug": "musicly",
     "splash": {
       "backgroundColor": "#1c1b1f",
@@ -30,12 +45,13 @@
     "updates": {
       "checkAutomatically": "ON_LOAD",
       "enabled": true,
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/c3d32469-5a23-400a-a37b-2537f76ea04a"
     },
     "userInterfaceStyle": "dark",
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "version": "1.4.0"
+    "version": "1.4.1"
   }
 }
