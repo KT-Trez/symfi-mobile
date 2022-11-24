@@ -18,6 +18,7 @@ function Setting({buttons, buttonsColumn, children, style}: SettingProps) {
 			<View style={!buttonsColumn ? css.containerButtonsHorizontal : css.containerButtonsVertical}>
 				{buttons.map((button, i) =>
 					<Button icon={button.icon}
+							mode={'elevated'}
 							key={i}
 							onPress={button.fun}
 							uppercase={true}>{button.name}</Button>)}

@@ -1,8 +1,9 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
+import {MongoDocument} from 'react-native-local-mongodb';
 import {Appbar, Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
+import {PlaylistData, SavedSongMetadata} from '../../../typings/interfaces';
 import {RootPlayListsStackParamList} from '../../../typings/navigation';
 import AudioPlayer from '../../components/AudioPlayer';
 import SongsController from '../../datastore/SongsController';
@@ -24,7 +25,14 @@ function PlaylistContent() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const getSongs = useCallback(async () => {
-		setSongs(await songsDB.current.db.findAsync({'musicly.playlists.id': playlistID}) as SavedSongMetadata[]);
+		const compareFun = (a: MongoDocument, b: MongoDocument) => {
+			const playListDataA = a.musicly.playlists.find((p: PlaylistData) => p.id === playlistID);
+			const playListDataB = b.musicly.playlists.find((p: PlaylistData) => p.id === playlistID);
+			return playListDataA.order - playListDataB.order;
+		};
+		const songsArr = await songsDB.current.db.findAsync({'musicly.playlists.id': playlistID});
+
+		setSongs(songsArr.sort(compareFun) as SavedSongMetadata[]);
 	}, []);
 
 	const hideModal = () => setIsModalOpen(false);

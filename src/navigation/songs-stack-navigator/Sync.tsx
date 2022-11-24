@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
+import {SafeAreaView, StyleSheet, ToastAndroid} from 'react-native';
 import {Text, TextInput} from 'react-native-paper';
 import {DownloadType} from '../../../typings/enums';
 import LoadingView from '../../components/LoadingView';
@@ -110,17 +110,15 @@ function Sync() {
 			</Setting>
 
 			<Setting buttons={importButtons}>
-				<View>
-					<SafeAreaView>
-						<TextInput dense
-								   label={'UID'}
-								   mode={'outlined'}
-								   onChangeText={setUID}
-								   placeholder={'002137'}
-								   style={css.textInput}
-								   value={uid}/>
-					</SafeAreaView>
-				</View>
+				<SafeAreaView>
+					<TextInput dense
+							   label={'UID'}
+							   mode={'outlined'}
+							   onChangeText={setUID}
+							   placeholder={'002137'}
+							   style={css.textInput}
+							   value={uid}/>
+				</SafeAreaView>
 			</Setting>
 		</LoadingView>
 	);

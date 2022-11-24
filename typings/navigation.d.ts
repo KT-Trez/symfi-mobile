@@ -1,10 +1,10 @@
-export type RootPlayListsStackParamList = {
+export declare type RootPlayListsStackParamList = {
 	PlaylistContent: { id: string, };
 	PlaylistEdit: { id: string };
 	PlaylistMenu: undefined;
 };
 
-export type RootSongsStackParamList = {
+export declare type RootSongsStackParamList = {
 	SongEdit: { id: string };
 	SongsList: undefined;
 	Sync: undefined;

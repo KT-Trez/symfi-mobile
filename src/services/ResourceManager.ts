@@ -43,10 +43,18 @@ class Song extends SongData {
 			throw new Error('audio already downloaded');
 
 		// todo: add resumable download
-
 		const downloadURL = remoteURL ? remoteURL : ResourceManager.Net.remote + '/download/youtube?audioID=' + this.id;
 		const fileExt = type === 'audio' ? '.wav' : '.png';
 		return await FileSystem.downloadAsync(downloadURL, FileSystem.cacheDirectory + this.id + fileExt);
+	}
+
+	async getRemoteAudio(url?: string) {
+		if (!this.musicly)
+			throw new Error('song not deserialized');
+
+		const {uri} = await this.downloadResource('audio', url);
+		await this.saveAudio(uri);
+		await this.updateAudioFileInDB();
 	}
 
 	async getRemoteCover(url: string) {
@@ -56,6 +64,27 @@ class Song extends SongData {
 		const {uri} = await this.downloadResource('cover', url);
 		await this.saveCover(uri);
 		await this.updateCoverInDB();
+	}
+
+	private async saveAudio(uri: string) {
+		if (this.musicly.flags.isDownloaded)
+			try {
+				await FileSystem.deleteAsync(this.musicly.file.path!);
+			} catch (err) {
+				const asset = await MediaLibrary.getAssetInfoAsync(this.musicly.file.id!);
+				await MediaLibrary.deleteAssetsAsync(asset);
+			}
+
+		const asset = await MediaLibrary.createAssetAsync(uri);
+		const {size} = await FileSystem.getInfoAsync(uri);
+
+		this.musicly.file = {
+			downloadDate: new Date(),
+			id: asset.id,
+			path: asset.uri,
+			size
+		};
+		this.musicly.flags.isDownloaded = true;
 	}
 
 	private async saveCover(uri: string) {
@@ -80,6 +109,14 @@ class Song extends SongData {
 		this.musicly.flags.hasCover = true;
 	}
 
+	private async updateAudioFileInDB() {
+		await Song.storage.db.updateAsync({id: this.id}, {
+			$set: {
+				'musicly.file': this.musicly.file
+			}
+		});
+	}
+
 	private async updateCoverInDB() {
 		await Song.storage.updateCover(this.id, this.musicly.cover.uri);
 	}
@@ -91,4 +128,3 @@ export default class ResourceManager {
 	static PlayList = PlayList;
 	static Song = Song;
 }
-

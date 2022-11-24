@@ -19,9 +19,9 @@ function SongsSearch() {
 			try {
 				const response = await axios({
 					data: {},
-					headers: {
-						'Access-Control-Allow-Origin': '*'
-					},
+					//headers: {
+					//	'Access-Control-Allow-Origin': '*'
+					//},
 					method: 'get',
 					responseType: 'json',
 					url: '/search/youtube?keywords=' + encodeURI(searchQuery)
@@ -30,7 +30,7 @@ function SongsSearch() {
 				setSongs(response.data);
 			} catch (err) {
 				console.error(err);
-				ToastAndroid.showWithGravity('Server returned error code: ' + err.status, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+				ToastAndroid.showWithGravity('Server returned an error, try again later', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
 			} finally {
 				setIsLoading(false);
 			}

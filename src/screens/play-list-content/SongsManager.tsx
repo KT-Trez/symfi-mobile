@@ -1,7 +1,10 @@
+import moment from 'moment';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
+import {MongoDocument} from 'react-native-local-mongodb';
 import {Divider, Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
+import Stack from '../../components/Stack';
 import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
 
@@ -26,8 +29,12 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
+		const compareFun = (a: MongoDocument, b: MongoDocument) => {
+			return (new Date(a.musicly.file.downloadDate).getTime() - new Date(b.musicly.file.downloadDate).getTime()) * -1;
+		};
 		const songsArr = await songsDB.current.db.findAsync({$not: {'musicly.playlists.id': playlistID}}) as SavedSongMetadata[];
-		setSongs(songsArr);
+
+		setSongs(songsArr.sort(compareFun));
 		if (songsArr.length !== searchedSongs.length)
 			setSearchedSongs([...songsArr]);
 	}, []);
@@ -72,8 +79,7 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 				<Text variant={'titleMedium'}>Add song to playlist</Text>
 
 				<SafeAreaView>
-					<Searchbar elevation={0}
-							   onChangeText={setSearchQuery}
+					<Searchbar onChangeText={setSearchQuery}
 							   placeholder={'Search for songs'}
 							   style={css.searchbar}
 							   value={searchQuery}/>
@@ -81,14 +87,25 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 
 				<FlatList data={searchedSongs}
 						  ItemSeparatorComponent={Divider}
-						  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>No search results.</Text>}
+						  ListEmptyComponent={
+							  <Text style={css.textError} variant={'bodyMedium'}>No search results.</Text>
+						  }
 						  keyExtractor={item => item.id}
 						  renderItem={({item}) => {
 							  return (
-								  <TouchableOpacity onPress={() => addToPlaylist(item.id)} style={css.searchItem}>
-									  <Text numberOfLines={1}>{item.title}</Text>
+								  <TouchableOpacity onPress={() => addToPlaylist(item.id)} style={[css.searchItem, {backgroundColor: colors.elevation.level2}]}>
+									  <Text style={{textAlign: 'right'}} variant={'labelSmall'}>
+										  {moment(item.musicly.file.downloadDate).format('HH:mm:ss • DD/MM/YYYY')}
+									  </Text>
+									  <Stack flexDirection={'column'} sx={{marginTop: 5}}>
+										  <Text numberOfLines={2} variant={'titleSmall'}>{item.title}</Text>
+										  <Stack flexDirection={'row'} justifyContent={'space-between'}>
+											  <Text numberOfLines={1} variant={'bodySmall'}>{item.channel.name}</Text>
+											  <Text variant={'bodySmall'}>{item.metadata.duration.simple_text}</Text>
+										  </Stack>
+									  </Stack>
 								  </TouchableOpacity>
-							  )
+							  );
 						  }}/>
 			</Modal>
 		</Portal>
@@ -97,14 +114,19 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 
 const css = StyleSheet.create({
 	modal: {
-		backgroundColor: 'white',
-		margin: 10,
+		maxHeight: '90%',
+		maxWidth: '90%',
+		marginLeft: '5%',
+		marginRight: '5%',
 		padding: 20
 	},
 	searchbar: {
+		marginBottom: 5,
 		marginTop: 15
 	},
 	searchItem: {
+		marginBottom: 5,
+		marginTop: 5,
 		padding: 10
 	},
 	textError: {

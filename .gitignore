@@ -1,7 +1,6 @@
 # dependencies
 /.expo/
 /node_modules/
-/package-lock.json
 
 # dist
 /dist/

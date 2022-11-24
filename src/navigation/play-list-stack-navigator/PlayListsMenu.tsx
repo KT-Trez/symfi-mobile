@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
+import {MongoDocument} from 'react-native-local-mongodb';
 import {Appbar, FAB, Text, useTheme} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../typings/interfaces';
 import PlayListController from '../../datastore/PlayListController';
@@ -21,7 +22,12 @@ function PlayListsMenu() {
 
 	const getPlayLists = useCallback(async () => {
 		setIsRefreshing(true);
-		setPlaylists(await playlistsDB.current.db.findAsync({}) as PlaylistMetadata[]);
+		const compareFun = (a: MongoDocument, b: MongoDocument) => {
+			return a.order - b.order;
+		};
+		const playListsArr = await playlistsDB.current.db.findAsync({});
+
+		setPlaylists(playListsArr.sort(compareFun) as PlaylistMetadata[]);
 		setIsRefreshing(false);
 	}, []);
 
@@ -44,12 +50,14 @@ function PlayListsMenu() {
 						setPlaylistID={setPlayListToManage}/>
 
 			<Creator hide={hideCreator}
-							 isVisible={creatorVisible}
-							 reloadList={getPlayLists}/>
+					 isVisible={creatorVisible}
+					 reloadList={getPlayLists}/>
 
 			<FlatList data={playlists}
 					  keyExtractor={item => item.id}
-					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>You have no playLists yet.</Text>}
+					  ListEmptyComponent={
+						  <Text style={css.textError} variant={'bodyMedium'}>You have no playLists yet.</Text>
+					  }
 					  onRefresh={getPlayLists}
 					  refreshing={isRefreshing}
 					  renderItem={({item}) => <PlayList item={item} loadToManage={setPlayListToManage}/>}

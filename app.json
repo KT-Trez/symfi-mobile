@@ -2,7 +2,7 @@
   "expo": {
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff",
+        "backgroundColor": "#512da8",
         "foregroundImage": "./assets/adaptive-icon.png"
       },
       "backgroundColor": "#1c1b1f",
@@ -32,7 +32,7 @@
       "enabled": true,
       "fallbackToCacheTimeout": 0
     },
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "web": {
       "favicon": "./assets/favicon.png"
     },

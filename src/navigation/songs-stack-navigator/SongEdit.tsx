@@ -80,7 +80,7 @@ function SongEdit() {
 			<Setting buttons={[
 				{fun: getOriginalCover, icon: 'file-download-outline', name: 'Original'}
 			]}>
-				<Text variant={'bodyMedium'}>Get original cover</Text>
+				<Text variant={'titleSmall'}>Get original cover</Text>
 			</Setting>
 		</LoadingView>
 	);

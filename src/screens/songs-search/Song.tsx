@@ -4,6 +4,7 @@ import {Image, LayoutChangeEvent, StyleSheet, ToastAndroid, TouchableOpacity, Vi
 import {ActivityIndicator, Text, useTheme} from 'react-native-paper';
 import {DownloadType} from '../../../typings/enums';
 import {SongMetadata} from '../../../typings/interfaces';
+import Timestamp from '../../components/Timestamp';
 import SongsController from '../../datastore/SongsController';
 import NetService from '../../services/NetService';
 
@@ -73,6 +74,7 @@ function Song({item}: SongProps) {
 							   source={{uri: item.metadata.thumbnails[0].url}}
 							   style={{height: imageDimensions.height, width: imageDimensions.width}}/>
 				}
+				<Timestamp time={item.metadata.duration.simple_text}/>
 			</View>
 			<View onLayout={(event) => scaleImage(1, event)} style={css.metadataContainer}>
 				<Text numberOfLines={2} variant={'titleSmall'}>{item.title + '\n'}</Text>
