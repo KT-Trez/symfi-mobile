@@ -60,13 +60,13 @@ export interface SongMetadata {
 	description: string;
 	id: string;
 	metadata: {
-		badges: [];
+		badges: string[];
 		duration: {
 			accessibility_label: string;
 			seconds: number;
 			simple_text: string;
 		}
-		owner_badges: [];
+		owner_badges: string[];
 		published: string;
 		short_view_count_text: {
 			accessibility_label: string;

@@ -1,10 +1,11 @@
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import {PlaylistMetadata, SavedSongMetadata, SongMetadata} from '../../typings/interfaces';
+import {PlaylistMetadata, SavedSongMetadata} from '../../typings/interfaces';
 import PlayListData, {PlayListDataConstructor} from '../classes/PlayListData';
-import SongData, {SongDataOptions} from '../classes/SongData';
+import SongData, {SongDataConstructor} from '../classes/SongData';
 import PlayListController from '../datastore/PlayListController';
 import SongsController from '../datastore/SongsController';
+import {dbs} from '../datastore/Store';
 
 
 class Net {
@@ -70,6 +71,21 @@ class PlayList extends PlayListData {
 		});
 	}
 
+	async removePlayList() {
+		// todo: remove after all clients updated their data
+		const songs = await new SongsController().db.findAsync({
+			'musicly.playlists.id': this.id,
+			'musicly.version': {
+				$lte: 2
+			}
+		}) as SavedSongMetadata[];
+		for (const song of songs)
+			new SongsController().removePlayListFromSong(this.id, song.id);
+
+		await PlayList.storage.db.removeAsync({id: this.id}, {});
+		await dbs.songPlayLists.removeAsync({id: this.id});
+	}
+
 	async updateOrder() {
 		await PlayList.storage.db.updateAsync({id: this.id}, {$set: {order: this.order}});
 	}
@@ -81,23 +97,22 @@ class Song extends SongData {
 	static async deserialize(id: string) {
 		const song = await this.storage.db.findOneAsync({id}) as SavedSongMetadata;
 
-		const options: SongDataOptions = {
-			coverStats: song.musicly.cover,
-			fileStats: song.musicly.flags.isDownloaded ? {
-				id: song.musicly.file.id!,
-				path: song.musicly.file.path!,
-				size: song.musicly.file.size!
-			} : undefined,
-			isFavourite: song.musicly.flags.isFavourite,
-			playLists: song.musicly.playlists
+		const options: SongDataConstructor = {
+			channel: song.channel,
+			description: song.description,
+			id: song.id,
+			metadata: song.metadata,
+			musicly: song.musicly,
+			title: song.title,
+			url: song.url
 		};
 
-		return new Song(song.id, song, options);
+		return new Song(options);
 	}
 
 	// instance
-	constructor(id: string, metadata: SongMetadata, {coverStats, fileStats, isFavourite, playLists}: SongDataOptions) {
-		super(id, metadata, {coverStats, fileStats, isFavourite, playLists});
+	constructor(options: SongDataConstructor) {
+		super(options);
 	}
 
 	private async downloadResource(type: 'audio' | 'cover', remoteURL?: string) {

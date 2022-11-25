@@ -1,65 +1,111 @@
-import {PlaylistData, SavedSongMetadata, SongMetadata} from '../../typings/interfaces.js';
+import {Musicly} from '../../typings';
+import {PlaylistData, SavedSongMetadata} from '../../typings/interfaces.js';
 import config from '../config';
 
 
-interface CoverStats {
+interface Channel {
+	id: string;
+	name: string;
+	url: string;
+}
+
+interface Cover {
 	color: string;
-	name?: string;
+	name: string;
 	uri?: string;
 }
 
-interface FileStats {
-	id: string;
-	path: string;
-	size: number;
+interface File {
+	downloadDate: Date;
+	id?: string;
+	path?: string;
+	size?: number;
 }
 
-export interface SongDataOptions {
-	coverStats?: CoverStats;
-	fileStats?: FileStats;
-	isFavourite?: boolean;
-	playLists?: PlaylistData[];
+interface SongFlags {
+	hasCover: boolean;
+	isDownloaded: boolean;
+	isFavourite: boolean;
+}
+
+interface SongMetadata {
+	badges: string[];
+	duration: {
+		accessibility_label: string;
+		seconds: number;
+		simple_text: string;
+	};
+	owner_badges: string[];
+	published: string;
+	short_view_count_text: {
+		accessibility_label: string;
+		simple_text: string;
+	};
+	thumbnails: Thumbnail[];
+	view_count: string;
+}
+
+interface Thumbnail {
+	height: number;
+	url: string;
+	width: number;
+}
+
+export interface SongDataConstructor {
+	channel: Channel;
+	description: string;
+	id: string;
+	metadata: SongMetadata;
+	musicly: {
+		cover?: Cover;
+		file?: File;
+		flags?: SongFlags;
+		playlists: PlaylistData[];
+		version: number;
+		wasPlayed: number;
+	};
+	title: string;
+	url: string;
 }
 
 export default class SongData implements SavedSongMetadata {
 	channel: { id: string; name: string; url: string };
 	description: string;
 	id: string;
-	metadata: { badges: []; duration: { accessibility_label: string; seconds: number; simple_text: string }; owner_badges: []; published: string; short_view_count_text: { accessibility_label: string; simple_text: string }; thumbnails: { height: number; url: string; width: number }[]; view_count: string };
-	musicly: { cover: { color: string; name: string; uri: string | undefined }; file: { downloadDate: Date, id: string | undefined, path: string | undefined; size: number | undefined }; flags: { hasCover: boolean; isDownloaded: boolean; isFavourite: boolean }; playlists: PlaylistData[]; version: number; wasPlayed: number };
+	metadata: SongMetadata;
+	musicly: Musicly.Data.SongMusicly;
 	title: string;
 	url: string;
 
-	constructor(id: string, metadata: SongMetadata, {coverStats, fileStats, isFavourite, playLists}: SongDataOptions) {
-		this.channel = metadata.channel;
-		this.description = metadata.description;
-		this.id = id;
-		this.metadata = metadata.metadata;
+	constructor(options: SongDataConstructor) {
+		this.channel = options.channel;
+		this.description = options.description;
+		this.id = options.id;
+		this.metadata = options.metadata;
 
 		this.musicly = {
 			cover: {
-				color: coverStats?.color ?? Math.floor(Math.random() * 16777215).toString(16),
-				name: coverStats?.name ?? metadata.title + '-' + metadata.id,
-				uri: coverStats?.name
+				color: options.musicly.cover?.color ?? Math.floor(Math.random() * 16777215).toString(16),
+				name: options.musicly.cover?.name ?? [options.id, parseInt(Math.round(Math.random() * 100).toString() + new Date().getTime()).toString(16)].join('-'),
+				uri: options.musicly.cover?.uri
 			},
 			file: {
-				downloadDate: new Date(),
-				id: fileStats?.id,
-				path: fileStats?.path,
-				size: fileStats?.size ?? 0
+				downloadDate: options.musicly.file?.downloadDate ?? new Date(),
+				id: options.musicly.file?.id,
+				path: options.musicly.file?.path,
+				size: options.musicly.file?.size
 			},
 			flags: {
-				hasCover: !!coverStats?.uri,
-				isDownloaded: !!fileStats,
-				isFavourite: !!isFavourite
+				hasCover: !!options.musicly.cover,
+				isDownloaded: !!options.musicly.file,
+				isFavourite: !!options.musicly.flags?.isFavourite
 			},
-			playlists: playLists ?? [],
-			// todo: dynamically load version
-			version: config.current_schema_version,
+			playlists: options.musicly.playlists ?? [],
+			version: options.musicly.version ?? config.current_schema_version,
 			wasPlayed: 0
 		};
 
-		this.title = metadata.title;
-		this.url = metadata.url;
+		this.title = options.title;
+		this.url = options.url;
 	}
 }

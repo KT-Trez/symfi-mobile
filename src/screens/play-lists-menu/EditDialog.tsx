@@ -1,45 +1,34 @@
 import {NavigationContext} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
-import {SavedSongMetadata} from '../../../typings/interfaces';
+import React, {useEffect, useState} from 'react';
+import {Musicly} from '../../../typings';
 import ManageDialog from '../../components/ManageDialog';
-import PlayListController from '../../datastore/PlayListController';
-import SongsController from '../../datastore/SongsController';
+import {PlayList} from '../../services/ResourceManager';
 
 
 interface EditDialogProps {
-	playlistID: string | undefined;
+	options: Musicly.Components.ManageDialogOptions | null;
+	playList: PlayList | null;
 	refreshPlaylistsList: () => void;
-	setPlaylistID: (id: string | undefined) => void;
+	setPlayList: (playList: PlayList | null) => void;
 }
 
-function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: EditDialogProps) {
+function EditDialog({options, playList, refreshPlaylistsList, setPlayList}: EditDialogProps) {
 	const navigation = React.useContext(NavigationContext);
-
-	const playlistsDB = useRef(new PlayListController());
-	const songsDB = useRef(new SongsController());
 
 	const [isVisible, setIsVisible] = useState(false);
 
-	const editPlayList = () => {
-		navigation?.navigate('PlaylistEdit', {id: playlistID});
+	const goToPlayListEdit = () => {
+		navigation?.navigate('PlaylistEdit', {id: playList?.id});
 		hideDialog();
 	};
 
 	const hideDialog = () => {
-		setPlaylistID(undefined);
+		setPlayList(null);
 		setIsVisible(false);
 	};
 
 	const removePlayList = async () => {
-		if (!playlistID)
-			return;
-
-		await playlistsDB.current.db.removeAsync({id: playlistID}, {});
-
-		const songs = await songsDB.current.db.findAsync({'musicly.playlists.id': playlistID}) as SavedSongMetadata[];
-		for (const song of songs)
-			await songsDB.current.removePlayListFromSong(playlistID, song.id);
-
+		await playList?.removePlayList();
 		refreshPlaylistsList();
 		hideDialog();
 	};
@@ -47,17 +36,19 @@ function EditDialog({playlistID, refreshPlaylistsList, setPlaylistID}: EditDialo
 	const showDialog = () => setIsVisible(true);
 
 	useEffect(() => {
-		if (playlistID)
+		if (playList && options?.isDelete)
 			showDialog();
-	}, [playlistID]);
+		else if (playList && options?.isEdit)
+			goToPlayListEdit();
+	}, [playList]);
 
 	return (
 		<ManageDialog hide={hideDialog}
 					  isVisible={isVisible}
+					  message={options?.message}
 					  onCancel={hideDialog}
-					  onDelete={removePlayList}
-					  onEdit={editPlayList}
-					  resourceName={'playlist'}/>
+					  onDelete={options?.isDelete ? removePlayList : undefined}
+					  title={options?.title}/>
 	);
 }
 

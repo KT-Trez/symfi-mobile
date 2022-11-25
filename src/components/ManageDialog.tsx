@@ -1,28 +1,38 @@
 import React from 'react';
-import {Button, Dialog, Paragraph, Portal} from 'react-native-paper';
+import {Button, Dialog, Paragraph, Portal, useTheme} from 'react-native-paper';
 
 
 interface ManageDialogProps {
 	hide: () => void;
 	isVisible: boolean;
+	message?: string;
 	onCancel: () => void;
-	onDelete: () => void;
-	onEdit: () => void;
-	resourceName: string;
+	onDelete?: () => void;
+	onEdit?: () => void;
+	title?: string;
+	resourceName?: string;
 }
 
-function ManageDialog({hide, isVisible, onCancel, onEdit, onDelete, resourceName}: ManageDialogProps) {
+function ManageDialog({hide, isVisible, message, onCancel, onEdit, onDelete, resourceName, title}: ManageDialogProps) {
+	const {colors} = useTheme();
+
 	return (
 		<Portal>
 			<Dialog dismissable={true} onDismiss={hide} visible={isVisible}>
-				<Dialog.Title>Manage</Dialog.Title>
+				<Dialog.Title>{title ?? 'Manage'}</Dialog.Title>
 				<Dialog.Content>
-					<Paragraph>Do you want to delete/edit this {resourceName}?</Paragraph>
+					<Paragraph>{message ?? `Do you want to delete/edit this ${resourceName}?`}</Paragraph>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={onCancel}>Cancel</Button>
-					<Button onPress={onDelete}>Delete</Button>
-					<Button onPress={onEdit}>Edit</Button>
+					{onDelete &&
+                        <Button icon={'delete-forever'}
+                                onPress={onDelete}
+                                textColor={colors.error}>delete</Button>
+					}
+					{onEdit &&
+                        <Button onPress={onEdit}>edit</Button>
+					}
+					<Button onPress={onCancel}>cancel</Button>
 				</Dialog.Actions>
 			</Dialog>
 		</Portal>

@@ -1,43 +1,66 @@
 import {NavigationContext} from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, FAB, Menu, Provider, Text, useTheme} from 'react-native-paper';
-import {PlaylistMetadata} from '../../../typings/interfaces';
-import PlayListController from '../../datastore/PlayListController';
+import {Musicly} from '../../../typings';
 import Creator from '../../screens/play-lists-menu/Creator';
 import EditDialog from '../../screens/play-lists-menu/EditDialog';
 import PlayList from '../../screens/play-lists-menu/PlayList';
+import ResourceManager, {PlayList as CPlayList} from '../../services/ResourceManager';
 
 
 function PlayListsMenu() {
 	// constants
 	const {colors} = useTheme();
 	const navigation = useContext(NavigationContext);
-	const playlistsDB = useRef(new PlayListController());
 
-	const [playListToManage, setPlayListToManage] = useState<string | undefined>(undefined);
-	const [playlists, setPlaylists] = useState<PlaylistMetadata[]>([]);
+	const [playlists, setPlaylists] = useState<CPlayList[]>([]);
 
-	const [creatorVisible, setCreatorVisible] = useState(false);
+	const [playListToManage, setPlayListToManage] = useState<CPlayList | null>(null);
+	const [manageDialogOptions, setManageDialogOptions] = useState<Musicly.Components.ManageDialogOptions | null>(null);
+
+	const [creatorShows, setCreatorShows] = useState(false);
 	const [isRefreshing, setIsRefreshing] = useState(false);
-	const [menuVisible, setMenuVisible] = useState(false);
+	const [menuShows, setMenuShows] = useState(false);
 
 	const getPlayLists = useCallback(async () => {
 		setIsRefreshing(true);
-		setPlaylists((await playlistsDB.current.db.findAsync({})).sort((a, b) => a.order - b.order) as PlaylistMetadata[]);
+		setPlaylists((await ResourceManager.PlayList.deserializeAll()).sort((a, b) => a.order - b.order));
 		setIsRefreshing(false);
 	}, []);
 
 	const goToPlayListOrder = () => navigation?.navigate('PlayListOrder');
 
-	const hideCreator = () => setCreatorVisible(false);
+	// showing and hiding elements
+	const hideCreator = () => setCreatorShows(false);
 
-	const hideMenu = () => setMenuVisible(false);
+	const hideDeleteAndEditDialog = () => {
+		setManageDialogOptions(null);
+	};
 
-	const showCreator = () => setCreatorVisible(true);
+	const hideMenu = () => setMenuShows(false);
 
-	const showMenu = () => setMenuVisible(true);
+	const showCreator = () => setCreatorShows(true);
 
+	const showDeleteDialog = () => {
+		hideMenu();
+		setManageDialogOptions({
+			isDelete: true,
+			message: 'This action is permanent, are you sure?',
+			title: 'Delete'
+		});
+	};
+
+	const showEditDialog = () => {
+		hideMenu();
+		setManageDialogOptions({
+			isEdit: true
+		});
+	};
+
+	const showMenu = () => setMenuShows(true);
+
+	// effects
 	useEffect(() => {
 		getPlayLists();
 	}, []);
@@ -46,28 +69,33 @@ function PlayListsMenu() {
 		<Provider>
 			<View style={[css.container, {backgroundColor: colors.background}]}>
 				<Appbar.Header dark={true} elevated mode={'small'}>
-					<Appbar.Content title={playlists.length + ' PlayLists'}/>
+					{!manageDialogOptions?.isDelete && !manageDialogOptions?.isEdit ?
+						<Appbar.Content title={playlists.length + ' PlayLists'}/>
+						:
+						<Appbar.Action icon={'cancel'} onPress={hideDeleteAndEditDialog} style={{marginRight: 'auto'}}/>
+					}
 
 					<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
 						  anchorPosition={'bottom'}
 						  onDismiss={hideMenu}
-						  visible={menuVisible}>
-						<Menu.Item leadingIcon={'delete-forever'} title={'Delete'}/>
-						<Menu.Item leadingIcon={'pencil'} title={'Edit'}/>
+						  visible={menuShows}>
+						<Menu.Item leadingIcon={'delete'} onPress={showDeleteDialog} title={'Delete'}/>
+						<Menu.Item leadingIcon={'pencil'} onPress={showEditDialog} title={'Edit'}/>
 						<Menu.Item leadingIcon={'format-list-bulleted-type'}
 								   onPress={goToPlayListOrder}
-								   title={'Change order'}/>
+								   title={'Order'}/>
 						<Menu.Item leadingIcon={'cog'} title={'Settings'}/>
 					</Menu>
 				</Appbar.Header>
 
 				<Creator hide={hideCreator}
-						 isVisible={creatorVisible}
+						 isVisible={creatorShows}
 						 reloadList={getPlayLists}/>
 
-				<EditDialog playlistID={playListToManage}
+				<EditDialog options={manageDialogOptions}
+							playList={playListToManage}
 							refreshPlaylistsList={getPlayLists}
-							setPlaylistID={setPlayListToManage}/>
+							setPlayList={setPlayListToManage}/>
 
 				<FlatList data={playlists}
 						  keyExtractor={item => item.id}
@@ -76,7 +104,9 @@ function PlayListsMenu() {
 						  }
 						  onRefresh={getPlayLists}
 						  refreshing={isRefreshing}
-						  renderItem={({item}) => <PlayList item={item} loadToManage={setPlayListToManage}/>}
+						  renderItem={({item}) => <PlayList manageOptions={manageDialogOptions}
+															item={item}
+															setPlayList={setPlayListToManage}/>}
 						  style={css.flatList}/>
 
 				<FAB icon={'plus'}

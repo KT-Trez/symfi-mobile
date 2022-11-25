@@ -1,26 +1,29 @@
 import {NavigationContext} from '@react-navigation/native';
 import React, {useContext} from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Avatar, Text, useTheme} from 'react-native-paper';
-import {PlaylistMetadata} from '../../../typings/interfaces';
+import {Avatar, IconButton, Text, useTheme} from 'react-native-paper';
+import {Musicly} from '../../../typings';
+import Stack from '../../components/Stack';
+import {PlayList as CPlayList} from '../../services/ResourceManager';
 
 
-interface AlbumProps {
-	item: PlaylistMetadata;
-	loadToManage: (id: string) => void;
+interface PlayListProps {
+	item: CPlayList;
+	manageOptions: Musicly.Components.ManageDialogOptions | null;
+	setPlayList: (playList: CPlayList | null) => void;
 }
 
-function PlayList({item, loadToManage}: AlbumProps) {
+function PlayList({item, manageOptions, setPlayList}: PlayListProps) {
 	const {colors} = useTheme();
 	const navigation = useContext(NavigationContext);
 
-	const managePlayList = () => {
-		loadToManage(item.id);
-	};
+	const chosePlayList = () => setPlayList(item);
+
+	const goToPlayList = () => navigation?.navigate('PlaylistContent', {id: item.id});
 
 	return (
-		<TouchableOpacity onLongPress={managePlayList}
-						  onPress={() => navigation?.navigate('PlaylistContent', {id: item.id})}
+		<TouchableOpacity disabled={!!manageOptions}
+						  onPress={goToPlayList}
 						  style={[css.container, {backgroundColor: colors.elevation.level1}]}>
 			<View style={css.imageContainer}>
 				{item.cover.uri ?
@@ -37,6 +40,19 @@ function PlayList({item, loadToManage}: AlbumProps) {
 				<Text variant={'titleMedium'}>{item.name}</Text>
 				<Text variant={'labelMedium'}>{item.songsCount} {item.songsCount !== 1 ? 'songs' : 'song'}</Text>
 			</View>
+
+			{/* todo: find more elegant way for conditional buttons */}
+			{manageOptions &&
+                <Stack alignItems={'center'} justifyContent={'center'} sx={css.buttons}>
+					{manageOptions.isEdit ?
+						<IconButton icon={'playlist-edit'} onPress={chosePlayList} size={30}/> : <></>}
+					{manageOptions.isDelete ?
+						<IconButton iconColor={colors.error}
+									icon={'delete-forever'}
+									onPress={chosePlayList}
+									size={30}/> : <></>}
+                </Stack>
+			}
 		</TouchableOpacity>
 	);
 }
@@ -47,6 +63,9 @@ const css = StyleSheet.create({
 		margin: 5,
 		marginBottom: 2.5,
 		marginTop: 2.5
+	},
+	buttons: {
+		flex: 1
 	},
 	imageContainer: {
 		flex: 1,
