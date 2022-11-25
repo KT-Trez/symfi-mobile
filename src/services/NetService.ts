@@ -2,7 +2,7 @@ import axios, {AxiosInstance} from 'axios';
 import * as FileSystem from 'expo-file-system';
 import {DownloadType} from '../../typings/enums';
 import {PlaylistData, SongMetadata} from '../../typings/interfaces';
-import SongData from '../classes/SongData';
+import SongData, {SongDataConstructor} from '../classes/SongData';
 import SongsController from '../datastore/SongsController';
 import FileSystemService from './FileSystemService';
 
@@ -51,14 +51,23 @@ export default class NetService {
 
 		// todo: refactor saving to db; make it optional
 		const assetMetadata = await FileSystemService.saveAsset(uri);
-		const audio = new SongData(metadata.id, metadata, {
-			fileStats: {
-				id: assetMetadata.id,
-				path: assetMetadata.uri,
-				size: assetMetadata.size!
+		const options: SongDataConstructor = {
+			channel: metadata.channel,
+			description: metadata.description,
+			id: metadata.id,
+			metadata: metadata.metadata,
+			musicly: {
+				file: {
+					id: assetMetadata.id,
+					path: assetMetadata.uri,
+					size: assetMetadata.size
+				},
+				playlists: playLists
 			},
-			playLists
-		});
+			title: metadata.title,
+			url: metadata.url
+		};
+		const audio = new SongData(options);
 
 		await NetService.songsDB.db.insertAsync(audio);
 	}

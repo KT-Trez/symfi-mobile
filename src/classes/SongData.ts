@@ -16,7 +16,7 @@ interface Cover {
 }
 
 interface File {
-	downloadDate: Date;
+	downloadDate?: Date;
 	id?: string;
 	path?: string;
 	size?: number;
@@ -60,9 +60,9 @@ export interface SongDataConstructor {
 		cover?: Cover;
 		file?: File;
 		flags?: SongFlags;
-		playlists: PlaylistData[];
-		version: number;
-		wasPlayed: number;
+		playlists?: PlaylistData[];
+		version?: number;
+		wasPlayed?: number;
 	};
 	title: string;
 	url: string;
@@ -102,7 +102,7 @@ export default class SongData implements SavedSongMetadata {
 			},
 			playlists: options.musicly.playlists ?? [],
 			version: options.musicly.version ?? config.current_schema_version,
-			wasPlayed: 0
+			wasPlayed: options.musicly.wasPlayed ?? 0
 		};
 
 		this.title = options.title;

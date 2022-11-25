@@ -2,7 +2,7 @@ import moment from 'moment';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
 import {MongoDocument} from 'react-native-local-mongodb';
-import {Divider, Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
+import {Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import Stack from '../../components/Stack';
 import PlayListController from '../../datastore/PlayListController';
@@ -63,7 +63,7 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 	};
 
 	useEffect(() => {
-		setSearchedSongs([...songs.filter(song => song.title.toLowerCase().match(searchQuery) || song.channel.name.toLowerCase().match(searchQuery))]);
+		setSearchedSongs([...songs.filter(song => song.title.toLowerCase().match(searchQuery.toLowerCase()) || song.channel.name.toLowerCase().match(searchQuery.toLowerCase()))]);
 	}, [searchQuery]);
 
 	useEffect(() => {
@@ -86,14 +86,14 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 				</SafeAreaView>
 
 				<FlatList data={searchedSongs}
-						  ItemSeparatorComponent={Divider}
 						  ListEmptyComponent={
 							  <Text style={css.flatListText} variant={'bodyMedium'}>No search results.</Text>
 						  }
 						  keyExtractor={item => item.id}
 						  renderItem={({item}) => {
 							  return (
-								  <TouchableOpacity onPress={() => addToPlaylist(item.id)} style={[css.searchItem, {backgroundColor: colors.elevation.level2}]}>
+								  <TouchableOpacity onPress={() => addToPlaylist(item.id)}
+													style={[css.searchItem, {backgroundColor: colors.elevation.level2}]}>
 									  <Text style={{textAlign: 'right'}} variant={'labelSmall'}>
 										  {moment(item.musicly.file.downloadDate).format('HH:mm:ss • DD/MM/YYYY')}
 									  </Text>
