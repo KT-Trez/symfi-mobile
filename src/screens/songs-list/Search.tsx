@@ -35,7 +35,7 @@ function Search({data, isRefreshing, keyExtractor, refreshData,	renderItem,	sear
 			</SafeAreaView>
 
 			<FlatList data={searchData}
-					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>{searchEmptyText}</Text>}
+					  ListEmptyComponent={<Text style={css.flatListText} variant={'bodyMedium'}>{searchEmptyText}</Text>}
 					  keyExtractor={keyExtractor}
 					  onRefresh={refreshData}
 					  refreshing={isRefreshing}
@@ -54,7 +54,7 @@ const css = StyleSheet.create({
 		paddingBottom: 2.5,
 		paddingTop: 2.5
 	},
-	textError: {
+	flatListText: {
 		margin: 5,
 		textAlign: 'center'
 	}

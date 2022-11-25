@@ -1,4 +1,5 @@
 import {PlaylistData, SavedSongMetadata, SongMetadata} from '../../typings/interfaces.js';
+import config from '../config';
 
 
 interface CoverStats {
@@ -53,7 +54,8 @@ export default class SongData implements SavedSongMetadata {
 				isFavourite: !!isFavourite
 			},
 			playlists: playLists ?? [],
-			version: 2,
+			// todo: dynamically load version
+			version: config.current_schema_version,
 			wasPlayed: 0
 		};
 

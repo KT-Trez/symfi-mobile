@@ -19,9 +19,6 @@ function SongsSearch() {
 			try {
 				const response = await axios({
 					data: {},
-					//headers: {
-					//	'Access-Control-Allow-Origin': '*'
-					//},
 					method: 'get',
 					responseType: 'json',
 					url: '/search/youtube?keywords=' + encodeURI(searchQuery)

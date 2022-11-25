@@ -58,7 +58,7 @@ function PlaylistContent() {
 						  refreshPlaylist={getSongs}/>
 
 			<FlatList data={songs}
-					  ListEmptyComponent={<Text style={css.textError} variant={'bodyMedium'}>This playlist is empty.</Text>}
+					  ListEmptyComponent={<Text style={css.flatListText} variant={'bodyMedium'}>This playlist is empty.</Text>}
 					  renderItem={({item}) => <Song item={item}
 													loadToPlay={setCurrentSongID}
 													playlistID={playlistID}
@@ -77,7 +77,7 @@ const css = StyleSheet.create({
 		paddingBottom: 2.5,
 		paddingTop: 2.5
 	},
-	textError: {
+	flatListText: {
 		margin: 15,
 		textAlign: 'center'
 	}

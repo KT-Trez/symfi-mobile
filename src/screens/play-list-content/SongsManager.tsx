@@ -88,7 +88,7 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 				<FlatList data={searchedSongs}
 						  ItemSeparatorComponent={Divider}
 						  ListEmptyComponent={
-							  <Text style={css.textError} variant={'bodyMedium'}>No search results.</Text>
+							  <Text style={css.flatListText} variant={'bodyMedium'}>No search results.</Text>
 						  }
 						  keyExtractor={item => item.id}
 						  renderItem={({item}) => {
@@ -97,9 +97,9 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 									  <Text style={{textAlign: 'right'}} variant={'labelSmall'}>
 										  {moment(item.musicly.file.downloadDate).format('HH:mm:ss • DD/MM/YYYY')}
 									  </Text>
-									  <Stack flexDirection={'column'} sx={{marginTop: 5}}>
+									  <Stack direction={'column'} sx={{marginTop: 5}}>
 										  <Text numberOfLines={2} variant={'titleSmall'}>{item.title}</Text>
-										  <Stack flexDirection={'row'} justifyContent={'space-between'}>
+										  <Stack direction={'row'} justifyContent={'space-between'}>
 											  <Text numberOfLines={1} variant={'bodySmall'}>{item.channel.name}</Text>
 											  <Text variant={'bodySmall'}>{item.metadata.duration.simple_text}</Text>
 										  </Stack>
@@ -129,7 +129,7 @@ const css = StyleSheet.create({
 		marginTop: 5,
 		padding: 10
 	},
-	textError: {
+	flatListText: {
 		margin: 15,
 		textAlign: 'center'
 	}

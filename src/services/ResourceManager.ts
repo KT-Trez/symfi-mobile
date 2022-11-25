@@ -1,7 +1,9 @@
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import {SavedSongMetadata, SongMetadata} from '../../typings/interfaces';
+import {PlaylistMetadata, SavedSongMetadata, SongMetadata} from '../../typings/interfaces';
+import PlayListData, {PlayListDataConstructor} from '../classes/PlayListData';
 import SongData, {SongDataOptions} from '../classes/SongData';
+import PlayListController from '../datastore/PlayListController';
 import SongsController from '../datastore/SongsController';
 
 
@@ -9,8 +11,68 @@ class Net {
 	static readonly remote = 'https://musicly-api.herokuapp.com';
 }
 
-class PlayList {
+class PlayList extends PlayListData {
+	private static storage = new PlayListController();
 
+	static async deserialize(id: string) {
+		const playList = await this.storage.db.findOneAsync({id}) as PlaylistMetadata;
+
+		const options: PlayListDataConstructor = {
+			cover: playList.cover,
+			flags: playList.flags,
+			id: playList.id,
+			name: playList.name,
+			order: playList.order,
+			songsCount: playList.songsCount,
+			version: playList.version
+		};
+
+		return new PlayList(options);
+	}
+
+	static async deserializeAll() {
+		const playLists = await this.storage.db.findAsync({});
+
+		const playListsArr = [];
+		for (const playList of playLists) {
+			const options: PlayListDataConstructor = {
+				cover: playList.cover,
+				flags: playList.flags,
+				id: playList.id,
+				name: playList.name,
+				order: playList.order,
+				songsCount: playList.songsCount,
+				version: playList.version
+			};
+			playListsArr.push(new PlayList(options));
+		}
+
+		return playListsArr;
+	}
+
+	constructor(options: PlayListDataConstructor) {
+		super(options);
+	}
+
+	async move(order: number, offset: number) {
+		await new Promise(resolve => {
+			let done = 0;
+			PlayList.storage.db.updateAsync({order}, {$set: {order: this.order + offset}}).then(() => {
+				done++;
+				if (done == 2)
+					resolve(true);
+			});
+			PlayList.storage.db.updateAsync({order: order + offset}, {$set: {order}}).then(() => {
+				done++;
+				if (done == 2)
+					resolve(true);
+			});
+		});
+	}
+
+	async updateOrder() {
+		await PlayList.storage.db.updateAsync({id: this.id}, {$set: {order: this.order}});
+	}
 }
 
 class Song extends SongData {
@@ -128,3 +190,8 @@ export default class ResourceManager {
 	static PlayList = PlayList;
 	static Song = Song;
 }
+
+export {
+	PlayList,
+	Song
+};

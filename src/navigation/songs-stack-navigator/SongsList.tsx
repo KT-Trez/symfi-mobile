@@ -66,7 +66,7 @@ const css = StyleSheet.create({
 	searchbar: {
 		margin: 5
 	},
-	textError: {
+	flatListText: {
 		margin: 5,
 		textAlign: 'center'
 	}

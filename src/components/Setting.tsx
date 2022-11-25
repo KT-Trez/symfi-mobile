@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, View, ViewProps} from 'react-native';
-import {Button, Surface} from 'react-native-paper';
+import {Button, Surface, useTheme} from 'react-native-paper';
 import {IconSource} from 'react-native-paper/lib/typescript/components/Icon';
 
 
@@ -12,12 +12,15 @@ interface SettingProps {
 }
 
 function Setting({buttons, buttonsColumn, children, style}: SettingProps) {
+	const {colors} = useTheme();
+
 	return (
 		<Surface style={[css.container, style]}>
 			{children}
 			<View style={!buttonsColumn ? css.containerButtonsHorizontal : css.containerButtonsVertical}>
 				{buttons.map((button, i) =>
 					<Button icon={button.icon}
+							buttonColor={colors.elevation.level3}
 							mode={'elevated'}
 							key={i}
 							onPress={button.fun}

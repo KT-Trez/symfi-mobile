@@ -1,5 +1,5 @@
 import {NavigationContext} from '@react-navigation/native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Avatar, Text, useTheme} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../typings/interfaces';
@@ -12,7 +12,7 @@ interface AlbumProps {
 
 function PlayList({item, loadToManage}: AlbumProps) {
 	const {colors} = useTheme();
-	const navigation = React.useContext(NavigationContext);
+	const navigation = useContext(NavigationContext);
 
 	const managePlayList = () => {
 		loadToManage(item.id);

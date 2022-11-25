@@ -12,6 +12,9 @@
         "WRITE_EXTERNAL_STORAGE"
       ]
     },
+    "androidStatusBar": {
+      "translucent": true
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -32,6 +35,7 @@
     "platforms": [
       "android"
     ],
+    "primaryColor": "#1c1b1f",
     "privacy": "hidden",
     "runtimeVersion": {
       "policy": "sdkVersion"
