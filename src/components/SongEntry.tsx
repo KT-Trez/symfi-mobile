@@ -23,7 +23,7 @@ function SongEntry({item, onLongPress, onPress}: SongEntryProps) {
 					<Image source={{uri: item.musicly.cover.uri}}
 						   style={css.image}/>
 					:
-					<MaterialIcons color={'#' + item.musicly.cover.color} name='image' size={30}/>
+					<MaterialIcons color={'#' + item.musicly.cover.color} name="image" size={30}/>
 				}
 			</View>
 			<View style={css.containerText}>

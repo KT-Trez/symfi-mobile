@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
 import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
-import Song from '../../screens/songs-search/Song';
+import Song from '../../views/songs-search/Song';
 
 
 function SongsSearch() {

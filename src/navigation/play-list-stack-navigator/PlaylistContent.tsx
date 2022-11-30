@@ -2,13 +2,14 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {MongoDocument} from 'react-native-local-mongodb';
-import {Appbar, Text, useTheme} from 'react-native-paper';
+import {Appbar, Menu, Text, useTheme} from 'react-native-paper';
 import {PlaylistData, SavedSongMetadata} from '../../../typings/interfaces';
 import {RootPlayListsStackParamList} from '../../../typings/navigation';
 import AudioPlayer from '../../components/AudioPlayer';
 import SongsController from '../../datastore/SongsController';
-import Song from '../../screens/play-list-content/Song';
-import SongsManager from '../../screens/play-list-content/SongsManager';
+import Song from '../../views/play-list-content/Song';
+import SongsManager from '../../views/play-list-content/SongsManager';
+import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
 
 
 type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistContent'>;
@@ -22,7 +23,11 @@ function PlaylistContent() {
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const [currentSongID, setCurrentSongID] = useState<string | undefined>();
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [removeSong, setRemoveSong] = useState<SavedSongMetadata | null>(null);
+
+	const [dialogShows, setDialogShows] = useState(false);
+	const [menuShows, setMenuShows] = useState(false);
+	const [songsManagerShows, setSongsManagerShows] = useState(false);
 
 	const getSongs = useCallback(async () => {
 		const compareFun = (a: MongoDocument, b: MongoDocument) => {
@@ -35,34 +40,67 @@ function PlaylistContent() {
 		setSongs(songsArr.sort(compareFun) as SavedSongMetadata[]);
 	}, []);
 
-	const hideModal = () => setIsModalOpen(false);
 
-	const showModal = async () => setIsModalOpen(true);
+	// hide and show elements
+	const hideDialog = () => {
+		setRemoveSong(null);
+		setDialogShows(false);
+	};
+	const hideMenu = () => setMenuShows(false);
+
+	const hideModal = () => setSongsManagerShows(false);
+
+	const showDialog = () => setDialogShows(true);
+
+	const showMenu = () => setMenuShows(true);
+
+	const showModal = async () => {
+		hideMenu();
+		setSongsManagerShows(true);
+	};
 
 	useEffect(() => {
 		getSongs();
 	}, []);
 
+	useEffect(() => {
+		if (removeSong)
+			showDialog();
+	}, [removeSong]);
+
 	return (
 		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={songs.length + (songs.length !== 1 ? ' songs' : ' song')}/>
-				<Appbar.Action icon={'plus'} onPress={showModal}/>
+
+				<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
+					  anchorPosition={'bottom'}
+					  onDismiss={hideMenu}
+					  visible={menuShows}>
+					<Menu.Item leadingIcon={'playlist-plus'} onPress={showModal} title={'Add song'}/>
+				</Menu>
+
 			</Appbar.Header>
 
 			<AudioPlayer audioID={currentSongID} setAudioID={setCurrentSongID} songs={songs}/>
 
+			<RemoveFromPlayListDialog hide={hideDialog}
+									  playListID={route.params.id}
+									  refreshSongList={getSongs}
+									  shows={dialogShows}
+									  song={removeSong}/>
+
 			<SongsManager hideModal={hideModal}
-						  isVisible={isModalOpen}
+						  isVisible={songsManagerShows}
 						  playlistID={playlistID}
 						  refreshPlaylist={getSongs}/>
 
 			<FlatList data={songs}
-					  ListEmptyComponent={<Text style={css.flatListText} variant={'bodyMedium'}>This playlist is empty.</Text>}
+					  ListEmptyComponent={
+						  <Text style={css.flatListText} variant={'bodyMedium'}>This playlist is empty.</Text>}
 					  renderItem={({item}) => <Song item={item}
 													loadToPlay={setCurrentSongID}
-													playlistID={playlistID}
-													refreshPlaylist={getSongs}/>}
+													loadToRemove={setRemoveSong}/>}
 					  style={css.flatList}/>
 		</View>
 

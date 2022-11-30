@@ -4,7 +4,7 @@ import {Button, IconButton, Surface, Text, useTheme} from 'react-native-paper';
 import LoadingView from '../../components/LoadingView';
 import Stack from '../../components/Stack';
 import ResourceManager, {PlayList} from '../../services/ResourceManager';
-import ChipAvatar from './ChipAvatar';
+import ChipAvatar from '../../views/play-lists-menu/ChipAvatar';
 
 
 function ChangeOrder() {

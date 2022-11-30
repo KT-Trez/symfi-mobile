@@ -9,7 +9,7 @@ import SongsController from '../../datastore/SongsController';
 import NetService from '../../services/NetService';
 
 
-function Sync() {
+function Settings() {
 	const playlistsDB = useRef(new PlayListController());
 	const songsDB = useRef(new SongsController());
 
@@ -41,7 +41,7 @@ function Sync() {
 			});
 
 			setSyncID(res.data.uid);
-			ToastAndroid.showWithGravity('Sync ID: ' + res.data.uid, ToastAndroid.LONG, ToastAndroid.BOTTOM)
+			ToastAndroid.showWithGravity('Settings ID: ' + res.data.uid, ToastAndroid.LONG, ToastAndroid.BOTTOM)
 		} catch (err) {
 			console.error(err);
 			ToastAndroid.showWithGravity('Export unsuccessful, try again later', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
@@ -104,7 +104,7 @@ function Sync() {
 	const importButtons = [{fun: importData, icon: 'database-import-outline', name: 'import'}];
 
 	return (
-		<LoadingView isLoading={isLoading} title={'Sync'}>
+		<LoadingView isLoading={isLoading} title={'Settings'}>
 			<Setting buttons={exportButtons} style={css.topSetting}>
 				<Text variant={'bodyMedium'}>{playListsCount} PlayLists | {songsCount} Songs</Text>
 			</Setting>
@@ -133,4 +133,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default Sync;
+export default Settings;

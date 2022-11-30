@@ -2,33 +2,31 @@ import {NavigationContext} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {Musicly} from '../../../typings';
 import ManageDialog from '../../components/ManageDialog';
-import {PlayList} from '../../services/ResourceManager';
 
 
 interface EditDialogProps {
 	options: Musicly.Components.ManageDialogOptions | null;
-	playList: PlayList | null;
 	refreshPlaylistsList: () => void;
-	setPlayList: (playList: PlayList | null) => void;
+	setOptions: (options: Musicly.Components.ManageDialogOptions | null) => void;
 }
 
-function EditDialog({options, playList, refreshPlaylistsList, setPlayList}: EditDialogProps) {
+function EditDialog({options, refreshPlaylistsList, setOptions}: EditDialogProps) {
 	const navigation = React.useContext(NavigationContext);
 
 	const [isVisible, setIsVisible] = useState(false);
 
 	const goToPlayListEdit = () => {
-		navigation?.navigate('PlaylistEdit', {id: playList?.id});
+		navigation?.navigate('PlaylistEdit', {id: options?.playList?.id});
 		hideDialog();
 	};
 
 	const hideDialog = () => {
-		setPlayList(null);
+		setOptions(null);
 		setIsVisible(false);
 	};
 
 	const removePlayList = async () => {
-		await playList?.removePlayList();
+		await options?.playList?.removePlayList();
 		refreshPlaylistsList();
 		hideDialog();
 	};
@@ -36,18 +34,17 @@ function EditDialog({options, playList, refreshPlaylistsList, setPlayList}: Edit
 	const showDialog = () => setIsVisible(true);
 
 	useEffect(() => {
-		if (playList && options?.isDelete)
+		if (options?.message && options.title)
 			showDialog();
-		else if (playList && options?.isEdit)
-			goToPlayListEdit();
-	}, [playList]);
+	}, [options]);
 
 	return (
 		<ManageDialog hide={hideDialog}
 					  isVisible={isVisible}
 					  message={options?.message}
 					  onCancel={hideDialog}
-					  onDelete={options?.isDelete ? removePlayList : undefined}
+					  onDelete={options?.isDelete || options?.isManage ? removePlayList : undefined}
+					  onEdit={options?.isEdit || options?.isManage ? goToPlayListEdit : undefined}
 					  title={options?.title}/>
 	);
 }

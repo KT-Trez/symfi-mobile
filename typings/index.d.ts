@@ -1,21 +1,15 @@
 import {PlaylistData} from './interfaces';
+import {PlayList} from '../src/services/ResourceManager';
 
 
 export declare module Musicly {
 	export module Components {
-		export type ManageDialogOptions = DeleteDialog | EditDialog;
-
-		interface DeleteDialog {
-			isDelete: true;
+		export interface ManageDialogOptions {
+			isDelete?: boolean;
 			isEdit?: boolean;
-			message: string;
-			title: string;
-		}
-
-		interface EditDialog {
-			isDelete?: false;
-			isEdit: true;
+			isManage?: boolean;
 			message?: string;
+			playList?: PlayList;
 			title?: string;
 		}
 	}

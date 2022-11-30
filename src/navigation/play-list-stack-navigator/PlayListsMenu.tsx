@@ -3,9 +3,9 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, FAB, Menu, Provider, Text, useTheme} from 'react-native-paper';
 import {Musicly} from '../../../typings';
-import Creator from '../../screens/play-lists-menu/Creator';
-import EditDialog from '../../screens/play-lists-menu/EditDialog';
-import PlayList from '../../screens/play-lists-menu/PlayList';
+import Creator from '../../views/play-lists-menu/Creator';
+import EditDialog from '../../views/play-lists-menu/EditDialog';
+import PlayList from '../../views/play-lists-menu/PlayList';
 import ResourceManager, {PlayList as CPlayList} from '../../services/ResourceManager';
 
 
@@ -16,7 +16,7 @@ function PlayListsMenu() {
 
 	const [playlists, setPlaylists] = useState<CPlayList[]>([]);
 
-	const [playListToManage, setPlayListToManage] = useState<CPlayList | null>(null);
+	// todo: prevent going back
 	const [manageDialogOptions, setManageDialogOptions] = useState<Musicly.Components.ManageDialogOptions | null>(null);
 
 	const [creatorShows, setCreatorShows] = useState(false);
@@ -30,6 +30,8 @@ function PlayListsMenu() {
 	}, []);
 
 	const goToPlayListOrder = () => navigation?.navigate('PlayListOrder');
+
+	const goToSettings = () => navigation?.navigate('Settings');
 
 	// showing and hiding elements
 	const hideCreator = () => setCreatorShows(false);
@@ -45,9 +47,7 @@ function PlayListsMenu() {
 	const showDeleteDialog = () => {
 		hideMenu();
 		setManageDialogOptions({
-			isDelete: true,
-			message: 'This action is permanent, are you sure?',
-			title: 'Delete'
+			isDelete: true
 		});
 	};
 
@@ -69,23 +69,25 @@ function PlayListsMenu() {
 		<Provider>
 			<View style={[css.container, {backgroundColor: colors.background}]}>
 				<Appbar.Header dark={true} elevated mode={'small'}>
-					{!manageDialogOptions?.isDelete && !manageDialogOptions?.isEdit ?
+					{(!manageDialogOptions || manageDialogOptions.isManage) &&
 						<Appbar.Content title={playlists.length + ' PlayLists'}/>
-						:
-						<Appbar.Action icon={'cancel'} onPress={hideDeleteAndEditDialog} style={{marginRight: 'auto'}}/>
 					}
 
-					<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
-						  anchorPosition={'bottom'}
-						  onDismiss={hideMenu}
-						  visible={menuShows}>
-						<Menu.Item leadingIcon={'delete'} onPress={showDeleteDialog} title={'Delete'}/>
-						<Menu.Item leadingIcon={'pencil'} onPress={showEditDialog} title={'Edit'}/>
-						<Menu.Item leadingIcon={'format-list-bulleted-type'}
-								   onPress={goToPlayListOrder}
-								   title={'Order'}/>
-						<Menu.Item leadingIcon={'cog'} title={'Settings'}/>
-					</Menu>
+					{!manageDialogOptions || manageDialogOptions.isManage ?
+						<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
+							  anchorPosition={'bottom'}
+							  onDismiss={hideMenu}
+							  visible={menuShows}>
+							<Menu.Item leadingIcon={'delete'} onPress={showDeleteDialog} title={'Delete'}/>
+							<Menu.Item leadingIcon={'pencil'} onPress={showEditDialog} title={'Edit'}/>
+							<Menu.Item leadingIcon={'format-list-bulleted-type'}
+									   onPress={goToPlayListOrder}
+									   title={'Order'}/>
+							<Menu.Item leadingIcon={'cog'} title={'Settings'} onPress={goToSettings}/>
+						</Menu>
+						:
+						<Appbar.Action icon={'cancel'} onPress={hideDeleteAndEditDialog} style={{marginLeft: 'auto'}}/>
+					}
 				</Appbar.Header>
 
 				<Creator hide={hideCreator}
@@ -93,9 +95,8 @@ function PlayListsMenu() {
 						 reloadList={getPlayLists}/>
 
 				<EditDialog options={manageDialogOptions}
-							playList={playListToManage}
 							refreshPlaylistsList={getPlayLists}
-							setPlayList={setPlayListToManage}/>
+							setOptions={setManageDialogOptions}/>
 
 				<FlatList data={playlists}
 						  keyExtractor={item => item.id}
@@ -106,7 +107,7 @@ function PlayListsMenu() {
 						  refreshing={isRefreshing}
 						  renderItem={({item}) => <PlayList manageOptions={manageDialogOptions}
 															item={item}
-															setPlayList={setPlayListToManage}/>}
+															setManageDialogOptions={setManageDialogOptions}/>}
 						  style={css.flatList}/>
 
 				<FAB icon={'plus'}
