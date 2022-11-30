@@ -10,13 +10,13 @@ import SongsController from '../../datastore/SongsController';
 
 
 interface SongsManagerProps {
-	hideModal: () => void;
-	isVisible: boolean;
+	hide: () => void;
 	playlistID: string;
-	refreshPlaylist: () => void;
+	refreshPlayList: () => void;
+	shows: boolean;
 }
 
-function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: SongsManagerProps) {
+function SongsManager({hide, playlistID, refreshPlayList, shows}: SongsManagerProps) {
 	const {colors} = useTheme();
 	const playlistsDB = useRef(new PlayListController());
 	const songsDB = useRef(new SongsController());
@@ -56,9 +56,8 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 		}, {});
 
 		setSearchedSongs(arr => arr.filter(song => song.id !== itemID));
-		await getSongs();
 
-		refreshPlaylist();
+		refreshPlayList();
 		setIsBlocked(false);
 	};
 
@@ -67,15 +66,17 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 	}, [searchQuery]);
 
 	useEffect(() => {
-		if (isVisible)
+		if (shows) {
 			getSongs();
-	}, [isVisible]);
+			setSearchQuery('');
+		}
+	}, [shows]);
 
 	return (
 		<Portal>
 			<Modal contentContainerStyle={[css.modal, {backgroundColor: colors.elevation.level3}]}
-				   onDismiss={hideModal}
-				   visible={isVisible}>
+				   onDismiss={hide}
+				   visible={shows}>
 				<Text variant={'titleMedium'}>Add song to playlist</Text>
 
 				<SafeAreaView>

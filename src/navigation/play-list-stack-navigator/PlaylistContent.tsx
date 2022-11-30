@@ -90,10 +90,10 @@ function PlaylistContent() {
 									  shows={dialogShows}
 									  song={removeSong}/>
 
-			<SongsManager hideModal={hideModal}
-						  isVisible={songsManagerShows}
+			<SongsManager hide={hideModal}
 						  playlistID={playlistID}
-						  refreshPlaylist={getSongs}/>
+						  refreshPlayList={getSongs}
+						  shows={songsManagerShows}/>
 
 			<FlatList data={songs}
 					  ListEmptyComponent={

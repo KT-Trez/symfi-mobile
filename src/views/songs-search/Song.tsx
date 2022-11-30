@@ -2,11 +2,10 @@ import {MaterialIcons} from '@expo/vector-icons';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Image, LayoutChangeEvent, StyleSheet, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, Text, useTheme} from 'react-native-paper';
-import {DownloadType} from '../../../typings/enums';
 import {SongMetadata} from '../../../typings/interfaces';
 import Timestamp from '../../components/Timestamp';
 import SongsController from '../../datastore/SongsController';
-import NetService from '../../services/NetService';
+import ResourceManager from '../../services/ResourceManager';
 
 
 interface SongProps {
@@ -35,7 +34,8 @@ function Song({item}: SongProps) {
 		setIsDownloading(true);
 
 		try {
-			await new NetService().download(DownloadType.Audio, item);
+			const song = await ResourceManager.Song.create(item);
+			await song.getRemoteAudio();
 			await checkDownloadedStatus();
 		} catch (err) {
 			console.error(err);
@@ -62,11 +62,11 @@ function Song({item}: SongProps) {
 				  style={css.imageContainer}>
 				{item.metadata.thumbnails.length === 0 ?
 					<View style={css.imageBroken}>
-						<MaterialIcons color='gray' name='broken-image' size={30}/>
+						<MaterialIcons color="gray" name="broken-image" size={30}/>
 					</View>
 					:
 					loadingFailed ?
-						<MaterialIcons color='gray' name='error-outline' size={30}/>
+						<MaterialIcons color="gray" name="error-outline" size={30}/>
 						:
 						<Image onError={() => setLoadingFailed(true)}
 							   resizeMode={'contain'}

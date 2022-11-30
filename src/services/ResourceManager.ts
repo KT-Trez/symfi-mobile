@@ -1,6 +1,7 @@
+import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import {PlaylistMetadata, SavedSongMetadata} from '../../typings/interfaces';
+import {PlaylistMetadata, SavedSongMetadata, SongMetadata} from '../../typings/interfaces';
 import PlayListData, {PlayListDataConstructor} from '../classes/PlayListData';
 import SongData, {SongDataConstructor} from '../classes/SongData';
 import PlayListController from '../datastore/PlayListController';
@@ -9,7 +10,12 @@ import {dbs} from '../datastore/Store';
 
 
 class Net {
-	static readonly remote = 'https://musicly-api.herokuapp.com';
+	public static readonly remote = 'https://musicly-api.herokuapp.com';
+
+	public static readonly axios = axios.create({
+		baseURL: this.remote,
+		timeout: 20000
+	});
 }
 
 class PlayList extends PlayListData {
@@ -94,7 +100,7 @@ class PlayList extends PlayListData {
 class Song extends SongData {
 	private static storage = new SongsController();
 
-	static async deserialize(id: string) {
+	public static async deserialize(id: string) {
 		const song = await this.storage.db.findOneAsync({id}) as SavedSongMetadata;
 
 		const options: SongDataConstructor = {
@@ -108,6 +114,23 @@ class Song extends SongData {
 		};
 
 		return new Song(options);
+	}
+
+	public static async create(data: SongMetadata) {
+		const options: SongDataConstructor = {
+			channel: data.channel,
+			description: data.description,
+			id: data.id,
+			metadata: data.metadata,
+			musicly: {},
+			title: data.title,
+			url: data.url
+		};
+
+		const song = new Song(options);
+		await song.updateInDB(true);
+
+		return song;
 	}
 
 	// instance
@@ -196,6 +219,10 @@ class Song extends SongData {
 
 	private async updateCoverInDB() {
 		await Song.storage.updateCover(this.id, this.musicly.cover.uri);
+	}
+
+	private async updateInDB(upsert?: boolean) {
+		await Song.storage.db.update({id: this.id}, this, {upsert});
 	}
 }
 
