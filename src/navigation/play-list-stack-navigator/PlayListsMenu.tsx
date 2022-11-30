@@ -7,6 +7,7 @@ import Creator from '../../views/play-lists-menu/Creator';
 import EditDialog from '../../views/play-lists-menu/EditDialog';
 import PlayList from '../../views/play-lists-menu/PlayList';
 import ResourceManager, {PlayList as CPlayList} from '../../services/ResourceManager';
+import useCompare from '../../hooks/useCompare';
 
 
 function PlayListsMenu() {
@@ -22,10 +23,11 @@ function PlayListsMenu() {
 	const [creatorShows, setCreatorShows] = useState(false);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [menuShows, setMenuShows] = useState(false);
+	const [sortShows, setSortShows] = useState(false);
 
 	const getPlayLists = useCallback(async () => {
 		setIsRefreshing(true);
-		setPlaylists((await ResourceManager.PlayList.deserializeAll()).sort((a, b) => a.order - b.order));
+		setPlaylists(useCompare<CPlayList>(await ResourceManager.PlayList.deserializeAll(), (item) => item.order));
 		setIsRefreshing(false);
 	}, []);
 
@@ -41,6 +43,8 @@ function PlayListsMenu() {
 	};
 
 	const hideMenu = () => setMenuShows(false);
+
+	const hideSort = () => setSortShows(false);
 
 	const showCreator = () => setCreatorShows(true);
 
@@ -60,6 +64,27 @@ function PlayListsMenu() {
 
 	const showMenu = () => setMenuShows(true);
 
+	const showSort = () => setSortShows(true);
+
+	// sorting playLists
+	const sortByNameAscending = () => {
+		setPlaylists(arr => useCompare(arr, item => item.name));
+		hideSort();
+	};
+	const sortByNameDescending = () => {
+		setPlaylists(arr => useCompare(arr, item => item.name, true));
+		hideSort();
+	};
+
+	const sortByOrderAscending = () => {
+		setPlaylists(arr => useCompare(arr, item => item.order));
+		hideSort();
+	};
+	const sortByOrderDescending = () => {
+		setPlaylists(arr => useCompare(arr, item => item.order, true));
+		hideSort();
+	};
+
 	// effects
 	useEffect(() => {
 		getPlayLists();
@@ -74,17 +99,37 @@ function PlayListsMenu() {
 					}
 
 					{!manageDialogOptions || manageDialogOptions.isManage ?
-						<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
-							  anchorPosition={'bottom'}
-							  onDismiss={hideMenu}
-							  visible={menuShows}>
-							<Menu.Item leadingIcon={'delete'} onPress={showDeleteDialog} title={'Delete'}/>
-							<Menu.Item leadingIcon={'pencil'} onPress={showEditDialog} title={'Edit'}/>
-							<Menu.Item leadingIcon={'format-list-bulleted-type'}
-									   onPress={goToPlayListOrder}
-									   title={'Order'}/>
-							<Menu.Item leadingIcon={'cog'} title={'Settings'} onPress={goToSettings}/>
-						</Menu>
+						<>
+							<Menu anchor={<Appbar.Action icon={'sort'} onPress={showSort}/>}
+								  anchorPosition={'bottom'}
+								  onDismiss={hideSort}
+								  visible={sortShows}>
+								<Menu.Item leadingIcon={'sort-alphabetical-ascending'}
+										   onPress={sortByNameAscending}
+										   title={'Asc by name'}/>
+								<Menu.Item leadingIcon={'sort-alphabetical-descending'}
+										   onPress={sortByNameDescending}
+										   title={'Dsc by name'}/>
+								<Menu.Item leadingIcon={'sort-numeric-ascending'}
+										   onPress={sortByOrderAscending}
+										   title={'Asc by order'}/>
+								<Menu.Item leadingIcon={'sort-numeric-descending'}
+										   onPress={sortByOrderDescending}
+										   title={'Dsc by order'}/>
+							</Menu>
+
+							<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
+								  anchorPosition={'bottom'}
+								  onDismiss={hideMenu}
+								  visible={menuShows}>
+								<Menu.Item leadingIcon={'delete'} onPress={showDeleteDialog} title={'Delete'}/>
+								<Menu.Item leadingIcon={'pencil'} onPress={showEditDialog} title={'Edit'}/>
+								<Menu.Item leadingIcon={'format-list-bulleted-type'}
+										   onPress={goToPlayListOrder}
+										   title={'Order'}/>
+								<Menu.Item leadingIcon={'cog'} onPress={goToSettings} title={'Settings'}/>
+							</Menu>
+						</>
 						:
 						<Appbar.Action icon={'cancel'} onPress={hideDeleteAndEditDialog} style={{marginLeft: 'auto'}}/>
 					}

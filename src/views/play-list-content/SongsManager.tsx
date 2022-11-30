@@ -1,12 +1,12 @@
 import moment from 'moment';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
-import {MongoDocument} from 'react-native-local-mongodb';
 import {Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import Stack from '../../components/Stack';
 import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
+import useCompare from '../../hooks/useCompare';
 
 
 interface SongsManagerProps {
@@ -29,15 +29,13 @@ function SongsManager({hide, playlistID, refreshPlayList, shows}: SongsManagerPr
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
-		const compareFun = (a: MongoDocument, b: MongoDocument) => {
-			return (new Date(a.musicly.file.downloadDate).getTime() - new Date(b.musicly.file.downloadDate).getTime()) * -1;
-		};
-		const songsArr = await songsDB.current.db.findAsync({$not: {'musicly.playlists.id': playlistID}}) as SavedSongMetadata[];
-
-		setSongs(songsArr.sort(compareFun));
-		if (songsArr.length !== searchedSongs.length)
-			setSearchedSongs([...songsArr]);
+		setSongs(useCompare(await songsDB.current.db.findAsync({$not: {'musicly.playlists.id': playlistID}}) as SavedSongMetadata[], (item: SavedSongMetadata) => item.musicly.file.downloadDate));
 	}, []);
+
+	useEffect(() => {
+		if (songs.length !== searchedSongs.length)
+			setSearchedSongs([...songs]);
+	}, [songs]);
 
 	const addToPlaylist = async (itemID: string) => {
 		if (isBlocked)

@@ -10,6 +10,7 @@ import SongsController from '../../datastore/SongsController';
 import Song from '../../views/play-list-content/Song';
 import SongsManager from '../../views/play-list-content/SongsManager';
 import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
+import useCompare from '../../hooks/useCompare';
 
 
 type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistContent'>;
@@ -28,6 +29,7 @@ function PlaylistContent() {
 	const [dialogShows, setDialogShows] = useState(false);
 	const [menuShows, setMenuShows] = useState(false);
 	const [songsManagerShows, setSongsManagerShows] = useState(false);
+	const [sortShows, setSortShows] = useState(false);
 
 	const getSongs = useCallback(async () => {
 		const compareFun = (a: MongoDocument, b: MongoDocument) => {
@@ -46,9 +48,12 @@ function PlaylistContent() {
 		setRemoveSong(null);
 		setDialogShows(false);
 	};
+
 	const hideMenu = () => setMenuShows(false);
 
 	const hideModal = () => setSongsManagerShows(false);
+
+	const hideSort = () => setSortShows(false);
 
 	const showDialog = () => setDialogShows(true);
 
@@ -57,6 +62,27 @@ function PlaylistContent() {
 	const showModal = async () => {
 		hideMenu();
 		setSongsManagerShows(true);
+	};
+
+	const showSort = () => setSortShows(true);
+
+	// sorting songs
+	const sortByTitleAscending = () => {
+		setSongs(arr => useCompare(arr, item => item.title));
+		hideSort();
+	};
+	const sortByTitleDescending = () => {
+		setSongs(arr => useCompare(arr, item => item.title, true));
+		hideSort();
+	};
+
+	const sortByDownloadDateAscending = () => {
+		setSongs(arr => useCompare(arr, item => item.musicly.file.downloadDate));
+		hideSort();
+	};
+	const sortByDownloadDateDescending = () => {
+		setSongs(arr => useCompare(arr, item => item.musicly.file.downloadDate, true));
+		hideSort();
 	};
 
 	useEffect(() => {
@@ -73,13 +99,30 @@ function PlaylistContent() {
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={songs.length + (songs.length !== 1 ? ' songs' : ' song')}/>
 
+				<Menu anchor={<Appbar.Action icon={'sort'} onPress={showSort}/>}
+					  anchorPosition={'bottom'}
+					  onDismiss={hideSort}
+					  visible={sortShows}>
+					<Menu.Item leadingIcon={'sort-calendar-ascending'}
+							   onPress={sortByDownloadDateAscending}
+							   title={'Asc by date'}/>
+					<Menu.Item leadingIcon={'sort-calendar-descending'}
+							   onPress={sortByDownloadDateDescending}
+							   title={'Dsc by date'}/>
+					<Menu.Item leadingIcon={'sort-alphabetical-ascending'}
+							   onPress={sortByTitleAscending}
+							   title={'Asc by title'}/>
+					<Menu.Item leadingIcon={'sort-alphabetical-descending'}
+							   onPress={sortByTitleDescending}
+							   title={'Dsc by title'}/>
+				</Menu>
+
 				<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
 					  anchorPosition={'bottom'}
 					  onDismiss={hideMenu}
 					  visible={menuShows}>
 					<Menu.Item leadingIcon={'playlist-plus'} onPress={showModal} title={'Add song'}/>
 				</Menu>
-
 			</Appbar.Header>
 
 			<AudioPlayer audioID={currentSongID} setAudioID={setCurrentSongID} songs={songs}/>

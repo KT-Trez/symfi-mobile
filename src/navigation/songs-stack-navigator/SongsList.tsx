@@ -7,6 +7,7 @@ import SongsController from '../../datastore/SongsController';
 import EditDialog from '../../views/songs-list/EditDialog';
 import Search from '../../views/songs-list/Search';
 import Song from '../../views/songs-list/Song';
+import useCompare from '../../hooks/useCompare';
 
 
 function SongsList() {
@@ -19,10 +20,12 @@ function SongsList() {
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
+	//  todo: implement filters
+	// const [sort, setSort] = useState<{ ascending: boolean, type: 'author' | 'date' | 'duration' | 'title' } | null>(null);
 
 	const getSongs = useCallback(async () => {
 		setIsRefreshing(true);
-		setSongs(await songsDB.current.db.findAsync({}) as SavedSongMetadata[]);
+		setSongs(useCompare<SavedSongMetadata>(await songsDB.current.db.findAsync({}) as SavedSongMetadata[], (item) => item.title));
 		setIsRefreshing(false);
 	}, []);
 

@@ -1,11 +1,3 @@
-import {DownloadStatus} from './enums';
-
-
-export interface DownloadMetadata {
-	id: string;
-	status: DownloadStatus;
-}
-
 export interface PlaylistData {
 	id: string;
 	isFavourite: boolean;
@@ -48,7 +40,7 @@ export interface SavedSongMetadata extends SongMetadata {
 		playlists: PlaylistData[];
 		version: number;
 		wasPlayed: number;
-	}
+	};
 }
 
 export interface SongMetadata {
@@ -56,7 +48,7 @@ export interface SongMetadata {
 		id: string;
 		name: string;
 		url: string;
-	}
+	};
 	description: string;
 	id: string;
 	metadata: {
@@ -78,7 +70,7 @@ export interface SongMetadata {
 			width: number;
 		}[];
 		view_count: string;
-	}
+	};
 	title: string;
 	url: string;
 }
