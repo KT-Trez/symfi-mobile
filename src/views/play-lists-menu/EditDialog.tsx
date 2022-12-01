@@ -1,7 +1,8 @@
 import {NavigationContext} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {Musicly} from '../../../typings';
 import ManageDialog from '../../components/ManageDialog';
+import useVisibility from '../../hooks/useVisibility';
 
 
 interface EditDialogProps {
@@ -13,16 +14,11 @@ interface EditDialogProps {
 function EditDialog({options, refreshPlaylistsList, setOptions}: EditDialogProps) {
 	const navigation = React.useContext(NavigationContext);
 
-	const [isVisible, setIsVisible] = useState(false);
+	const [hideDialog, dialogShows, showDialog] = useVisibility([() => setOptions(null)]);
 
 	const goToPlayListEdit = () => {
 		navigation?.navigate('PlaylistEdit', {id: options?.playList?.id});
 		hideDialog();
-	};
-
-	const hideDialog = () => {
-		setOptions(null);
-		setIsVisible(false);
 	};
 
 	const removePlayList = async () => {
@@ -31,8 +27,6 @@ function EditDialog({options, refreshPlaylistsList, setOptions}: EditDialogProps
 		hideDialog();
 	};
 
-	const showDialog = () => setIsVisible(true);
-
 	useEffect(() => {
 		if (options?.message && options.title)
 			showDialog();
@@ -40,7 +34,7 @@ function EditDialog({options, refreshPlaylistsList, setOptions}: EditDialogProps
 
 	return (
 		<ManageDialog hide={hideDialog}
-					  isVisible={isVisible}
+					  isVisible={dialogShows}
 					  message={options?.message}
 					  onCancel={hideDialog}
 					  onDelete={options?.isDelete || options?.isManage ? removePlayList : undefined}

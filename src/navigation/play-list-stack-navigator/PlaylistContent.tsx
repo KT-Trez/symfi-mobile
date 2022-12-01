@@ -11,6 +11,7 @@ import Song from '../../views/play-list-content/Song';
 import SongsManager from '../../views/play-list-content/SongsManager';
 import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
 import useCompare from '../../hooks/useCompare';
+import useVisibility from '../../hooks/useVisibility';
 
 
 type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistContent'>;
@@ -26,10 +27,10 @@ function PlaylistContent() {
 	const [currentSongID, setCurrentSongID] = useState<string | undefined>();
 	const [removeSong, setRemoveSong] = useState<SavedSongMetadata | null>(null);
 
-	const [dialogShows, setDialogShows] = useState(false);
-	const [menuShows, setMenuShows] = useState(false);
-	const [songsManagerShows, setSongsManagerShows] = useState(false);
-	const [sortShows, setSortShows] = useState(false);
+	const [hideDialog, dialogShows, showDialog] = useVisibility([() => setRemoveSong(null)]);
+	const [hideMenu, menuShows, showMenu] = useVisibility();
+	const [hideSongsManager, songsManagerShows, showSongsManager] = useVisibility(undefined, [() => hideMenu()]);
+	const [hideSort, sortShows, showSort] = useVisibility();
 
 	const getSongs = useCallback(async () => {
 		const compareFun = (a: MongoDocument, b: MongoDocument) => {
@@ -41,30 +42,6 @@ function PlaylistContent() {
 
 		setSongs(songsArr.sort(compareFun) as SavedSongMetadata[]);
 	}, []);
-
-
-	// hide and show elements
-	const hideDialog = () => {
-		setRemoveSong(null);
-		setDialogShows(false);
-	};
-
-	const hideMenu = () => setMenuShows(false);
-
-	const hideModal = () => setSongsManagerShows(false);
-
-	const hideSort = () => setSortShows(false);
-
-	const showDialog = () => setDialogShows(true);
-
-	const showMenu = () => setMenuShows(true);
-
-	const showModal = async () => {
-		hideMenu();
-		setSongsManagerShows(true);
-	};
-
-	const showSort = () => setSortShows(true);
 
 	// sorting songs
 	const sortByTitleAscending = () => {
@@ -121,7 +98,7 @@ function PlaylistContent() {
 					  anchorPosition={'bottom'}
 					  onDismiss={hideMenu}
 					  visible={menuShows}>
-					<Menu.Item leadingIcon={'playlist-plus'} onPress={showModal} title={'Add song'}/>
+					<Menu.Item leadingIcon={'playlist-plus'} onPress={showSongsManager} title={'Add song'}/>
 				</Menu>
 			</Appbar.Header>
 
@@ -133,7 +110,7 @@ function PlaylistContent() {
 									  shows={dialogShows}
 									  song={removeSong}/>
 
-			<SongsManager hide={hideModal}
+			<SongsManager hide={hideSongsManager}
 						  playlistID={playlistID}
 						  refreshPlayList={getSongs}
 						  shows={songsManagerShows}/>

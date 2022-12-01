@@ -38,8 +38,10 @@ export declare module Musicly {
 		}
 
 		export interface SongPlayList {
+			flags: {
+				isFavourite: boolean;
+			};
 			id: string;
-			isFavourite: boolean;
 			order: number;
 			songID: string;
 		}

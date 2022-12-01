@@ -1,13 +1,13 @@
 import {NavigationContext} from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, FAB, Menu, Provider, Text, useTheme} from 'react-native-paper';
 import {Musicly} from '../../../typings';
 import Creator from '../../views/play-lists-menu/Creator';
 import EditDialog from '../../views/play-lists-menu/EditDialog';
 import PlayList from '../../views/play-lists-menu/PlayList';
-import ResourceManager, {PlayList as CPlayList} from '../../services/ResourceManager';
-import useCompare from '../../hooks/useCompare';
+import usePlayLists from '../../hooks/usePlayLists';
+import useVisibility from '../../hooks/useVisibility';
 
 
 function PlayListsMenu() {
@@ -15,38 +15,23 @@ function PlayListsMenu() {
 	const {colors} = useTheme();
 	const navigation = useContext(NavigationContext);
 
-	const [playlists, setPlaylists] = useState<CPlayList[]>([]);
+	const [isLoading, playLists, refreshPlayLists, sortPlayLists] = usePlayLists();
 
 	// todo: prevent going back
 	const [manageDialogOptions, setManageDialogOptions] = useState<Musicly.Components.ManageDialogOptions | null>(null);
 
-	const [creatorShows, setCreatorShows] = useState(false);
-	const [isRefreshing, setIsRefreshing] = useState(false);
-	const [menuShows, setMenuShows] = useState(false);
-	const [sortShows, setSortShows] = useState(false);
-
-	const getPlayLists = useCallback(async () => {
-		setIsRefreshing(true);
-		setPlaylists(useCompare<CPlayList>(await ResourceManager.PlayList.deserializeAll(), (item) => item.order));
-		setIsRefreshing(false);
-	}, []);
+	const [hideCreator, creatorShows, showCreator] = useVisibility();
+	const [hideMenu, menuShows, showMenu] = useVisibility();
+	const [hideSort, sortShows, showSort] = useVisibility();
 
 	const goToPlayListOrder = () => navigation?.navigate('PlayListOrder');
 
 	const goToSettings = () => navigation?.navigate('Settings');
 
 	// showing and hiding elements
-	const hideCreator = () => setCreatorShows(false);
-
 	const hideDeleteAndEditDialog = () => {
 		setManageDialogOptions(null);
 	};
-
-	const hideMenu = () => setMenuShows(false);
-
-	const hideSort = () => setSortShows(false);
-
-	const showCreator = () => setCreatorShows(true);
 
 	const showDeleteDialog = () => {
 		hideMenu();
@@ -62,40 +47,31 @@ function PlayListsMenu() {
 		});
 	};
 
-	const showMenu = () => setMenuShows(true);
-
-	const showSort = () => setSortShows(true);
-
 	// sorting playLists
 	const sortByNameAscending = () => {
-		setPlaylists(arr => useCompare(arr, item => item.name));
+		sortPlayLists(item => item.name);
 		hideSort();
 	};
 	const sortByNameDescending = () => {
-		setPlaylists(arr => useCompare(arr, item => item.name, true));
+		sortPlayLists(item => item.name, true);
 		hideSort();
 	};
 
 	const sortByOrderAscending = () => {
-		setPlaylists(arr => useCompare(arr, item => item.order));
+		sortPlayLists(item => item.order);
 		hideSort();
 	};
 	const sortByOrderDescending = () => {
-		setPlaylists(arr => useCompare(arr, item => item.order, true));
+		sortPlayLists(item => item.order, true);
 		hideSort();
 	};
-
-	// effects
-	useEffect(() => {
-		getPlayLists();
-	}, []);
 
 	return (
 		<Provider>
 			<View style={[css.container, {backgroundColor: colors.background}]}>
 				<Appbar.Header dark={true} elevated mode={'small'}>
 					{(!manageDialogOptions || manageDialogOptions.isManage) &&
-						<Appbar.Content title={playlists.length + ' PlayLists'}/>
+						<Appbar.Content title={playLists.length + ' playlist' + (playLists.length !== 0 ? 's' : '')}/>
 					}
 
 					{!manageDialogOptions || manageDialogOptions.isManage ?
@@ -137,19 +113,19 @@ function PlayListsMenu() {
 
 				<Creator hide={hideCreator}
 						 isVisible={creatorShows}
-						 reloadList={getPlayLists}/>
+						 reloadList={refreshPlayLists}/>
 
 				<EditDialog options={manageDialogOptions}
-							refreshPlaylistsList={getPlayLists}
+							refreshPlaylistsList={refreshPlayLists}
 							setOptions={setManageDialogOptions}/>
 
-				<FlatList data={playlists}
+				<FlatList data={playLists}
 						  keyExtractor={item => item.id}
 						  ListEmptyComponent={
 							  <Text style={css.flatListText} variant={'bodyMedium'}>You have no playLists yet.</Text>
 						  }
-						  onRefresh={getPlayLists}
-						  refreshing={isRefreshing}
+						  onRefresh={refreshPlayLists}
+						  refreshing={isLoading}
 						  renderItem={({item}) => <PlayList manageOptions={manageDialogOptions}
 															item={item}
 															setManageDialogOptions={setManageDialogOptions}/>}

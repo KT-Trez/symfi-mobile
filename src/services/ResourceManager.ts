@@ -21,7 +21,7 @@ class Net {
 class PlayList extends PlayListData {
 	private static storage = new PlayListController();
 
-	static async deserialize(id: string) {
+	public static async deserialize(id: string) {
 		const playList = await this.storage.db.findOneAsync({id}) as PlaylistMetadata;
 
 		const options: PlayListDataConstructor = {
@@ -37,7 +37,7 @@ class PlayList extends PlayListData {
 		return new PlayList(options);
 	}
 
-	static async deserializeAll() {
+	public static async deserializeAll() {
 		const playLists = await this.storage.db.findAsync({});
 
 		const playListsArr = [];
@@ -114,6 +114,26 @@ class Song extends SongData {
 		};
 
 		return new Song(options);
+	}
+
+	public static async deserializeAll() {
+		const songs = await this.storage.db.findAsync({});
+
+		const songsArr = [];
+		for (const song of songs) {
+			const options: SongDataConstructor = {
+				channel: song.channel,
+				description: song.description,
+				id: song.id,
+				metadata: song.metadata,
+				musicly: song.musicly,
+				title: song.title,
+				url: song.url
+			};
+			songsArr.push(new Song(options));
+		}
+
+		return songsArr;
 	}
 
 	public static async create(data: SongMetadata) {

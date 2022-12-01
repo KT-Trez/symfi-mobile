@@ -9,9 +9,10 @@ import Song from '../../views/songs-search/Song';
 function SongsSearch() {
 	const {colors} = useTheme();
 
-	const [isLoading, setIsLoading] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
+
+	const [isLoading, setIsLoading] = useState(false);
 
 	const search = async () => {
 		setIsLoading(true);

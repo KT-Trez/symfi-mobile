@@ -1,23 +1,17 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React from 'react';
 import {FlatList, StyleSheet} from 'react-native';
 import {Button, IconButton, Surface, Text, useTheme} from 'react-native-paper';
 import LoadingView from '../../components/LoadingView';
 import Stack from '../../components/Stack';
-import ResourceManager, {PlayList} from '../../services/ResourceManager';
+import {PlayList} from '../../services/ResourceManager';
 import ChipAvatar from '../../views/play-lists-menu/ChipAvatar';
+import usePlayLists from '../../hooks/usePlayLists';
 
 
 function ChangeOrder() {
 	const {colors} = useTheme();
-	const [playLists, setPlayLists] = useState<PlayList[]>([]);
 
-	const [isLoading, setIsLoading] = useState(true);
-
-	const getPlayLists = useCallback(async () => {
-		setIsLoading(true);
-		setPlayLists((await ResourceManager.PlayList.deserializeAll()).sort((a, b) => a.order - b.order));
-		setIsLoading(false);
-	}, []);
+	const [isLoading, playLists, refreshPlayLists, _, setPlayLists] = usePlayLists();
 
 	const move = async (playList: PlayList, offset: number) => {
 		const playListsCopy = [...playLists];
@@ -42,12 +36,8 @@ function ChangeOrder() {
 	const save = () => {
 		for (const playList of playLists)
 			playList.updateOrder();
-		getPlayLists();
+		refreshPlayLists();
 	};
-
-	useEffect(() => {
-		getPlayLists();
-	}, []);
 
 	return (
 		<LoadingView isLoading={isLoading} sx={css.container} title={'Change order'}>
@@ -70,7 +60,7 @@ function ChangeOrder() {
 						  ListEmptyComponent={
 							  <Text style={css.flatListText} variant={'bodyMedium'}>You have no playLists yet.</Text>
 						  }
-						  onRefresh={getPlayLists}
+						  onRefresh={refreshPlayLists}
 						  refreshing={isLoading}
 						  renderItem={({item, index}) =>
 							  <Stack alignItems={'center'} direction={'row'} sx={css.chipContainer}>
@@ -109,7 +99,7 @@ const css = StyleSheet.create({
 		padding: 5
 	},
 	chipContainer: {
-		marginBottom: 10,
+		marginBottom: 10
 	},
 	chips: {
 		paddingBottom: 5

@@ -32,11 +32,6 @@ function SongsManager({hide, playlistID, refreshPlayList, shows}: SongsManagerPr
 		setSongs(useCompare(await songsDB.current.db.findAsync({$not: {'musicly.playlists.id': playlistID}}) as SavedSongMetadata[], (item: SavedSongMetadata) => item.musicly.file.downloadDate));
 	}, []);
 
-	useEffect(() => {
-		if (songs.length !== searchedSongs.length)
-			setSearchedSongs([...songs]);
-	}, [songs]);
-
 	const addToPlaylist = async (itemID: string) => {
 		if (isBlocked)
 			return;
@@ -69,6 +64,10 @@ function SongsManager({hide, playlistID, refreshPlayList, shows}: SongsManagerPr
 			setSearchQuery('');
 		}
 	}, [shows]);
+
+	useEffect(() => {
+		setSearchedSongs([...songs]);
+	}, [songs.length]);
 
 	return (
 		<Portal>

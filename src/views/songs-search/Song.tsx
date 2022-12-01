@@ -6,6 +6,7 @@ import {SongMetadata} from '../../../typings/interfaces';
 import Timestamp from '../../components/Timestamp';
 import SongsController from '../../datastore/SongsController';
 import ResourceManager from '../../services/ResourceManager';
+import * as MediaLibrary from 'expo-media-library';
 
 
 interface SongProps {
@@ -32,6 +33,12 @@ function Song({item}: SongProps) {
 
 	const downloadSong = useCallback(async () => {
 		setIsDownloading(true);
+
+		const {status} = await MediaLibrary.requestPermissionsAsync();
+		if (status !== MediaLibrary.PermissionStatus.GRANTED) {
+			setIsDownloading(false);
+			return ToastAndroid.showWithGravity('Can\'t save a file without media library permission.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
+		}
 
 		try {
 			const song = await ResourceManager.Song.create(item);
@@ -62,11 +69,11 @@ function Song({item}: SongProps) {
 				  style={css.imageContainer}>
 				{item.metadata.thumbnails.length === 0 ?
 					<View style={css.imageBroken}>
-						<MaterialIcons color="gray" name="broken-image" size={30}/>
+						<MaterialIcons color='gray' name='broken-image' size={30}/>
 					</View>
 					:
 					loadingFailed ?
-						<MaterialIcons color="gray" name="error-outline" size={30}/>
+						<MaterialIcons color='gray' name='error-outline' size={30}/>
 						:
 						<Image onError={() => setLoadingFailed(true)}
 							   resizeMode={'contain'}
