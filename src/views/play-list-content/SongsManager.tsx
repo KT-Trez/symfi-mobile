@@ -4,8 +4,7 @@ import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native
 import {Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import Stack from '../../components/Stack';
-import {dbs} from '../../datastore/Store';
-import TempSongController from '../../datastore/TempSongController';
+import SongsController from '../../datastore/SongsController';
 import useCompare from '../../hooks/useCompare';
 
 
@@ -27,7 +26,7 @@ function SongsManager({hide, playListID, refreshPlayList, shows}: SongsManagerPr
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
-		setSongs(useCompare(await dbs.songs.findAsync({$not: {'musicly.playListsIDs': playListID}}) as SavedSongMetadata[], item => item.musicly.file.downloadDate));
+		setSongs(useCompare(await SongsController.store.findAsync({$not: {'musicly.playListsIDs': playListID}}) as SavedSongMetadata[], item => item.musicly.file.downloadDate));
 	}, []);
 
 	useEffect(() => {
@@ -40,7 +39,7 @@ function SongsManager({hide, playListID, refreshPlayList, shows}: SongsManagerPr
 			return;
 		setIsBlocked(true);
 
-		await TempSongController.addToPlayList(itemID, playListID);
+		await SongsController.addToPlayList(itemID, playListID);
 
 		setSearchedSongs(arr => arr.filter(song => song.id !== itemID));
 

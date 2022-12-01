@@ -1,14 +1,14 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {Button, Surface, Text, TextInput} from 'react-native-paper';
 import {PlaylistMetadata} from '../../../typings/interfaces';
 import {RootPlayListsStackParamList} from '../../../typings/navigation';
 import CoverChange from '../../components/CoverChange';
 import LoadingView from '../../components/LoadingView';
-import PlayListController from '../../datastore/PlayListController';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
 import useImagePicker from '../../hooks/useImagePicker';
+import PlayListController from '../../datastore/PlayListController';
 
 
 type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistEdit'>;
@@ -17,8 +17,6 @@ function PlaylistEdit() {
 	// constants
 	const route = useRoute<ProfileScreenRouteProp>();
 	const playlistID = route.params?.id;
-
-	const playlistDB = useRef(new PlayListController());
 
 	// flags
 	const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +36,7 @@ function PlaylistEdit() {
 		if (isCanceled)
 			return;
 
-		await playlistDB.current.updateCover(playlistID, uri);
+		await PlayListController.updateCover(playlistID, uri);
 		await getPlaylist();
 	};
 
@@ -46,14 +44,14 @@ function PlaylistEdit() {
 		if (!name)
 			return;
 
-		await playlistDB.current.db.updateAsync({id: playlistID}, {$set: {name: name}}, {});
+		await PlayListController.store.updateAsync({id: playlistID}, {$set: {name: name}}, {});
 		await getPlaylist();
 	}, [name]);
 
 
 	const getPlaylist = useCallback(async () => {
 		setIsLoading(true);
-		setPlaylist(await playlistDB.current.db.findOneAsync({id: playlistID}) as PlaylistMetadata);
+		setPlaylist(await PlayListController.store.findOneAsync({id: playlistID}) as PlaylistMetadata);
 		setIsLoading(false);
 	}, []);
 
@@ -62,7 +60,7 @@ function PlaylistEdit() {
 			return;
 
 		await useAssetRemoval(playlist.cover.uri!);
-		await playlistDB.current.updateCover(playlistID);
+		await PlayListController.updateCover(playlistID);
 		await getPlaylist();
 	};
 

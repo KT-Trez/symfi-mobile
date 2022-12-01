@@ -1,12 +1,12 @@
 import {MaterialIcons} from '@expo/vector-icons';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Image, LayoutChangeEvent, StyleSheet, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, Text, useTheme} from 'react-native-paper';
 import {SongMetadata} from '../../../typings/interfaces';
 import Timestamp from '../../components/Timestamp';
-import SongsController from '../../datastore/SongsController';
 import ResourceManager from '../../services/ResourceManager';
 import * as MediaLibrary from 'expo-media-library';
+import SongsController from '../../datastore/SongsController';
 
 
 interface SongProps {
@@ -16,7 +16,6 @@ interface SongProps {
 function Song({item}: SongProps) {
 	// todo: !IMPORTANT optimize
 	const {colors} = useTheme();
-	const songsDB = useRef(new SongsController());
 
 	const [isDownloaded, setIsDownloaded] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
@@ -27,7 +26,7 @@ function Song({item}: SongProps) {
 
 	// todo: measure performance, remove if unnecessary
 	const checkDownloadedStatus = useCallback(async () => {
-		if (await songsDB.current.countAsync({id: item.id}) > 0)
+		if (await SongsController.countAsync({id: item.id}) > 0)
 			setIsDownloaded(true);
 	}, []);
 

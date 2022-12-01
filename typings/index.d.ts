@@ -67,7 +67,7 @@ export declare module Musicly {
 				isDownloaded: boolean;
 				isFavourite: boolean;
 			},
-			playLists?: SongPlayList[];
+			playList?: SongPlayList;
 			playListsIDs: string[];
 			version: number;
 			wasPlayed: number;

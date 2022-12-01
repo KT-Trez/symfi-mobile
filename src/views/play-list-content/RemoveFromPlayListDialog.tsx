@@ -1,8 +1,8 @@
 import React from 'react';
 import {Button, Dialog, Paragraph, Portal, useTheme} from 'react-native-paper';
 import {Song as SongC} from '../../services/ResourceManager';
-import TempSongController from '../../datastore/TempSongController';
-import {dbs} from '../../datastore/Store';
+import SongsController from '../../datastore/SongsController';
+import PlayListController from '../../datastore/PlayListController';
 
 
 interface RemoveFromPlayListDialogProps {
@@ -17,8 +17,8 @@ function RemoveFromPlayListDialog({hide, playListID, refreshSongList, shows, son
 	const {colors} = useTheme();
 
 	const removeSongFromPlayList = async () => {
-		await TempSongController.removeFromPlayList(song!.id, playListID);
-		await dbs.playLists.updateAsync({id: playListID}, {$inc: {songsCount: -1}});
+		await SongsController.removeFromPlayList(song!.id, playListID);
+		await PlayListController.store.updateAsync({id: playListID}, {$inc: {songsCount: -1}});
 
 		await refreshSongList();
 		hide();

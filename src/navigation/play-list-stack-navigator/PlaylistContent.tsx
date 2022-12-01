@@ -8,7 +8,7 @@ import Song from '../../views/play-list-content/Song';
 import SongsManager from '../../views/play-list-content/SongsManager';
 import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
 import useCompare from '../../hooks/useCompare';
-import {dbs} from '../../datastore/Store';
+import {Store} from '../../datastore/Store';
 import ResourceManager, {Song as SongC} from '../../services/ResourceManager';
 import {Musicly} from '../../../typings';
 
@@ -31,19 +31,12 @@ function PlaylistContent() {
 	const [sortShows, setSortShows] = useState(false);
 
 	const getSongs = useCallback(async () => {
-		// const compareFun = (a: MongoDocument, b: MongoDocument) => {
-		// 	const playListDataA = a.musicly.playlists.find((p: PlaylistData) => p.id === playlistID);
-		// 	const playListDataB = b.musicly.playlists.find((p: PlaylistData) => p.id === playlistID);
-		// 	return playListDataA.order - playListDataB.order;
-		// };
-		// const songsArr = await songsDB.current.db.findAsync({'musicly.playlists.id': playlistID});
-
 		const songArr: SongC[] = [];
-		const playListItems = await dbs.songPlayLists.findAsync({playListID: playlistID}) as Musicly.Data.SongPlayList[];
+		const playListItems = await Store.songPlayLists.findAsync({playListID: playlistID}) as Musicly.Data.SongPlayList[];
 		for (const playListItem of playListItems)
-			songArr.push(await ResourceManager.Song.deserialize(playListItem.songID));
+			songArr.push(await (await ResourceManager.Song.deserialize(playListItem.songID)).loadPlayList(playListItem));
 
-		setSongs(useCompare(songArr, item => item.title));
+		setSongs(useCompare(songArr, item => item.musicly.playList?.order ?? item.title));
 	}, []);
 
 
