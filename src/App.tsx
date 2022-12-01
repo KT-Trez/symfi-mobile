@@ -1,8 +1,9 @@
 import {DarkTheme, NavigationContainer} from '@react-navigation/native';
 import axios from 'axios';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {MD3DarkTheme, Provider as PaperProvider} from 'react-native-paper';
 import BottomTabNavigator from './navigation/BottomTabNavigator';
+import useSchemaUpdate from './hooks/useSchemaUpdate';
 
 // todo: implement HTTPModule
 Object.assign(axios.defaults, {
@@ -11,6 +12,10 @@ Object.assign(axios.defaults, {
 });
 
 export default function App() {
+	useEffect(() => {
+		useSchemaUpdate();
+	}, []);
+
 	return (
 		<PaperProvider theme={MD3DarkTheme}>
 			<NavigationContainer theme={DarkTheme}>

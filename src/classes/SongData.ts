@@ -1,5 +1,4 @@
 import {Musicly} from '../../typings';
-import {PlaylistData, SavedSongMetadata} from '../../typings/interfaces.js';
 import config from '../config';
 
 
@@ -60,7 +59,7 @@ export interface SongDataConstructor {
 		cover?: Cover;
 		file?: File;
 		flags?: SongFlags;
-		playlists?: PlaylistData[];
+		playListsIDs?: string[];
 		version?: number;
 		wasPlayed?: number;
 	};
@@ -68,7 +67,7 @@ export interface SongDataConstructor {
 	url: string;
 }
 
-export default class SongData implements SavedSongMetadata {
+export default class SongData implements Musicly.Data.Song {
 	channel: { id: string; name: string; url: string };
 	description: string;
 	id: string;
@@ -86,7 +85,7 @@ export default class SongData implements SavedSongMetadata {
 		this.musicly = {
 			cover: {
 				color: options.musicly.cover?.color ?? Math.floor(Math.random() * 16777215).toString(16),
-				name: options.musicly.cover?.name ?? [options.id, parseInt(Math.round(Math.random() * 100).toString() + new Date().getTime()).toString(16)].join('-'),
+				name: options.musicly.cover?.name ?? [options.id, parseInt(Math.round(Math.random() * 100).toString() + new Date().getTime()).toString(16)].join('-').replace(/\s*/, ''),
 				uri: options.musicly.cover?.uri
 			},
 			file: {
@@ -100,7 +99,7 @@ export default class SongData implements SavedSongMetadata {
 				isDownloaded: !!options.musicly.file,
 				isFavourite: !!options.musicly.flags?.isFavourite
 			},
-			playlists: options.musicly.playlists ?? [],
+			playListsIDs: options.musicly.playListsIDs ?? [],
 			version: options.musicly.version ?? config.current_schema_version,
 			wasPlayed: options.musicly.wasPlayed ?? 0
 		};

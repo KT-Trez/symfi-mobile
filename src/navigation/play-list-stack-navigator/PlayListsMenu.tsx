@@ -146,7 +146,7 @@ function PlayListsMenu() {
 				<FlatList data={playlists}
 						  keyExtractor={item => item.id}
 						  ListEmptyComponent={
-							  <Text style={css.flatListText} variant={'bodyMedium'}>You have no playLists yet.</Text>
+							  <Text style={css.flatListText} variant={'bodyMedium'}>You have no playlists yet.</Text>
 						  }
 						  onRefresh={getPlayLists}
 						  refreshing={isRefreshing}

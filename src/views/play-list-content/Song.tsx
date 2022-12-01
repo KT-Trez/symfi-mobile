@@ -1,12 +1,12 @@
 import React from 'react';
-import {SavedSongMetadata} from '../../../typings/interfaces';
 import SongEntry from '../../components/SongEntry';
+import {Song as SongC} from '../../services/ResourceManager';
 
 
 interface SongProps {
-	item: SavedSongMetadata;
+	item: SongC;
 	loadToPlay: (id: string) => void;
-	loadToRemove: (song: SavedSongMetadata) => void;
+	loadToRemove: (song: SongC) => void;
 }
 
 function Song({item, loadToPlay, loadToRemove}: SongProps) {

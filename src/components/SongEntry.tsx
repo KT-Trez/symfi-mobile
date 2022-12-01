@@ -3,10 +3,11 @@ import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../typings/interfaces';
+import {Song as SongC} from '../services/ResourceManager';
 
 
 interface SongEntryProps {
-	item: SavedSongMetadata;
+	item: SavedSongMetadata | SongC;
 	onLongPress?: () => void;
 	onPress?: () => void;
 }

@@ -8,6 +8,7 @@ import ManageDialog from '../../components/ManageDialog';
 import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
+import {dbs} from '../../datastore/Store';
 
 
 interface EditDialogProps {
@@ -63,8 +64,9 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 			if (song.musicly.flags.hasCover)
 				await useAssetRemoval(song.musicly.cover.uri!);
 
-			// decrease songsCount in playLists
+			// decrease songsCount and remove from playLists
 			await playlistsDB.current.decreaseSongsCount(song.musicly.playlists);
+			await dbs.songPlayLists.removeAsync({songID})
 		} catch (err) {
 			// handle missing id in old db entries
 			ToastAndroid.showWithGravity('Insufficient data, please delete audio file manually from file system', ToastAndroid.LONG, ToastAndroid.BOTTOM);

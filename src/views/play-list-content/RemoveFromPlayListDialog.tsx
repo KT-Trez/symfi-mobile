@@ -1,8 +1,8 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import {Button, Dialog, Paragraph, Portal, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
+import {Song as SongC} from '../../services/ResourceManager';
+import TempSongController from '../../datastore/TempSongController';
 import {dbs} from '../../datastore/Store';
-import SongsController from '../../datastore/SongsController';
 
 
 interface RemoveFromPlayListDialogProps {
@@ -10,18 +10,17 @@ interface RemoveFromPlayListDialogProps {
 	playListID: string;
 	refreshSongList: () => Promise<void>;
 	shows: boolean;
-	song: SavedSongMetadata | null;
+	song: SongC | null;
 }
 
 function RemoveFromPlayListDialog({hide, playListID, refreshSongList, shows, song}: RemoveFromPlayListDialogProps) {
 	const {colors} = useTheme();
-	const songsDB = useRef(new SongsController());
 
 	const removeSongFromPlayList = async () => {
-		await songsDB.current.removePlayListFromSong(playListID, song!.id);
-		await dbs.playLists.updateAsync({id: playListID}, {$inc: {songsCount: -1}}, {});
-		await refreshSongList();
+		await TempSongController.removeFromPlayList(song!.id, playListID);
+		await dbs.playLists.updateAsync({id: playListID}, {$inc: {songsCount: -1}});
 
+		await refreshSongList();
 		hide();
 	};
 

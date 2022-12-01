@@ -1,16 +1,16 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {MongoDocument} from 'react-native-local-mongodb';
 import {Appbar, Menu, Text, useTheme} from 'react-native-paper';
-import {PlaylistData, SavedSongMetadata} from '../../../typings/interfaces';
 import {RootPlayListsStackParamList} from '../../../typings/navigation';
 import AudioPlayer from '../../components/AudioPlayer';
-import SongsController from '../../datastore/SongsController';
 import Song from '../../views/play-list-content/Song';
 import SongsManager from '../../views/play-list-content/SongsManager';
 import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
 import useCompare from '../../hooks/useCompare';
+import {dbs} from '../../datastore/Store';
+import ResourceManager, {Song as SongC} from '../../services/ResourceManager';
+import {Musicly} from '../../../typings';
 
 
 type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistContent'>;
@@ -19,12 +19,11 @@ function PlaylistContent() {
 	const {colors} = useTheme();
 	const route = useRoute<ProfileScreenRouteProp>();
 	const playlistID = route.params?.id;
-	const songsDB = useRef(new SongsController());
 
-	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
+	const [songs, setSongs] = useState<SongC[]>([]);
 
 	const [currentSongID, setCurrentSongID] = useState<string | undefined>();
-	const [removeSong, setRemoveSong] = useState<SavedSongMetadata | null>(null);
+	const [removeSong, setRemoveSong] = useState<SongC | null>(null);
 
 	const [dialogShows, setDialogShows] = useState(false);
 	const [menuShows, setMenuShows] = useState(false);
@@ -32,14 +31,19 @@ function PlaylistContent() {
 	const [sortShows, setSortShows] = useState(false);
 
 	const getSongs = useCallback(async () => {
-		const compareFun = (a: MongoDocument, b: MongoDocument) => {
-			const playListDataA = a.musicly.playlists.find((p: PlaylistData) => p.id === playlistID);
-			const playListDataB = b.musicly.playlists.find((p: PlaylistData) => p.id === playlistID);
-			return playListDataA.order - playListDataB.order;
-		};
-		const songsArr = await songsDB.current.db.findAsync({'musicly.playlists.id': playlistID});
+		// const compareFun = (a: MongoDocument, b: MongoDocument) => {
+		// 	const playListDataA = a.musicly.playlists.find((p: PlaylistData) => p.id === playlistID);
+		// 	const playListDataB = b.musicly.playlists.find((p: PlaylistData) => p.id === playlistID);
+		// 	return playListDataA.order - playListDataB.order;
+		// };
+		// const songsArr = await songsDB.current.db.findAsync({'musicly.playlists.id': playlistID});
 
-		setSongs(songsArr.sort(compareFun) as SavedSongMetadata[]);
+		const songArr: SongC[] = [];
+		const playListItems = await dbs.songPlayLists.findAsync({playListID: playlistID}) as Musicly.Data.SongPlayList[];
+		for (const playListItem of playListItems)
+			songArr.push(await ResourceManager.Song.deserialize(playListItem.songID));
+
+		setSongs(useCompare(songArr, item => item.title));
 	}, []);
 
 
@@ -134,7 +138,7 @@ function PlaylistContent() {
 									  song={removeSong}/>
 
 			<SongsManager hide={hideModal}
-						  playlistID={playlistID}
+						  playListID={playlistID}
 						  refreshPlayList={getSongs}
 						  shows={songsManagerShows}/>
 

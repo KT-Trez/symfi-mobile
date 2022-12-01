@@ -7,6 +7,8 @@ import SongData, {SongDataConstructor} from '../classes/SongData';
 import PlayListController from '../datastore/PlayListController';
 import SongsController from '../datastore/SongsController';
 import {dbs} from '../datastore/Store';
+import {Musicly} from '../../typings';
+import TempSongController from '../datastore/TempSongController';
 
 
 class Net {
@@ -78,18 +80,11 @@ class PlayList extends PlayListData {
 	}
 
 	async removePlayList() {
-		// todo: remove after all clients updated their data
-		const songs = await new SongsController().db.findAsync({
-			'musicly.playlists.id': this.id,
-			'musicly.version': {
-				$lte: 2
-			}
-		}) as SavedSongMetadata[];
+		const songs = await dbs.songs.findAsync({'musicly.playListsIDs': this.id}) as Musicly.Data.Song[];
 		for (const song of songs)
-			new SongsController().removePlayListFromSong(this.id, song.id);
+			await TempSongController.removeFromPlayList(song.id, this.id);
 
 		await PlayList.storage.db.removeAsync({id: this.id}, {});
-		await dbs.songPlayLists.removeAsync({id: this.id});
 	}
 
 	async updateOrder() {
@@ -114,6 +109,26 @@ class Song extends SongData {
 		};
 
 		return new Song(options);
+	}
+
+	public static async deserializeAll() {
+		const songs = await this.storage.db.findAsync({}) as Musicly.Data.Song[];
+
+		const songsArr = [];
+		for (const song of songs) {
+			const options: SongDataConstructor = {
+				channel: song.channel,
+				description: song.description,
+				id: song.id,
+				metadata: song.metadata,
+				musicly: song.musicly,
+				title: song.title,
+				url: song.url
+			};
+			songsArr.push(new Song(options));
+		}
+
+		return songsArr;
 	}
 
 	public static async create(data: SongMetadata) {

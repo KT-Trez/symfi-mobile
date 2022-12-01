@@ -1,31 +1,29 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Appbar, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
 import AudioPlayer from '../../components/AudioPlayer';
-import SongsController from '../../datastore/SongsController';
 import EditDialog from '../../views/songs-list/EditDialog';
 import Search from '../../views/songs-list/Search';
 import Song from '../../views/songs-list/Song';
 import useCompare from '../../hooks/useCompare';
+import ResourceManager, {Song as SongC} from '../../services/ResourceManager';
 
 
 function SongsList() {
 	const {colors} = useTheme();
-	const songsDB = useRef(new SongsController());
 
 	const [songToManageID, setSongToManageID] = useState<string | undefined>();
 	const [songToPlayID, setSongToPlayID] = useState<string | undefined>();
 
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
-	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
+	const [songs, setSongs] = useState<SongC[]>([]);
 	//  todo: implement filters
 	// const [sort, setSort] = useState<{ ascending: boolean, type: 'author' | 'date' | 'duration' | 'title' } | null>(null);
 
 	const getSongs = useCallback(async () => {
 		setIsRefreshing(true);
-		setSongs(useCompare<SavedSongMetadata>(await songsDB.current.db.findAsync({}) as SavedSongMetadata[], (item) => item.title));
+		setSongs(useCompare(await ResourceManager.Song.deserializeAll(), (item) => item.title));
 		setIsRefreshing(false);
 	}, []);
 
