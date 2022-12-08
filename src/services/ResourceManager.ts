@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
+import {FileSystemSessionType} from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import {PlaylistMetadata, SavedSongMetadata, SongMetadata} from '../../typings/interfaces';
 import PlayListData, {PlayListDataConstructor} from '../classes/PlayListData';
@@ -7,15 +8,32 @@ import SongData, {SongDataConstructor} from '../classes/SongData';
 import PlayListController from '../datastore/PlayListController';
 import SongsController from '../datastore/SongsController';
 import {dbs} from '../datastore/Store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 class Net {
-	public static readonly remote = 'https://musicly-api.herokuapp.com';
+	public static remote = 'https://api-musicly.onrender.com';
 
 	public static readonly axios = axios.create({
 		baseURL: this.remote,
 		timeout: 20000
 	});
+
+	public static async changeRemote(url: string) {
+		if (url.endsWith('/'))
+			url = url.slice(0, url.length - 1);
+
+		this.axios.defaults.baseURL = url;
+		this.remote = url;
+
+		await AsyncStorage.setItem('remote', url);
+	}
+
+	public static async loadRemote() {
+		const remote = await AsyncStorage.getItem('remote');
+		if (remote)
+			await this.changeRemote(remote);
+	}
 }
 
 class PlayList extends PlayListData {
@@ -162,10 +180,19 @@ class Song extends SongData {
 		if (type === 'audio' && this.musicly.flags.isDownloaded)
 			throw new Error('audio already downloaded');
 
+		const downloadURL = await ResourceManager.Net.axios({
+			responseType: 'json',
+			url: '/v2/media/youtube/' + this.id
+		});
+
 		// todo: add resumable download
-		const downloadURL = remoteURL ? remoteURL : ResourceManager.Net.remote + '/download/youtube?audioID=' + this.id;
-		const fileExt = type === 'audio' ? '.wav' : '.png';
-		return await FileSystem.downloadAsync(downloadURL, FileSystem.cacheDirectory + this.id + fileExt);
+		console.log(remoteURL ?? downloadURL.data.link);
+
+		const ext = type === 'audio' ? '.wav' : '.png';
+		return await FileSystem.downloadAsync(remoteURL ?? downloadURL.data.link, FileSystem.cacheDirectory + this.id + ext, {
+			cache: true,
+			sessionType: FileSystemSessionType.BACKGROUND
+		});
 	}
 
 	async getRemoteAudio(url?: string) {

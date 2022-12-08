@@ -21,7 +21,7 @@ function SongsList() {
 	return (
 		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
-				<Appbar.Content title={songs.length + ' Songs'}/>
+				<Appbar.Content title={songs.length + (songs.length !== 1 ? ' songs' : ' song')}/>
 			</Appbar.Header>
 
 			<AudioPlayer audioID={songToPlayID} setAudioID={setSongToPlayID} songs={songs}/>

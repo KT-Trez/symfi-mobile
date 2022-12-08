@@ -3,6 +3,37 @@ import {PlayList} from '../src/services/ResourceManager';
 
 
 export declare module Musicly {
+	export module Api {
+		export interface MediaInfo {
+			channel: {
+				id: string
+				name: string
+				url: string
+			};
+			description: string;
+			id: string;
+			metadata: {
+				duration: {
+					label: string;
+					seconds: number;
+				}
+				published: string;
+				thumbnails: Thumbnail[];
+				views: {
+					count: number;
+					label: string;
+				}
+			};
+			title: string;
+		}
+
+		export interface Thumbnail {
+			height: number;
+			url: string;
+			width: number;
+		}
+	}
+
 	export module Components {
 		export interface ManageDialogOptions {
 			isDelete?: boolean;

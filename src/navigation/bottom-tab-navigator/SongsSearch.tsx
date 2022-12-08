@@ -1,28 +1,31 @@
-import axios from 'axios';
 import React, {useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
-import {Appbar, Searchbar, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
+import {Appbar, Menu, Searchbar, useTheme} from 'react-native-paper';
 import Song from '../../views/songs-search/Song';
+import ResourceManager from '../../services/ResourceManager';
+import {Musicly} from '../../../typings';
+import useVisibility from '../../hooks/useVisibility';
+import ServerSetup from '../../views/songs-search/ServerSetup';
 
 
 function SongsSearch() {
 	const {colors} = useTheme();
 
 	const [searchQuery, setSearchQuery] = useState('');
-	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
+	const [songs, setSongs] = useState<Musicly.Api.MediaInfo[]>([]);
 
 	const [isLoading, setIsLoading] = useState(false);
+	const [hideMenu, menuShows, showMenu] = useVisibility();
+	const [hideServerSetup, serverSetupShows, showServerSetup] = useVisibility();
 
 	const search = async () => {
 		setIsLoading(true);
 		if (searchQuery) {
 			try {
-				const response = await axios({
-					data: {},
+				const response = await ResourceManager.Net.axios({
 					method: 'get',
 					responseType: 'json',
-					url: '/search/youtube?keywords=' + encodeURI(searchQuery)
+					url: '/v2/search/youtube?query=' + encodeURI(searchQuery)
 				});
 
 				setSongs(response.data);
@@ -39,6 +42,13 @@ function SongsSearch() {
 		<View style={[css.container, {backgroundColor: colors.background}]}>
 			<Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={'Search'}/>
+
+				<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
+					  anchorPosition={'bottom'}
+					  onDismiss={hideMenu}
+					  visible={menuShows}>
+					<Menu.Item leadingIcon={'server'} onPress={showServerSetup} title={'Set server'}/>
+				</Menu>
 			</Appbar.Header>
 
 			<SafeAreaView>
@@ -48,6 +58,8 @@ function SongsSearch() {
 						   style={css.searchbar}
 						   value={searchQuery}/>
 			</SafeAreaView>
+
+			<ServerSetup hide={hideServerSetup} shows={serverSetupShows}/>
 
 			{isLoading ?
 				<ActivityIndicator size={'large'} style={css.activityIndicator}/>

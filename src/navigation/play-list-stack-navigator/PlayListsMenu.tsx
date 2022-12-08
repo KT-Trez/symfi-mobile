@@ -71,7 +71,7 @@ function PlayListsMenu() {
 			<View style={[css.container, {backgroundColor: colors.background}]}>
 				<Appbar.Header dark={true} elevated mode={'small'}>
 					{(!manageDialogOptions || manageDialogOptions.isManage) &&
-						<Appbar.Content title={playLists.length + ' playlist' + (playLists.length !== 0 ? 's' : '')}/>
+						<Appbar.Content title={playLists.length + (playLists.length !== 1 ? ' playlists' : ' playlist')}/>
 					}
 
 					{!manageDialogOptions || manageDialogOptions.isManage ?
@@ -122,7 +122,7 @@ function PlayListsMenu() {
 				<FlatList data={playLists}
 						  keyExtractor={item => item.id}
 						  ListEmptyComponent={
-							  <Text style={css.flatListText} variant={'bodyMedium'}>You have no playLists yet.</Text>
+							  <Text style={css.flatListText} variant={'bodyMedium'}>You have no playlists yet.</Text>
 						  }
 						  onRefresh={refreshPlayLists}
 						  refreshing={isLoading}
