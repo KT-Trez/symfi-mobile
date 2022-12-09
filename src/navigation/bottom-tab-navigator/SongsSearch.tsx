@@ -16,7 +16,7 @@ function SongsSearch() {
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [hideMenu, menuShows, showMenu] = useVisibility();
-	const [hideServerSetup, serverSetupShows, showServerSetup] = useVisibility();
+	const [hideServerSetup, serverSetupShows, showServerSetup] = useVisibility(undefined, [hideMenu]);
 
 	const search = async () => {
 		setIsLoading(true);
@@ -47,7 +47,7 @@ function SongsSearch() {
 					  anchorPosition={'bottom'}
 					  onDismiss={hideMenu}
 					  visible={menuShows}>
-					<Menu.Item leadingIcon={'server'} onPress={showServerSetup} title={'Set server'}/>
+					<Menu.Item leadingIcon={'server'} onPress={showServerSetup} title={'Change server'}/>
 				</Menu>
 			</Appbar.Header>
 
