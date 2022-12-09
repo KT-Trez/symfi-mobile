@@ -1,21 +1,45 @@
+import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
+import {FileSystemSessionType} from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import {PlaylistMetadata, SavedSongMetadata} from '../../typings/interfaces';
+import {PlaylistMetadata, SavedSongMetadata, SongMetadata} from '../../typings/interfaces';
 import PlayListData, {PlayListDataConstructor} from '../classes/PlayListData';
 import SongData, {SongDataConstructor} from '../classes/SongData';
 import PlayListController from '../datastore/PlayListController';
 import SongsController from '../datastore/SongsController';
 import {dbs} from '../datastore/Store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 class Net {
-	static readonly remote = 'https://musicly-api.herokuapp.com';
+	public static remote = 'https://api-musicly.onrender.com';
+
+	public static readonly axios = axios.create({
+		baseURL: this.remote,
+		timeout: 20000
+	});
+
+	public static async changeRemote(url: string) {
+		if (url.endsWith('/'))
+			url = url.slice(0, url.length - 1);
+
+		this.axios.defaults.baseURL = url;
+		this.remote = url;
+
+		await AsyncStorage.setItem('remote', url);
+	}
+
+	public static async loadRemote() {
+		const remote = await AsyncStorage.getItem('remote');
+		if (remote)
+			await this.changeRemote(remote);
+	}
 }
 
 class PlayList extends PlayListData {
 	private static storage = new PlayListController();
 
-	static async deserialize(id: string) {
+	public static async deserialize(id: string) {
 		const playList = await this.storage.db.findOneAsync({id}) as PlaylistMetadata;
 
 		const options: PlayListDataConstructor = {
@@ -31,7 +55,7 @@ class PlayList extends PlayListData {
 		return new PlayList(options);
 	}
 
-	static async deserializeAll() {
+	public static async deserializeAll() {
 		const playLists = await this.storage.db.findAsync({});
 
 		const playListsArr = [];
@@ -94,7 +118,7 @@ class PlayList extends PlayListData {
 class Song extends SongData {
 	private static storage = new SongsController();
 
-	static async deserialize(id: string) {
+	public static async deserialize(id: string) {
 		const song = await this.storage.db.findOneAsync({id}) as SavedSongMetadata;
 
 		const options: SongDataConstructor = {
@@ -110,6 +134,43 @@ class Song extends SongData {
 		return new Song(options);
 	}
 
+	public static async deserializeAll() {
+		const songs = await this.storage.db.findAsync({});
+
+		const songsArr = [];
+		for (const song of songs) {
+			const options: SongDataConstructor = {
+				channel: song.channel,
+				description: song.description,
+				id: song.id,
+				metadata: song.metadata,
+				musicly: song.musicly,
+				title: song.title,
+				url: song.url
+			};
+			songsArr.push(new Song(options));
+		}
+
+		return songsArr;
+	}
+
+	public static async create(data: SongMetadata) {
+		const options: SongDataConstructor = {
+			channel: data.channel,
+			description: data.description,
+			id: data.id,
+			metadata: data.metadata,
+			musicly: {},
+			title: data.title,
+			url: data.url
+		};
+
+		const song = new Song(options);
+		await song.updateInDB(true);
+
+		return song;
+	}
+
 	// instance
 	constructor(options: SongDataConstructor) {
 		super(options);
@@ -119,10 +180,19 @@ class Song extends SongData {
 		if (type === 'audio' && this.musicly.flags.isDownloaded)
 			throw new Error('audio already downloaded');
 
+		const downloadURL = await ResourceManager.Net.axios({
+			responseType: 'json',
+			url: '/v2/media/youtube/' + this.id
+		});
+
 		// todo: add resumable download
-		const downloadURL = remoteURL ? remoteURL : ResourceManager.Net.remote + '/download/youtube?audioID=' + this.id;
-		const fileExt = type === 'audio' ? '.wav' : '.png';
-		return await FileSystem.downloadAsync(downloadURL, FileSystem.cacheDirectory + this.id + fileExt);
+		console.log(remoteURL ?? downloadURL.data.link);
+
+		const ext = type === 'audio' ? '.wav' : '.png';
+		return await FileSystem.downloadAsync(remoteURL ?? downloadURL.data.link, FileSystem.cacheDirectory + this.id + ext, {
+			cache: true,
+			sessionType: FileSystemSessionType.BACKGROUND
+		});
 	}
 
 	async getRemoteAudio(url?: string) {
@@ -196,6 +266,10 @@ class Song extends SongData {
 
 	private async updateCoverInDB() {
 		await Song.storage.updateCover(this.id, this.musicly.cover.uri);
+	}
+
+	private async updateInDB(upsert?: boolean) {
+		await Song.storage.db.update({id: this.id}, this, {upsert});
 	}
 }
 

@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DataStore from 'react-native-local-mongodb';
+import PlayListController from './PlayListController';
+import SongsController from './SongsController';
 
 
 const storeFactory = (name: string) => {
@@ -31,6 +33,8 @@ const storeFactory = (name: string) => {
 };
 
 const dbs = {
+	playLists: new PlayListController().db,
+	songs: new SongsController().db,
 	songPlayLists: storeFactory('songPlayLists')
 };
 

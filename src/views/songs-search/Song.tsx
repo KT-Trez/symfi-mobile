@@ -2,15 +2,15 @@ import {MaterialIcons} from '@expo/vector-icons';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Image, LayoutChangeEvent, StyleSheet, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, Text, useTheme} from 'react-native-paper';
-import {DownloadType} from '../../../typings/enums';
-import {SongMetadata} from '../../../typings/interfaces';
 import Timestamp from '../../components/Timestamp';
 import SongsController from '../../datastore/SongsController';
-import NetService from '../../services/NetService';
+import * as MediaLibrary from 'expo-media-library';
+import ResourceManager from '../../services/ResourceManager';
+import {Musicly} from '../../../typings';
 
 
 interface SongProps {
-	item: SongMetadata;
+	item: Musicly.Api.MediaInfo;
 }
 
 function Song({item}: SongProps) {
@@ -34,8 +34,37 @@ function Song({item}: SongProps) {
 	const downloadSong = useCallback(async () => {
 		setIsDownloading(true);
 
+		const {status} = await MediaLibrary.requestPermissionsAsync();
+		if (status !== MediaLibrary.PermissionStatus.GRANTED) {
+			setIsDownloading(false);
+			return ToastAndroid.showWithGravity('Can\'t save a file without media library permission.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
+		}
+
 		try {
-			await new NetService().download(DownloadType.Audio, item);
+			const song = await ResourceManager.Song.create({
+				channel: item.channel,
+				description: item.description,
+				id: item.id,
+				metadata: {
+					badges: [],
+					duration: {
+						accessibility_label: item.metadata.duration.label,
+						seconds: item.metadata.duration.seconds,
+						simple_text: item.metadata.duration.label
+					},
+					owner_badges: [],
+					published: item.metadata.views.label,
+					short_view_count_text: {
+						accessibility_label: item.metadata.views.label,
+						simple_text: item.metadata.views.label
+					},
+					thumbnails: item.metadata.thumbnails,
+					view_count: item.metadata.views.label
+				},
+				title: item.title,
+				url: ''
+			});
+			await song.getRemoteAudio();
 			await checkDownloadedStatus();
 		} catch (err) {
 			console.error(err);
@@ -74,13 +103,13 @@ function Song({item}: SongProps) {
 							   source={{uri: item.metadata.thumbnails[0].url}}
 							   style={{height: imageDimensions.height, width: imageDimensions.width}}/>
 				}
-				<Timestamp time={item.metadata.duration.simple_text}/>
+				<Timestamp time={item.metadata.duration.label}/>
 			</View>
 			<View onLayout={(event) => scaleImage(1, event)} style={css.metadataContainer}>
 				<Text numberOfLines={2} variant={'titleSmall'}>{item.title + '\n'}</Text>
 				<Text numberOfLines={1} variant={'bodySmall'}>{item.channel.name}</Text>
 				<Text numberOfLines={1} variant={'labelSmall'}>
-					{item.metadata.short_view_count_text.simple_text} • {item.metadata.published}
+					{item.metadata.views.label} • {item.metadata.published}
 				</Text>
 			</View>
 			<TouchableOpacity disabled={isDownloaded || isDownloading}

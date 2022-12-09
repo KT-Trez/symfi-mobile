@@ -4,7 +4,7 @@ import {FlexAlignType, StyleProp, View, ViewStyle} from 'react-native';
 
 interface StackProps {
 	alignItems?: FlexAlignType;
-	children: JSX.Element | JSX.Element[];
+	children?: React.ReactNode;
 	direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse' | undefined;
 	flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
 	justifyContent?: 'flex-end' | 'flex-start' | 'space-between' | 'space-evenly' | 'center' | 'space-around' | undefined;

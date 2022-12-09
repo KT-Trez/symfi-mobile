@@ -5,7 +5,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Surface, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../typings/interfaces';
-import useRandomIntInclusive from '../hooks/useRandomIntInclusive';
+import useRandomInt from '../hooks/useRandomInt';
 
 
 interface AudioPlayerProps {
@@ -55,7 +55,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 					songsArr = [...songs];
 
 				setSongsLeft(songsArr);
-				setSong(songsArr[useRandomIntInclusive(0, songsArr.length - 1)]);
+				setSong(songsArr[useRandomInt(0, songsArr.length - 1)]);
 			} else if (autoplay)
 				setSong(songs[(songs.indexOf(song!) + 1) % songs.length]);
 			else

@@ -1,15 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, ToastAndroid} from 'react-native';
 import {Text, TextInput} from 'react-native-paper';
-import {DownloadType} from '../../../typings/enums';
 import LoadingView from '../../components/LoadingView';
 import Setting from '../../components/Setting';
 import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
-import NetService from '../../services/NetService';
+import ResourceManager from '../../services/ResourceManager';
 
 
-function Sync() {
+function Settings() {
 	const playlistsDB = useRef(new PlayListController());
 	const songsDB = useRef(new SongsController());
 
@@ -27,7 +26,7 @@ function Sync() {
 		setIsLoading(true);
 
 		try {
-			const res = await new NetService().REST({
+			const res = await ResourceManager.Net.axios({
 				data: {
 					playLists: await playlistsDB.current.db.findAsync({}),
 					songsList: await songsDB.current.db.findAsync({})
@@ -41,7 +40,7 @@ function Sync() {
 			});
 
 			setSyncID(res.data.uid);
-			ToastAndroid.showWithGravity('Sync ID: ' + res.data.uid, ToastAndroid.LONG, ToastAndroid.BOTTOM)
+			ToastAndroid.showWithGravity('Settings ID: ' + res.data.uid, ToastAndroid.LONG, ToastAndroid.BOTTOM);
 		} catch (err) {
 			console.error(err);
 			ToastAndroid.showWithGravity('Export unsuccessful, try again later', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
@@ -65,10 +64,8 @@ function Sync() {
 		if (!/\d{6}/gm.test(uid))
 			return ToastAndroid.showWithGravity('Incorrect UID', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
 
-		const net = new NetService();
-
 		try {
-			const res = await net.REST({
+			const res = await ResourceManager.Net.axios({
 				headers: {
 					'Access-Control-Allow-Origin': '*'
 				},
@@ -83,9 +80,10 @@ function Sync() {
 			// todo: find a better way to download songs
 			// IMPORTANT: update database in case of duplicated song
 			for (const song of res.data.songsList) {
-				const playLists = song.musicly.playlists;
 				delete song.musicly;
-				net.download(DownloadType.Audio, song, playLists);
+				// todo: restore song's playlists
+				const songC = await ResourceManager.Song.create(song);
+				songC.getRemoteAudio();
 			}
 		} catch (err) {
 			console.error(err);
@@ -104,7 +102,7 @@ function Sync() {
 	const importButtons = [{fun: importData, icon: 'database-import-outline', name: 'import'}];
 
 	return (
-		<LoadingView isLoading={isLoading} title={'Sync'}>
+		<LoadingView isLoading={isLoading} title={'Settings'}>
 			<Setting buttons={exportButtons} style={css.topSetting}>
 				<Text variant={'bodyMedium'}>{playListsCount} PlayLists | {songsCount} Songs</Text>
 			</Setting>
@@ -133,4 +131,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default Sync;
+export default Settings;

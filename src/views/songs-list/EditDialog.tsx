@@ -1,13 +1,14 @@
 import {NavigationContext} from '@react-navigation/native';
 import * as MediaLibrary from 'expo-media-library';
 import {PermissionStatus} from 'expo-media-library';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {ToastAndroid} from 'react-native';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import ManageDialog from '../../components/ManageDialog';
 import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
+import useVisibility from '../../hooks/useVisibility';
 
 
 interface EditDialogProps {
@@ -25,17 +26,12 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 	const songsDB = useRef(new SongsController());
 
 	// flags
-	const [isVisible, setIsVisible] = useState(false);
+	const [hideDialog, dialogShows, showDialog] = useVisibility([() => setSongID(undefined)]);
 
 	// methods
 	const editSong = () => {
 		navigation?.navigate('SongEdit', {id: songID});
 		hideDialog();
-	};
-
-	const hideDialog = () => {
-		setSongID(undefined);
-		setIsVisible(false);
 	};
 
 	// todo: load song from DB
@@ -77,8 +73,6 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 		}
 	};
 
-	const showDialog = () => setIsVisible(true);
-
 	// effects
 	useEffect(() => {
 		if (songID)
@@ -87,7 +81,7 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 
 	return (
 		<ManageDialog hide={hideDialog}
-					  isVisible={isVisible}
+					  isVisible={dialogShows}
 					  onCancel={hideDialog}
 					  onDelete={removeSong}
 					  onEdit={editSong}

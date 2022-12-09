@@ -1,22 +1,22 @@
 import moment from 'moment';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
-import {MongoDocument} from 'react-native-local-mongodb';
 import {Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import Stack from '../../components/Stack';
 import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
+import useCompare from '../../hooks/useCompare';
 
 
 interface SongsManagerProps {
-	hideModal: () => void;
-	isVisible: boolean;
+	hide: () => void;
 	playlistID: string;
-	refreshPlaylist: () => void;
+	refreshPlayList: () => void;
+	shows: boolean;
 }
 
-function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: SongsManagerProps) {
+function SongsManager({hide, playlistID, refreshPlayList, shows}: SongsManagerProps) {
 	const {colors} = useTheme();
 	const playlistsDB = useRef(new PlayListController());
 	const songsDB = useRef(new SongsController());
@@ -29,14 +29,7 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
-		const compareFun = (a: MongoDocument, b: MongoDocument) => {
-			return (new Date(a.musicly.file.downloadDate).getTime() - new Date(b.musicly.file.downloadDate).getTime()) * -1;
-		};
-		const songsArr = await songsDB.current.db.findAsync({$not: {'musicly.playlists.id': playlistID}}) as SavedSongMetadata[];
-
-		setSongs(songsArr.sort(compareFun));
-		if (songsArr.length !== searchedSongs.length)
-			setSearchedSongs([...songsArr]);
+		setSongs(useCompare(await songsDB.current.db.findAsync({$not: {'musicly.playlists.id': playlistID}}) as SavedSongMetadata[], (item: SavedSongMetadata) => item.musicly.file.downloadDate));
 	}, []);
 
 	const addToPlaylist = async (itemID: string) => {
@@ -56,9 +49,8 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 		}, {});
 
 		setSearchedSongs(arr => arr.filter(song => song.id !== itemID));
-		await getSongs();
 
-		refreshPlaylist();
+		refreshPlayList();
 		setIsBlocked(false);
 	};
 
@@ -67,15 +59,21 @@ function SongsManager({hideModal, isVisible, playlistID, refreshPlaylist}: Songs
 	}, [searchQuery]);
 
 	useEffect(() => {
-		if (isVisible)
+		if (shows) {
 			getSongs();
-	}, [isVisible]);
+			setSearchQuery('');
+		}
+	}, [shows]);
+
+	useEffect(() => {
+		setSearchedSongs([...songs]);
+	}, [songs.length]);
 
 	return (
 		<Portal>
 			<Modal contentContainerStyle={[css.modal, {backgroundColor: colors.elevation.level3}]}
-				   onDismiss={hideModal}
-				   visible={isVisible}>
+				   onDismiss={hide}
+				   visible={shows}>
 				<Text variant={'titleMedium'}>Add song to playlist</Text>
 
 				<SafeAreaView>

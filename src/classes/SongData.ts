@@ -96,8 +96,8 @@ export default class SongData implements SavedSongMetadata {
 				size: options.musicly.file?.size
 			},
 			flags: {
-				hasCover: !!options.musicly.cover,
-				isDownloaded: !!options.musicly.file,
+				hasCover: options.musicly.flags?.hasCover ?? !!options.musicly.cover?.uri,
+				isDownloaded: options.musicly.flags?.isDownloaded ?? !!options.musicly.file?.path,
 				isFavourite: !!options.musicly.flags?.isFavourite
 			},
 			playlists: options.musicly.playlists ?? [],

@@ -1,21 +1,46 @@
 import {PlaylistData} from './interfaces';
+import {PlayList} from '../src/services/ResourceManager';
 
 
 export declare module Musicly {
-	export module Components {
-		export type ManageDialogOptions = DeleteDialog | EditDialog;
-
-		interface DeleteDialog {
-			isDelete: true;
-			isEdit?: boolean;
-			message: string;
+	export module Api {
+		export interface MediaInfo {
+			channel: {
+				id: string
+				name: string
+				url: string
+			};
+			description: string;
+			id: string;
+			metadata: {
+				duration: {
+					label: string;
+					seconds: number;
+				}
+				published: string;
+				thumbnails: Thumbnail[];
+				views: {
+					count: number;
+					label: string;
+				}
+			};
 			title: string;
 		}
 
-		interface EditDialog {
-			isDelete?: false;
-			isEdit: true;
+		export interface Thumbnail {
+			height: number;
+			url: string;
+			width: number;
+		}
+	}
+
+	export module Components {
+		export interface ManageDialogOptions {
+			isDelete?: boolean;
+			isEdit?: boolean;
+			isManage?: boolean;
 			message?: string;
+			playList?: PlayList;
 			title?: string;
 		}
 	}
@@ -44,8 +69,10 @@ export declare module Musicly {
 		}
 
 		export interface SongPlayList {
+			flags: {
+				isFavourite: boolean;
+			};
 			id: string;
-			isFavourite: boolean;
 			order: number;
 			songID: string;
 		}
