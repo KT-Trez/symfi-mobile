@@ -2,7 +2,7 @@ import moment from 'moment';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
 import {Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
+import {SavedSongMetadata} from '../../../types/interfaces';
 import Stack from '../../components/Stack';
 import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';

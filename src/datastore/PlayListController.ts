@@ -1,5 +1,5 @@
 import DataStore from 'react-native-local-mongodb';
-import {PlaylistData} from '../../typings/interfaces';
+import {PlaylistData} from '../../types/interfaces';
 import DefaultDataStore from './Default';
 
 

@@ -1,4 +1,4 @@
-import {PlaylistMetadata} from '../../typings/interfaces';
+import {PlaylistMetadata} from '../../types/interfaces';
 import config from '../config';
 
 

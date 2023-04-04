@@ -1,6 +1,6 @@
 import {NavigationContext} from '@react-navigation/native';
 import React, {useEffect} from 'react';
-import {Musicly} from '../../../typings';
+import {Musicly} from '../../../types';
 import ManageDialog from '../../components/ManageDialog';
 import useVisibility from '../../hooks/useVisibility';
 

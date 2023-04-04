@@ -3,14 +3,14 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {MongoDocument} from 'react-native-local-mongodb';
 import {Appbar, Menu, Text, useTheme} from 'react-native-paper';
-import {PlaylistData, SavedSongMetadata} from '../../../typings/interfaces';
-import {RootPlayListsStackParamList} from '../../../typings/navigation';
+import {PlaylistData, SavedSongMetadata} from '../../../types/interfaces';
+import {RootPlayListsStackParamList} from '../../../types/navigation';
 import AudioPlayer from '../../components/AudioPlayer';
+import Song from '../../components/Song';
 import SongsController from '../../datastore/SongsController';
 import useCompare from '../../hooks/useCompare';
 import useVisibility from '../../hooks/useVisibility';
 import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
-import Song from '../../views/play-list-content/Song';
 import SongsManager from '../../views/play-list-content/SongsManager';
 
 
@@ -77,27 +77,27 @@ function PlaylistContent() {
 				<Appbar.Content title={songs.length + (songs.length !== 1 ? ' songs' : ' song')}/>
 
 				<Menu anchor={<Appbar.Action icon={'sort'} onPress={showSort}/>}
-					  anchorPosition={'bottom'}
-					  onDismiss={hideSort}
-					  visible={sortShows}>
+				      anchorPosition={'bottom'}
+				      onDismiss={hideSort}
+				      visible={sortShows}>
 					<Menu.Item leadingIcon={'sort-calendar-ascending'}
-							   onPress={sortByDownloadDateAscending}
-							   title={'Asc by date'}/>
+					           onPress={sortByDownloadDateAscending}
+					           title={'Asc by date'}/>
 					<Menu.Item leadingIcon={'sort-calendar-descending'}
-							   onPress={sortByDownloadDateDescending}
-							   title={'Dsc by date'}/>
+					           onPress={sortByDownloadDateDescending}
+					           title={'Dsc by date'}/>
 					<Menu.Item leadingIcon={'sort-alphabetical-ascending'}
-							   onPress={sortByTitleAscending}
-							   title={'Asc by title'}/>
+					           onPress={sortByTitleAscending}
+					           title={'Asc by title'}/>
 					<Menu.Item leadingIcon={'sort-alphabetical-descending'}
-							   onPress={sortByTitleDescending}
-							   title={'Dsc by title'}/>
+					           onPress={sortByTitleDescending}
+					           title={'Dsc by title'}/>
 				</Menu>
 
 				<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
-					  anchorPosition={'bottom'}
-					  onDismiss={hideMenu}
-					  visible={menuShows}>
+				      anchorPosition={'bottom'}
+				      onDismiss={hideMenu}
+				      visible={menuShows}>
 					<Menu.Item leadingIcon={'playlist-plus'} onPress={showSongsManager} title={'Add Song'}/>
 				</Menu>
 			</Appbar.Header>
@@ -105,23 +105,25 @@ function PlaylistContent() {
 			<AudioPlayer audioID={currentSongID} setAudioID={setCurrentSongID} songs={songs}/>
 
 			<RemoveFromPlayListDialog hide={hideDialog}
-									  playListID={route.params.id}
-									  refreshSongList={getSongs}
-									  shows={dialogShows}
-									  song={removeSong}/>
+			                          playListID={route.params.id}
+			                          refreshSongList={getSongs}
+			                          shows={dialogShows}
+			                          song={removeSong}/>
 
 			<SongsManager hide={hideSongsManager}
-						  playlistID={playlistID}
-						  refreshPlayList={getSongs}
-						  shows={songsManagerShows}/>
+			              playlistID={playlistID}
+			              refreshPlayList={getSongs}
+			              shows={songsManagerShows}/>
 
 			<FlatList data={songs}
-					  ListEmptyComponent={
-						  <Text style={css.flatListText} variant={'bodyMedium'}>This playlist is empty.</Text>}
-					  renderItem={({item}) => <Song item={item}
-													loadToPlay={setCurrentSongID}
-													loadToRemove={setRemoveSong}/>}
-					  style={css.flatList}/>
+			          ListEmptyComponent={
+				          <Text style={css.flatListText} variant={'bodyMedium'}>This playlist is empty.</Text>}
+			          renderItem={({item}) =>
+				          <Song bottomLabel={`${Math.round((item.musicly.file.size ?? 0) / 1024 / 1024 * 100) / 100}MB`}
+				                data={item}
+				                onPressSelect={setCurrentSongID}
+				                onLongPressSelect={() => setRemoveSong(item)}/>}
+			          style={css.flatList}/>
 		</View>
 
 	);

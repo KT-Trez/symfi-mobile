@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Appbar, useTheme} from 'react-native-paper';
 import AudioPlayer from '../../components/AudioPlayer';
+import Song from '../../components/Song';
+import useSongs from '../../hooks/useSongs';
 import EditDialog from '../../views/songs-list/EditDialog';
 import Search from '../../views/songs-list/Search';
-import Song from '../../views/songs-list/Song';
-import useSongs from '../../hooks/useSongs';
 
 
 function SongsList() {
@@ -27,19 +27,20 @@ function SongsList() {
 			<AudioPlayer audioID={songToPlayID} setAudioID={setSongToPlayID} songs={songs}/>
 
 			<EditDialog playingSongID={songToPlayID}
-						refreshSongsList={refreshSongs}
-						setSongID={setSongToManageID}
-						songID={songToManageID}/>
+			            refreshSongsList={refreshSongs}
+			            setSongID={setSongToManageID}
+			            songID={songToManageID}/>
 
 			<Search data={songs}
-					isRefreshing={isLoading}
-					keyExtractor={(item) => item.id}
-					refreshData={refreshSongs}
-					renderItem={({item}) => <Song item={item}
-												  loadToManage={setSongToManageID}
-												  loadToPlay={setSongToPlayID}/>}
-					searchbarText={'Search for saved song'}
-					searchEmptyText={'You have no saved songs yet.'}/>
+			        isRefreshing={isLoading}
+			        keyExtractor={(item) => item.id}
+			        refreshData={refreshSongs}
+			        renderItem={({item}) => <Song bottomLabel={`${Math.round((item.musicly.file.size ?? 0) / 1024 / 1024 * 100) / 100}MB`}
+			                                      data={item}
+			                                      onLongPressSelect={setSongToManageID}
+			                                      onPressSelect={setSongToPlayID}/>}
+			        searchbarText={'Search for saved song'}
+			        searchEmptyText={'You have no saved songs yet.'}/>
 		</View>
 	);
 }

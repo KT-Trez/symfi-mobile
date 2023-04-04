@@ -4,7 +4,7 @@ import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Surface, Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../typings/interfaces';
+import {SavedSongMetadata} from '../../types/interfaces';
 import useRandomInt from '../hooks/useRandomInt';
 
 

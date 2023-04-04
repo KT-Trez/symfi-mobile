@@ -1,8 +1,8 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Text} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
-import {RootSongsStackParamList} from '../../../typings/navigation';
+import {SavedSongMetadata} from '../../../types/interfaces';
+import {RootSongsStackParamList} from '../../../types/navigation';
 import CoverChange from '../../components/CoverChange';
 import LoadingView from '../../components/LoadingView';
 import Setting from '../../components/Setting';

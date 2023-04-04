@@ -3,7 +3,7 @@ import * as MediaLibrary from 'expo-media-library';
 import {PermissionStatus} from 'expo-media-library';
 import React, {useEffect, useRef} from 'react';
 import {ToastAndroid} from 'react-native';
-import {SavedSongMetadata} from '../../../typings/interfaces';
+import {SavedSongMetadata} from '../../../types/interfaces';
 import ManageDialog from '../../components/ManageDialog';
 import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';

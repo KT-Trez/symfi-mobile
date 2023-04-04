@@ -1,8 +1,8 @@
 import React, {useRef} from 'react';
 import {Button, Dialog, Paragraph, Portal, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../typings/interfaces';
-import {dbs} from '../../datastore/Store';
+import {SavedSongMetadata} from '../../../types/interfaces';
 import SongsController from '../../datastore/SongsController';
+import {dbs} from '../../datastore/Store';
 
 
 interface RemoveFromPlayListDialogProps {

@@ -1,5 +1,5 @@
 import DataStore from 'react-native-local-mongodb';
-import {SavedSongMetadata} from '../../typings/interfaces';
+import {SavedSongMetadata} from '../../types/interfaces';
 import DefaultDataStore from './Default';
 
 

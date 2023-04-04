@@ -1,6 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import {RootSongsStackParamList} from '../../../typings/navigation';
+import {RootSongsStackParamList} from '../../../types/navigation';
 import SongEdit from '../songs-stack-navigator/SongEdit';
 import SongsList from '../songs-stack-navigator/SongsList';
 
