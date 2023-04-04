@@ -1,25 +1,22 @@
 import moment from 'moment';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
 import {Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../types/interfaces';
 import Stack from '../../components/Stack';
-import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
 import useCompare from '../../hooks/useCompare';
 
 
 interface SongsManagerProps {
 	hide: () => void;
-	playlistID: string;
+	playListID: string;
 	refreshPlayList: () => void;
 	shows: boolean;
 }
 
-function SongsManager({hide, playlistID, refreshPlayList, shows}: SongsManagerProps) {
+function SongsManager({hide, playListID, refreshPlayList, shows}: SongsManagerProps) {
 	const {colors} = useTheme();
-	const playlistsDB = useRef(new PlayListController());
-	const songsDB = useRef(new SongsController());
 
 	const [isBlocked, setIsBlocked] = useState(false);
 
@@ -29,7 +26,7 @@ function SongsManager({hide, playlistID, refreshPlayList, shows}: SongsManagerPr
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
-		setSongs(useCompare(await songsDB.current.db.findAsync({$not: {'musicly.playlists.id': playlistID}}) as SavedSongMetadata[], (item: SavedSongMetadata) => item.musicly.file.downloadDate, true));
+		setSongs(useCompare(await SongsController.store.findAsync({$not: {'musicly.playListsIDs': playListID}}) as SavedSongMetadata[], item => item.musicly.file.downloadDate, true));
 	}, []);
 
 	const addToPlaylist = async (itemID: string) => {
@@ -37,16 +34,7 @@ function SongsManager({hide, playlistID, refreshPlayList, shows}: SongsManagerPr
 			return;
 		setIsBlocked(true);
 
-		await playlistsDB.current.db.updateAsync({id: playlistID}, {$inc: {songsCount: 1}}, {});
-		await songsDB.current.db.updateAsync({id: itemID}, {
-			$push: {
-				'musicly.playlists': {
-					id: playlistID,
-					isFavourite: false,
-					order: (await playlistsDB.current.db.findOneAsync({id: playlistID})).songsCount
-				}
-			}
-		}, {});
+		await SongsController.addToPlayList(itemID, playListID);
 
 		setSearchedSongs(arr => arr.filter(song => song.id !== itemID));
 

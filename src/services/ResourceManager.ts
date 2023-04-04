@@ -7,9 +7,10 @@ import {Musicly} from '../../types';
 import {PlaylistMetadata, SavedSongMetadata, SongMetadata} from '../../types/interfaces';
 import PlayListData, {PlayListDataConstructor} from '../classes/PlayListData';
 import SongData, {SongDataConstructor} from '../classes/SongData';
-import PlayListController from '../datastore/PlayListController';
+import {Store} from '../datastore/Store';
+import {Musicly} from '../../typings';
 import SongsController from '../datastore/SongsController';
-import {dbs} from '../datastore/Store';
+import PlayListController from '../datastore/PlayListController';
 
 
 class Net {
@@ -38,10 +39,10 @@ class Net {
 }
 
 class PlayList extends PlayListData {
-	private static storage = new PlayListController();
+	private static storage = PlayListController.store;
 
 	public static async deserialize(id: string) {
-		const playList = await this.storage.db.findOneAsync({id}) as PlaylistMetadata;
+		const playList = await this.storage.findOneAsync({id}) as PlaylistMetadata;
 
 		const options: PlayListDataConstructor = {
 			cover: playList.cover,
@@ -57,7 +58,7 @@ class PlayList extends PlayListData {
 	}
 
 	public static async deserializeAll() {
-		const playLists = await this.storage.db.findAsync({});
+		const playLists = await this.storage.findAsync({});
 
 		const playListsArr = [];
 		for (const playList of playLists) {
@@ -83,12 +84,12 @@ class PlayList extends PlayListData {
 	async move(order: number, offset: number) {
 		await new Promise(resolve => {
 			let done = 0;
-			PlayList.storage.db.updateAsync({order}, {$set: {order: this.order + offset}}).then(() => {
+			PlayList.storage.updateAsync({order}, {$set: {order: this.order + offset}}).then(() => {
 				done++;
 				if (done == 2)
 					resolve(true);
 			});
-			PlayList.storage.db.updateAsync({order: order + offset}, {$set: {order}}).then(() => {
+			PlayList.storage.updateAsync({order: order + offset}, {$set: {order}}).then(() => {
 				done++;
 				if (done == 2)
 					resolve(true);
@@ -97,30 +98,23 @@ class PlayList extends PlayListData {
 	}
 
 	async removePlayList() {
-		// todo: remove after all clients updated their data
-		const songs = await new SongsController().db.findAsync({
-			'musicly.playlists.id': this.id,
-			'musicly.version': {
-				$lte: 2
-			}
-		}) as SavedSongMetadata[];
+		const songs = await SongsController.store.findAsync({'musicly.playListsIDs': this.id}) as Musicly.Data.Song[];
 		for (const song of songs)
-			new SongsController().removePlayListFromSong(this.id, song.id);
+			await SongsController.removeFromPlayList(song.id, this.id);
 
-		await PlayList.storage.db.removeAsync({id: this.id}, {});
-		await dbs.songPlayLists.removeAsync({id: this.id});
+		await PlayList.storage.removeAsync({id: this.id}, {});
 	}
 
 	async updateOrder() {
-		await PlayList.storage.db.updateAsync({id: this.id}, {$set: {order: this.order}});
+		await PlayList.storage.updateAsync({id: this.id}, {$set: {order: this.order}});
 	}
 }
 
 class Song extends SongData {
-	private static storage = new SongsController();
+	private static storage = SongsController.store;
 
 	public static async deserialize(id: string) {
-		const song = await this.storage.db.findOneAsync({id}) as SavedSongMetadata;
+		const song = await this.storage.findOneAsync({id}) as SavedSongMetadata;
 
 		const options: SongDataConstructor = {
 			channel: song.channel,
@@ -136,7 +130,7 @@ class Song extends SongData {
 	}
 
 	public static async deserializeAll() {
-		const songs = await this.storage.db.findAsync({});
+		const songs = await this.storage.findAsync({}) as Musicly.Data.Song[];
 
 		const songsArr = [];
 		for (const song of songs) {
@@ -155,7 +149,7 @@ class Song extends SongData {
 		return songsArr;
 	}
 
-	public static async create(data: SongMetadata, musicly?: Partial<Musicly.Data.SongMusicly>) {
+	public static async create(data: SongMetadata) {
 		const options: SongDataConstructor = {
 			channel: data.channel,
 			description: data.description,
@@ -221,6 +215,18 @@ class Song extends SongData {
 		await this.updateCoverInDB();
 	}
 
+	public async loadPlayList(playList: Musicly.Data.SongPlayList | string) {
+		if (typeof playList === 'string')
+			this.musicly.playList = await Store.songPlayLists.findOneAsync({
+				playListID: playList,
+				songID: this.id
+			}) as Musicly.Data.SongPlayList;
+		else
+			this.musicly.playList = playList;
+
+		return this;
+	}
+
 	private async saveAudio(uri: string) {
 		if (this.musicly.flags.isDownloaded)
 			try {
@@ -265,7 +271,7 @@ class Song extends SongData {
 	}
 
 	private async updateAudioFileInDB() {
-		await Song.storage.db.updateAsync({id: this.id}, {
+		await Song.storage.updateAsync({id: this.id}, {
 			$set: {
 				'musicly.file': this.musicly.file
 			}
@@ -273,11 +279,12 @@ class Song extends SongData {
 	}
 
 	private async updateCoverInDB() {
-		await Song.storage.updateCover(this.id, this.musicly.cover.uri);
+		await SongsController.updateCover(this.id, this.musicly.cover.uri);
 	}
 
 	private async updateInDB(upsert?: boolean) {
-		await Song.storage.db.update({id: this.id}, this, {upsert});
+		// todo: remove musicly.playList before save
+		await Song.storage.update({id: this.id}, this, {upsert});
 	}
 }
 

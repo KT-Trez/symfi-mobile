@@ -1,34 +1,33 @@
-import DataStore from 'react-native-local-mongodb';
-import {SavedSongMetadata} from '../../types/interfaces';
-import DefaultDataStore from './Default';
+import {Store} from './Store';
+import SongPlayListData, {SongPlayListDataConstructor} from '../classes/SongPlayListData';
+import Controller from './Controller';
 
 
-export class SongsDatabase extends DefaultDataStore {
-	static _db: DataStore;
-	static db = new SongsDatabase().db;
+export default class SongsController extends Controller {
+	public static store = Store.songs;
 
-	get db() {
-		if (!SongsDatabase._db)
-			SongsDatabase._db = this.initDataStore();
-		return SongsDatabase._db;
+	public static async addToPlayList(songID: string, playListID: string) {
+		const options: SongPlayListDataConstructor = {
+			flags: {
+				isFavourite: false
+			},
+			order: (await Store.playLists.findOneAsync({id: playListID})).songsCount,
+			playListID,
+			songID
+		};
+		await Store.songPlayLists.insertAsync(new SongPlayListData(options));
+
+		await Store.playLists.updateAsync({id: playListID}, {$inc: {songsCount: 1}}, {});
+		await Store.songs.updateAsync({id: songID}, {$push: {'musicly.playListsIDs': playListID}});
 	}
 
-	protected store = 'songs';
-}
-
-export default class SongsController extends SongsDatabase {
-	async removePlayListFromSong(playListID: string, songID: string) {
-		if (!this.db)
-			throw new Error('Controller not initialized; Are you missing \'new\' keyword?');
-
-		const song = await this.db.findOneAsync({id: songID}) as SavedSongMetadata;
-		const playList = song.musicly.playlists.find(p => p.id === playListID);
-
-		await this.db.updateAsync({id: songID}, {$pull: {'musicly.playlists': playList}}, {});
+	public static async removeFromPlayList(songID: string, playListID: string) {
+		await Store.songPlayLists.removeAsync({songID, playListID});
+		await Store.songs.updateAsync({id: songID}, {$pull: {'musicly.playListsIDs': playListID}});
 	}
 
-	async updateCover(songID: string, uri?: string) {
-		await this.db.update({id: songID}, {
+	public static async updateCover(songID: string, uri?: string) {
+		await Store.songs.update({id: songID}, {
 			$set: {
 				'musicly.cover.uri': uri,
 				'musicly.flags.hasCover': !!uri
