@@ -7,11 +7,11 @@ import {PlaylistData, SavedSongMetadata} from '../../../typings/interfaces';
 import {RootPlayListsStackParamList} from '../../../typings/navigation';
 import AudioPlayer from '../../components/AudioPlayer';
 import SongsController from '../../datastore/SongsController';
-import Song from '../../views/play-list-content/Song';
-import SongsManager from '../../views/play-list-content/SongsManager';
-import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
 import useCompare from '../../hooks/useCompare';
 import useVisibility from '../../hooks/useVisibility';
+import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
+import Song from '../../views/play-list-content/Song';
+import SongsManager from '../../views/play-list-content/SongsManager';
 
 
 type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistContent'>;
@@ -98,7 +98,7 @@ function PlaylistContent() {
 					  anchorPosition={'bottom'}
 					  onDismiss={hideMenu}
 					  visible={menuShows}>
-					<Menu.Item leadingIcon={'playlist-plus'} onPress={showSongsManager} title={'Add song'}/>
+					<Menu.Item leadingIcon={'playlist-plus'} onPress={showSongsManager} title={'Add Song'}/>
 				</Menu>
 			</Appbar.Header>
 

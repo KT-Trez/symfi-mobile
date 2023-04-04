@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
 import {Appbar, Menu, Searchbar, useTheme} from 'react-native-paper';
-import Song from '../../views/songs-search/Song';
-import ResourceManager from '../../services/ResourceManager';
 import {Musicly} from '../../../typings';
 import useVisibility from '../../hooks/useVisibility';
+import ResourceManager from '../../services/ResourceManager';
 import ServerSetup from '../../views/songs-search/ServerSetup';
+import Song from '../../views/songs-search/Song';
 
 
 function SongsSearch() {
@@ -47,7 +47,7 @@ function SongsSearch() {
 					  anchorPosition={'bottom'}
 					  onDismiss={hideMenu}
 					  visible={menuShows}>
-					<Menu.Item leadingIcon={'server'} onPress={showServerSetup} title={'Change server'}/>
+					<Menu.Item leadingIcon={'server'} onPress={showServerSetup} title={'Change Server'}/>
 				</Menu>
 			</Appbar.Header>
 
