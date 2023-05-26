@@ -1,16 +1,16 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {Appbar, Menu, Text, useTheme} from 'react-native-paper';
-import {RootPlayListsStackParamList} from '../../../typings/navigation';
-import AudioPlayer from '../../components/AudioPlayer';
-import Song from '../../components/Song';
-import SongsController from '../../datastore/SongsController';
-import useCompare from '../../hooks/useCompare';
+import {Appbar, Button, Menu, Text, useTheme} from 'react-native-paper';
+import {Musicly} from '../../../types';
+import {RootPlayListsStackParamList} from '../../../types/navigation';
+import TrackAdapter from '../../classes/TrackAdapter';
+import {NewAudioPlayer} from '../../components/NewAudioPlayer';
+import Song from '../../components/Song/Song';
 import {Store} from '../../datastore/Store';
-import ResourceManager, {Song as SongC} from '../../services/ResourceManager';
-import {Musicly} from '../../../typings';
+import useCompare from '../../hooks/useCompare';
 import useVisibility from '../../hooks/useVisibility';
+import ResourceManager, {Song as SongC} from '../../services/ResourceManager';
 import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
 import SongsManager from '../../views/play-list-content/SongsManager';
 
@@ -27,6 +27,7 @@ function PlaylistContent() {
 	const [currentSongID, setCurrentSongID] = useState<string | undefined>();
 	const [removeSong, setRemoveSong] = useState<SongC | null>(null);
 
+	const [audioPlayerShows, setAudioPlayerShows] = useState(false);
 	const [hideDialog, dialogShows, showDialog] = useVisibility([() => setRemoveSong(null)]);
 	const [hideMenu, menuShows, showMenu] = useVisibility();
 	const [hideSongsManager, songsManagerShows, showSongsManager] = useVisibility(undefined, [() => hideMenu()]);
@@ -100,7 +101,9 @@ function PlaylistContent() {
 				</Menu>
 			</Appbar.Header>
 
-			<AudioPlayer audioID={currentSongID} setAudioID={setCurrentSongID} songs={songs}/>
+			{/*<AudioPlayer audioID={currentSongID} setAudioID={setCurrentSongID} songs={songs}/>*/}
+			<NewAudioPlayer shows={audioPlayerShows} tracks={songs.map(song => new TrackAdapter(song))}/>
+			<Button onPress={() => setAudioPlayerShows(val => !val)}>Audio Player</Button>
 
 			<RemoveFromPlayListDialog hide={hideDialog}
 			                          playListID={route.params.id}

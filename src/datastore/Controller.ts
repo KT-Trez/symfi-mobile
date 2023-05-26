@@ -1,7 +1,7 @@
 import DataStore, {Query} from 'react-native-local-mongodb';
 
 
-export default class Controller {
+export default abstract class Controller {
 	protected static store: DataStore;
 
 	public static async countAsync(query: Query) {

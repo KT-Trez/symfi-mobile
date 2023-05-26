@@ -1,7 +1,7 @@
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import * as MediaLibrary from 'expo-media-library';
 import {Actionsheet, Icon, Spinner, Text, VStack} from 'native-base';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ToastAndroid} from 'react-native';
 import {Musicly} from '../../../types';
 import SongsController from '../../datastore/SongsController';
@@ -16,8 +16,6 @@ interface SongActionsProps {
 
 // todo: move to song's card
 function SongActions({data, hide, isVisible}: SongActionsProps) {
-	const songsDB = useRef(new SongsController());
-
 	const [isDownloaded, setIsDownloaded] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 
@@ -26,7 +24,7 @@ function SongActions({data, hide, isVisible}: SongActionsProps) {
 		if (!data)
 			return;
 
-		if (await songsDB.current.countAsync({id: data.id}) > 0)
+		if (await SongsController.countAsync({id: data.id}) > 0)
 			setIsDownloaded(true);
 		else
 			setIsDownloaded(false);

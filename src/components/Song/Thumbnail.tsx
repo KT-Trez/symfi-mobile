@@ -1,5 +1,6 @@
-import {AspectRatio, Box, Image, Skeleton} from 'native-base';
-import React, {useState} from 'react';
+import {Box} from 'native-base';
+import React from 'react';
+import {Cover} from '../Cover';
 import Timestamp from '../Timestamp';
 
 
@@ -11,27 +12,9 @@ interface ThumbnailProps {
 }
 
 function Thumbnail({id, loadPlaceholder, timestamp, uri}: ThumbnailProps) {
-	// flag corresponding to image loading errors
-	const [imageErrored, setImageErrored] = useState(false);
-
 	return (
 		<Box w={'40%'}>
-			<AspectRatio ratio={16 / 9}>
-				{imageErrored ?
-					<Skeleton startColor={'light.600'} endColor={'light.700'} h={'100%'}
-					          rounded={'md'}/>
-					:
-					<Image alt={`${id} cover`}
-					       onError={() => setImageErrored(true)}
-					       resizeMode={'contain'}
-					       resizeMethod={'resize'}
-					       rounded={'md'}
-					       h={'100%'}
-					       w={'100%'}
-					       source={loadPlaceholder && uri ? {uri: uri} : require('../../../assets/song_placeholder.png')}/>
-				}
-			</AspectRatio>
-
+			<Cover alt={`${id}'s cover`} uri={loadPlaceholder ? undefined : uri}/>
 			<Timestamp time={timestamp}/>
 		</Box>
 	);

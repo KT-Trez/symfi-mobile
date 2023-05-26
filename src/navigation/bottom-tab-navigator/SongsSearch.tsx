@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
 import {Appbar, Menu, Searchbar, useTheme} from 'react-native-paper';
 import {Musicly} from '../../../types';
-import Song from '../../components/Song';
+import Song from '../../components/Song/Song';
 import useVisibility from '../../hooks/useVisibility';
 import ResourceManager from '../../services/ResourceManager';
 import ServerSetup from '../../views/songs-search/ServerSetup';

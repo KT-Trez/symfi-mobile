@@ -1,14 +1,13 @@
 import {NavigationContext} from '@react-navigation/native';
 import * as MediaLibrary from 'expo-media-library';
 import {PermissionStatus} from 'expo-media-library';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {ToastAndroid} from 'react-native';
-import ManageDialog from '../../components/ManageDialog';
-import useAssetRemoval from '../../hooks/useAssetRemoval';
-import {Store} from '../../datastore/Store';
-import PlayListController from '../../datastore/PlayListController';
 import {Musicly} from '../../../types';
+import ManageDialog from '../../components/ManageDialog';
+import PlayListController from '../../datastore/PlayListController';
 import SongsController from '../../datastore/SongsController';
+import {Store} from '../../datastore/Store';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
 import useVisibility from '../../hooks/useVisibility';
 
@@ -81,11 +80,11 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 
 	return (
 		<ManageDialog hide={hideDialog}
-					  isVisible={dialogShows}
-					  onCancel={hideDialog}
-					  onDelete={removeSong}
-					  onEdit={editSong}
-					  resourceName={'song'}/>
+		              isVisible={dialogShows}
+		              onCancel={hideDialog}
+		              onDelete={removeSong}
+		              onEdit={editSong}
+		              resourceName={'song'}/>
 	);
 }
 

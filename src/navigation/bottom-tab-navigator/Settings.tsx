@@ -10,9 +10,6 @@ import ResourceManager from '../../services/ResourceManager';
 
 
 function Settings() {
-	// const playlistsDB = useRef(new PlayListController());
-	const songsDB = useRef(new SongsController());
-
 	// const [isLoading, setIsLoading] = useState(false);
 	const [reloadingFromDisc, setReloadingFromDisc] = useState(false);
 
@@ -112,7 +109,7 @@ function Settings() {
 
 		for (const asset of assets) {
 			const assetID = asset.filename.slice(0, asset.filename.lastIndexOf('.'));
-			if (await songsDB.current.countAsync({id: assetID}) === 0)
+			if (await SongsController.countAsync({id: assetID}) === 0)
 				assetsToValidate.push(assetID);
 		}
 
@@ -133,16 +130,17 @@ function Settings() {
 			if (res.data.length !== 0)
 				for (const songMetadata of res.data) {
 					const asset = assets.find(asset => asset.filename === songMetadata.id + '.wav');
-					const {size} = await FileSystem.getInfoAsync(asset!.uri);
+					const fileInfo = await FileSystem.getInfoAsync(asset!.uri);
 
-					await ResourceManager.Song.create(songMetadata, {
-						file: {
-							downloadDate: new Date(asset!.creationTime),
-							id: asset!.id,
-							path: asset!.uri,
-							size
-						}
-					});
+					if (fileInfo.exists)
+						await ResourceManager.Song.create(songMetadata, {
+							file: {
+								downloadDate: new Date(asset!.creationTime),
+								id: asset!.id,
+								path: asset!.uri,
+								size: fileInfo.size
+							}
+						});
 				}
 		} catch (err) {
 			console.error(err);

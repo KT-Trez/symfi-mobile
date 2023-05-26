@@ -27,7 +27,12 @@
     },
     "icon": "./assets/icon.png",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
     },
     "name": "Musicly",
     "orientation": "portrait",

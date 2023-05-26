@@ -1,4 +1,4 @@
-import {Musicly} from '../../typings';
+import {Musicly} from '../../types';
 
 
 export interface SongPlayListDataConstructor {

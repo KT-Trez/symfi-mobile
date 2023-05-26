@@ -1,6 +1,4 @@
 import {Musicly} from '../../types';
-import {PlaylistData, SavedSongMetadata} from '../../types/interfaces.js';
-import {Musicly} from '../../typings';
 import config from '../config';
 
 

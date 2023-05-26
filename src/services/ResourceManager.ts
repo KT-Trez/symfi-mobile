@@ -7,10 +7,8 @@ import {Musicly} from '../../types';
 import {PlaylistMetadata, SavedSongMetadata, SongMetadata} from '../../types/interfaces';
 import PlayListData, {PlayListDataConstructor} from '../classes/PlayListData';
 import SongData, {SongDataConstructor} from '../classes/SongData';
-import {Store} from '../datastore/Store';
-import {Musicly} from '../../typings';
-import SongsController from '../datastore/SongsController';
 import PlayListController from '../datastore/PlayListController';
+import SongsController from '../datastore/SongsController';
 
 
 class Net {
@@ -149,7 +147,7 @@ class Song extends SongData {
 		return songsArr;
 	}
 
-	public static async create(data: SongMetadata) {
+	public static async create(data: SongMetadata, musicly?: Partial<Musicly.Data.SongMusicly>) {
 		const options: SongDataConstructor = {
 			channel: data.channel,
 			description: data.description,
@@ -217,7 +215,7 @@ class Song extends SongData {
 
 	public async loadPlayList(playList: Musicly.Data.SongPlayList | string) {
 		if (typeof playList === 'string')
-			this.musicly.playList = await Store.songPlayLists.findOneAsync({
+			this.musicly.playList = await PlayListController.store.findOneAsync({
 				playListID: playList,
 				songID: this.id
 			}) as Musicly.Data.SongPlayList;
@@ -237,15 +235,17 @@ class Song extends SongData {
 			}
 
 		const asset = await MediaLibrary.createAssetAsync(uri);
-		const {size} = await FileSystem.getInfoAsync(uri);
+		const fileInfo = await FileSystem.getInfoAsync(uri);
 
-		this.musicly.file = {
-			downloadDate: new Date(),
-			id: asset.id,
-			path: asset.uri,
-			size
-		};
-		this.musicly.flags.isDownloaded = true;
+		if (fileInfo.exists) {
+			this.musicly.file = {
+				downloadDate: new Date(),
+				id: asset.id,
+				path: asset.uri,
+				size: fileInfo.size
+			};
+			this.musicly.flags.isDownloaded = true;
+		}
 	}
 
 	private async saveCover(uri: string) {

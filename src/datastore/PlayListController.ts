@@ -1,5 +1,3 @@
-import DataStore from 'react-native-local-mongodb';
-import DefaultDataStore from './Default';
 import Controller from './Controller';
 import {Store} from './Store';
 
