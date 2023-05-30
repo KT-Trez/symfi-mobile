@@ -5,8 +5,8 @@ import {Musicly} from '../../../types';
 import Song from '../../components/Song/Song';
 import useVisibility from '../../hooks/useVisibility';
 import ResourceManager from '../../services/ResourceManager';
-import ServerSetup from '../../views/songs-search/ServerSetup';
-import SongActions from '../../views/songs-search/SongActions';
+import ServerSetup from './ServerSetup';
+import SongActions from './SongActions';
 
 
 function SongsSearch() {

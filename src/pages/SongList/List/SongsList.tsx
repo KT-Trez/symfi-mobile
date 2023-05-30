@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Appbar, useTheme} from 'react-native-paper';
-import AudioPlayer from '../../components/AudioPlayer';
-import Song from '../../components/Song/Song';
-import useSongs from '../../hooks/useSongs';
-import EditDialog from '../../views/songs-list/EditDialog';
-import Search from '../../views/songs-list/Search';
+import AudioPlayer from '../../../components/AudioPlayer';
+import {Song} from '../../../components/Song';
+import useSongs from '../../../hooks/useSongs';
+import EditDialog from './EditDialog';
+import Search from './Search';
 
 
 function SongsList() {

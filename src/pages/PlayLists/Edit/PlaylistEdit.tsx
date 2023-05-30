@@ -2,13 +2,13 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {Button, Surface, Text, TextInput} from 'react-native-paper';
-import {PlaylistMetadata} from '../../../types/interfaces';
-import {RootPlayListsStackParamList} from '../../../types/navigation';
-import CoverChange from '../../components/CoverChange';
-import LoadingView from '../../components/LoadingView';
-import useAssetRemoval from '../../hooks/useAssetRemoval';
-import useImagePicker from '../../hooks/useImagePicker';
-import PlayListController from '../../datastore/PlayListController';
+import {PlaylistMetadata} from '../../../../types/interfaces';
+import {RootPlayListsStackParamList} from '../../../../types/navigation';
+import CoverChange from '../../../components/CoverChange';
+import LoadingView from '../../../components/LoadingView';
+import PlayListController from '../../../datastore/PlayListController';
+import useAssetRemoval from '../../../hooks/useAssetRemoval';
+import useImagePicker from '../../../hooks/useImagePicker';
 
 
 type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistEdit'>;

@@ -2,17 +2,17 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, Button, Menu, Text, useTheme} from 'react-native-paper';
-import {Musicly} from '../../../types';
-import {RootPlayListsStackParamList} from '../../../types/navigation';
-import TrackAdapter from '../../classes/TrackAdapter';
-import {NewAudioPlayer} from '../../components/NewAudioPlayer';
-import Song from '../../components/Song/Song';
-import {Store} from '../../datastore/Store';
-import useCompare from '../../hooks/useCompare';
-import useVisibility from '../../hooks/useVisibility';
-import ResourceManager, {Song as SongC} from '../../services/ResourceManager';
-import RemoveFromPlayListDialog from '../../views/play-list-content/RemoveFromPlayListDialog';
-import SongsManager from '../../views/play-list-content/SongsManager';
+import {Musicly} from '../../../../types';
+import {RootPlayListsStackParamList} from '../../../../types/navigation';
+import TrackAdapter from '../../../classes/TrackAdapter';
+import {NewAudioPlayer} from '../../../components/NewAudioPlayer';
+import {Song} from '../../../components/Song';
+import {Store} from '../../../datastore/Store';
+import useCompare from '../../../hooks/useCompare';
+import useVisibility from '../../../hooks/useVisibility';
+import ResourceManager, {Song as SongC} from '../../../services/ResourceManager';
+import RemoveFromPlayListDialog from './RemoveFromPlayListDialog';
+import SongsManager from './SongsManager';
 
 
 type ProfileScreenRouteProp = RouteProp<RootPlayListsStackParamList, 'PlaylistContent'>;

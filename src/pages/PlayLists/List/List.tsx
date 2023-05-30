@@ -2,15 +2,15 @@ import {NavigationContext} from '@react-navigation/native';
 import React, {useContext, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, FAB, Menu, Provider, Text, useTheme} from 'react-native-paper';
-import {Musicly} from '../../../types';
-import usePlayLists from '../../hooks/usePlayLists';
-import useVisibility from '../../hooks/useVisibility';
-import Creator from '../../views/play-lists-menu/Creator';
-import EditDialog from '../../views/play-lists-menu/EditDialog';
-import PlayList from '../../views/play-lists-menu/PlayList';
+import {Musicly} from '../../../../types';
+import usePlayLists from '../../../hooks/usePlayLists';
+import useVisibility from '../../../hooks/useVisibility';
+import Creator from './Creator';
+import EditDialog from './EditDialog';
+import PlayList from './PlayList';
 
 
-function PlayListsMenu() {
+function List() {
 	// constants
 	const {colors} = useTheme();
 	const navigation = useContext(NavigationContext);
@@ -159,4 +159,4 @@ const css = StyleSheet.create({
 	}
 });
 
-export default PlayListsMenu;
+export default List;

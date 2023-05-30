@@ -1,6 +1,6 @@
-import {Store} from './Store';
 import SongPlayListData, {SongPlayListDataConstructor} from '../classes/SongPlayListData';
 import Controller from './Controller';
+import {Store} from './Store';
 
 
 export default class SongsController extends Controller {

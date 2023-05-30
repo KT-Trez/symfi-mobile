@@ -2,9 +2,9 @@ import {NavigationContext} from '@react-navigation/native';
 import React, {useContext} from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Avatar, IconButton, Text, useTheme} from 'react-native-paper';
-import {Musicly} from '../../../types';
-import Stack from '../../components/Stack';
-import {PlayList as CPlayList} from '../../services/ResourceManager';
+import {Musicly} from '../../../../types';
+import Stack from '../../../components/Stack';
+import {PlayList as CPlayList} from '../../../services/ResourceManager';
 
 
 interface PlayListProps {

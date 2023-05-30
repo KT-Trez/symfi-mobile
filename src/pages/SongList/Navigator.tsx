@@ -1,13 +1,13 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {RootSongsStackParamList} from '../../../types/navigation';
-import SongEdit from '../songs-stack-navigator/SongEdit';
-import SongsList from '../songs-stack-navigator/SongsList';
+import SongEdit from './Edit/SongEdit';
+import SongsList from './List/SongsList';
 
 
 const {Navigator, Screen} = createNativeStackNavigator<RootSongsStackParamList>();
 
-function SongsStackNavigator() {
+function SongListNavigator() {
 	const defaultOptions = {
 		headerShown: false
 	};
@@ -24,4 +24,4 @@ function SongsStackNavigator() {
 	);
 }
 
-export default SongsStackNavigator;
+export default SongListNavigator;

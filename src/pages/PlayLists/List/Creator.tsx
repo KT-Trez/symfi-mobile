@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button, Modal, Portal, Text, TextInput, useTheme} from 'react-native-paper';
-import PlayListController from '../../datastore/PlayListController';
+import PlayListController from '../../../datastore/PlayListController';
 
 
 interface CreatorProps {

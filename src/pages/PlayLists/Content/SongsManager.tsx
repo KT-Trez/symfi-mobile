@@ -2,10 +2,10 @@ import moment from 'moment';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
 import {Modal, Portal, Searchbar, Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../types/interfaces';
-import Stack from '../../components/Stack';
-import SongsController from '../../datastore/SongsController';
-import useCompare from '../../hooks/useCompare';
+import {SavedSongMetadata} from '../../../../types/interfaces';
+import Stack from '../../../components/Stack';
+import SongsController from '../../../datastore/SongsController';
+import useCompare from '../../../hooks/useCompare';
 
 
 interface SongsManagerProps {

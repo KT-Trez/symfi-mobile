@@ -1,15 +1,15 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {RootPlayListsStackParamList} from '../../../types/navigation';
-import ChangeOrder from '../play-list-stack-navigator/ChangeOrder';
-import PlaylistContent from '../play-list-stack-navigator/PlaylistContent';
-import PlaylistEdit from '../play-list-stack-navigator/PlaylistEdit';
-import PlayListsMenu from '../play-list-stack-navigator/PlayListsMenu';
+import PlaylistContent from './Content/PlaylistContent';
+import PlaylistEdit from './Edit/PlaylistEdit';
+import List from './List/List';
+import ChangeOrder from './Order/ChangeOrder';
 
 
 const {Navigator, Screen} = createNativeStackNavigator<RootPlayListsStackParamList>();
 
-function PlayListStackNavigator() {
+function PlayListsNavigator() {
 	const defaultOptions = {
 		headerShown: false
 	};
@@ -22,7 +22,7 @@ function PlayListStackNavigator() {
 			<Screen component={PlaylistEdit}
 					name={'PlaylistEdit'}
 					options={defaultOptions}/>
-			<Screen component={PlayListsMenu}
+			<Screen component={List}
 					name={'PlaylistMenu'}
 					options={defaultOptions}/>
 			<Screen component={ChangeOrder}
@@ -32,4 +32,4 @@ function PlayListStackNavigator() {
 	);
 }
 
-export default PlayListStackNavigator;
+export default PlayListsNavigator;

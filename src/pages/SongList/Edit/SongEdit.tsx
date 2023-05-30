@@ -1,15 +1,15 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Text} from 'react-native-paper';
-import {SavedSongMetadata} from '../../../types/interfaces';
-import {RootSongsStackParamList} from '../../../types/navigation';
-import CoverChange from '../../components/CoverChange';
-import LoadingView from '../../components/LoadingView';
-import Setting from '../../components/Setting';
-import useAssetRemoval from '../../hooks/useAssetRemoval';
-import useImagePicker from '../../hooks/useImagePicker';
-import ResourceManager from '../../services/ResourceManager';
-import SongsController from '../../datastore/SongsController';
+import {SavedSongMetadata} from '../../../../types/interfaces';
+import {RootSongsStackParamList} from '../../../../types/navigation';
+import CoverChange from '../../../components/CoverChange';
+import LoadingView from '../../../components/LoadingView';
+import Setting from '../../../components/Setting';
+import SongsController from '../../../datastore/SongsController';
+import useAssetRemoval from '../../../hooks/useAssetRemoval';
+import useImagePicker from '../../../hooks/useImagePicker';
+import ResourceManager from '../../../services/ResourceManager';
 
 
 type ProfileScreenRouteProp = RouteProp<RootSongsStackParamList, 'SongEdit'>;

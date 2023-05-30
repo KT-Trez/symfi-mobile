@@ -1,9 +1,9 @@
-import {Store} from '../datastore/Store';
-import {SavedSongMetadata} from '../../typings/interfaces';
-import SongPlayListData, {SongPlayListDataConstructor} from '../classes/SongPlayListData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SavedSongMetadata} from '../../types/interfaces';
+import SongPlayListData, {SongPlayListDataConstructor} from '../classes/SongPlayListData';
 import config from '../config';
 import SongsController from '../datastore/SongsController';
+import {Store} from '../datastore/Store';
 
 
 // !important: implement

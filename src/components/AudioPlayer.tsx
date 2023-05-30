@@ -4,8 +4,8 @@ import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Surface, Text, useTheme} from 'react-native-paper';
-import {Song as SongC} from '../services/ResourceManager';
 import useRandomInt from '../hooks/useRandomInt';
+import {Song as SongC} from '../services/ResourceManager';
 
 
 interface AudioPlayerProps {

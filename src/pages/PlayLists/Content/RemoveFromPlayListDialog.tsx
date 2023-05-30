@@ -1,8 +1,8 @@
 import React from 'react';
 import {Button, Dialog, Paragraph, Portal, useTheme} from 'react-native-paper';
-import {Song as SongC} from '../../services/ResourceManager';
-import SongsController from '../../datastore/SongsController';
-import PlayListController from '../../datastore/PlayListController';
+import PlayListController from '../../../datastore/PlayListController';
+import SongsController from '../../../datastore/SongsController';
+import {Song as SongC} from '../../../services/ResourceManager';
 
 
 interface RemoveFromPlayListDialogProps {

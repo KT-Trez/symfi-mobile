@@ -3,13 +3,13 @@ import * as MediaLibrary from 'expo-media-library';
 import {PermissionStatus} from 'expo-media-library';
 import React, {useEffect} from 'react';
 import {ToastAndroid} from 'react-native';
-import {Musicly} from '../../../types';
-import ManageDialog from '../../components/ManageDialog';
-import PlayListController from '../../datastore/PlayListController';
-import SongsController from '../../datastore/SongsController';
-import {Store} from '../../datastore/Store';
-import useAssetRemoval from '../../hooks/useAssetRemoval';
-import useVisibility from '../../hooks/useVisibility';
+import {Musicly} from '../../../../types';
+import ManageDialog from '../../../components/ManageDialog';
+import PlayListController from '../../../datastore/PlayListController';
+import SongsController from '../../../datastore/SongsController';
+import {Store} from '../../../datastore/Store';
+import useAssetRemoval from '../../../hooks/useAssetRemoval';
+import useVisibility from '../../../hooks/useVisibility';
 
 
 interface EditDialogProps {

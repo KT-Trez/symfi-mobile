@@ -1,11 +1,11 @@
 import React from 'react';
 import {FlatList, StyleSheet} from 'react-native';
 import {Button, IconButton, Surface, Text, useTheme} from 'react-native-paper';
-import LoadingView from '../../components/LoadingView';
-import Stack from '../../components/Stack';
-import {PlayList} from '../../services/ResourceManager';
-import ChipAvatar from '../../views/play-lists-menu/ChipAvatar';
-import usePlayLists from '../../hooks/usePlayLists';
+import LoadingView from '../../../components/LoadingView';
+import Stack from '../../../components/Stack';
+import usePlayLists from '../../../hooks/usePlayLists';
+import {PlayList} from '../../../services/ResourceManager';
+import ChipAvatar from '../List/ChipAvatar';
 
 
 function ChangeOrder() {
