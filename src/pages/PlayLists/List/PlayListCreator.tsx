@@ -7,27 +7,28 @@ import PlayListService from '../../../services/playlist.service';
 interface PlayListCreatorProps {
     hide: () => void;
     isVisible: boolean;
-    reloadList?: () => void;
+    refreshList?: () => void;
 }
 
-function PlayListCreator({hide, isVisible, reloadList}: PlayListCreatorProps) {
+function PlayListCreator({hide, isVisible, refreshList}: PlayListCreatorProps) {
     const [isNameValid, setIsNameValid] = useState(false);
     const [name, setName] = useState('');
 
-    const createAlbum = async () => {
+    const createPlayList = async () => {
         if (!name)
             return setIsNameValid(true);
 
         await PlayListService.create(name);
 
-        if (reloadList)
-            reloadList();
+        if (refreshList)
+            refreshList();
         hide();
     };
 
     return (
         <Modal isOpen={isVisible} onClose={hide}>
             <Modal.Content>
+                <Modal.CloseButton/>
                 <Modal.Header>Create Playlist</Modal.Header>
                 <Modal.Body>
                     <FormControl isInvalid={isNameValid}>
@@ -48,8 +49,8 @@ function PlayListCreator({hide, isVisible, reloadList}: PlayListCreatorProps) {
 
                 <Modal.Footer>
                     <Button.Group>
-                        <Button variant={'ghost'} onPress={hide}>Back</Button>
-                        <Button onPress={createAlbum}>Create</Button>
+                        <Button onPress={hide} variant={'ghost'}>Back</Button>
+                        <Button onPress={createPlayList}>Create</Button>
                     </Button.Group>
                 </Modal.Footer>
             </Modal.Content>

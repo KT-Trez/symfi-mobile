@@ -1,8 +1,8 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {RootPlayListsStackParamList} from '../../../types/navigation';
-import PlaylistContent from './Content/PlaylistContent';
-import PlaylistEdit from './Edit/PlaylistEdit';
+import PlayListContent from './Content/PlayListContent';
+import PlayListEdit from './Edit/PlayListEdit';
 import List from './List/List';
 import ChangeOrder from './Order/ChangeOrder';
 
@@ -16,10 +16,10 @@ function PlayListsNavigator() {
 
 	return (
 		<Navigator initialRouteName={'PlaylistMenu'}>
-			<Screen component={PlaylistContent}
+			<Screen component={PlayListContent}
 					name={'PlaylistContent'}
 					options={defaultOptions}/>
-			<Screen component={PlaylistEdit}
+			<Screen component={PlayListEdit}
 					name={'PlaylistEdit'}
 					options={defaultOptions}/>
 			<Screen component={List}

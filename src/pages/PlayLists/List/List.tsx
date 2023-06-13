@@ -67,7 +67,7 @@ function List() {
             {creatorShows &&
                 <PlayListCreator hide={hideCreator}
                                  isVisible={creatorShows}
-                                 reloadList={refreshPlayLists}/>
+                                 refreshList={refreshPlayLists}/>
             }
 
             <FlatList bgColor={'primary.50'}
@@ -94,7 +94,7 @@ function List() {
             <PlayListActions close={closeActions}
                              isOpen={!!actionsFor}
                              playListId={actionsFor}
-                             refreshPlaylistsList={refreshPlayLists}/>
+                             refreshPlayListsList={refreshPlayLists}/>
         </>
     );
 }

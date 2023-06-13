@@ -9,17 +9,17 @@ interface PlayListActionsProps {
     close: () => void;
     isOpen: boolean;
     playListId: string | undefined;
-    refreshPlaylistsList: () => void;
+    refreshPlayListsList: () => void;
 }
 
-function PlayListActions({close, isOpen, playListId, refreshPlaylistsList}: PlayListActionsProps) {
+function PlayListActions({close, isOpen, playListId, refreshPlayListsList}: PlayListActionsProps) {
     const navigation = useContext(NavigationContext);
 
     const deletePlayList = async () => {
         if (!playListId)
             return;
         await PlayListService.remove(playListId);
-        refreshPlaylistsList();
+        refreshPlayListsList();
         close();
     };
 
@@ -39,7 +39,7 @@ function PlayListActions({close, isOpen, playListId, refreshPlaylistsList}: Play
                     Delete
                 </Actionsheet.Item>
                 <Actionsheet.Item onPress={editPlayList}
-                                  startIcon={<Icon as={MaterialCommunityIcons} name={'pencil'} size={6}/>}
+                                  startIcon={<Icon as={MaterialCommunityIcons} name={'playlist-edit'} size={6}/>}
                 >
                     Edit
                 </Actionsheet.Item>

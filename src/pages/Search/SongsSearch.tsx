@@ -80,7 +80,7 @@ function SongsSearch() {
 						<Song bottomLabel={item.metadata.views.label}
 						      data={item}
 						      imageURI={item.metadata.thumbnails[0].url}
-						      onPressSelect={() => setSelectedSong(item)}/>
+						      selectOnPress={() => setSelectedSong(item)}/>
 						// <Song item={item}/>
 					}/>
 			}

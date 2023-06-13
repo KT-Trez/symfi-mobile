@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
-import {ActivityIndicator, Appbar, useTheme} from 'react-native-paper';
+import {ActivityIndicator, Appbar} from 'react-native-paper';
 
 
 interface LoadingPageProps {
@@ -12,11 +12,9 @@ interface LoadingPageProps {
 }
 
 function LoadingView({appbarActions, children, isLoading, sx, title}: LoadingPageProps) {
-	const {colors} = useTheme();
-
 	return (
-		<View style={[css.container, {backgroundColor: colors.background}]}>
-			<Appbar.Header elevated mode={'small'}>
+		<>
+            <Appbar.Header elevated mode={'small'}>
 				<Appbar.Content title={title}/>
 				{appbarActions}
 			</Appbar.Header>
@@ -28,7 +26,7 @@ function LoadingView({appbarActions, children, isLoading, sx, title}: LoadingPag
 				:
 				<ActivityIndicator size={'large'} style={css.activityIndicator}/>
 			}
-		</View>
+		</>
 	);
 }
 

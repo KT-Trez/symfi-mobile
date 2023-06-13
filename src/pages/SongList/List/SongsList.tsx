@@ -40,8 +40,8 @@ function SongsList() {
 				        <Song
 					        bottomLabel={`${Math.round((item.musicly.file.size ?? 0) / 1024 / 1024 * 100) / 100}MB`}
 					        data={item}
-					        onLongPressSelect={setSongToManageID}
-					        onPressSelect={setSongToPlayID}/>}
+					        selectOnLongPress={setSongToManageID}
+					        selectOnPress={setSongToPlayID}/>}
 			        searchbarText={'Search for saved song'}
 			        searchEmptyText={'You have no saved songs yet.'}/>
 		</View>

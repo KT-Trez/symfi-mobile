@@ -20,20 +20,23 @@ function PlayList({item, openActions}: PlayListProps) {
                           onLongPress={() => openActions(item.id)}>
             <HStack bg={'primary.100'} m={'auto'} mt={0.5} mb={0.5} rounded={'md'} w={'98%'}>
                 <HStack alignItems={'center'} justifyContent={'center'} w={'20%'}>
-                        <Avatar bg={'gray.400'} source={{uri: item.cover.uri}}>
-                            {item.name[0].toUpperCase()}
-                        </Avatar>
+                    <Avatar bg={'gray.400'} source={{uri: item.cover.uri}}>
+                        {item.name[0].toUpperCase()}
+                    </Avatar>
                 </HStack>
 
                 <VStack alignItems={'flex-start'} p={2} w={'70%'}>
                     <Text bold
+                          color={'text.900'}
                           fontSize={'md'}
                           isTruncated
                           numberOfLines={2}
                     >
                         {item.name}
                     </Text>
-                    <Text fontSize={'xs'}>{item.songsCount} {item.songsCount !== 1 ? 'songs' : 'song'}</Text>
+                    <Text color={'text.700'} fontSize={'xs'}>
+                        {item.songsCount} {item.songsCount !== 1 ? 'songs' : 'song'}
+                    </Text>
                 </VStack>
             </HStack>
         </TouchableOpacity>

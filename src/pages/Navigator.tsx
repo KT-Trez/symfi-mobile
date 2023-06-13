@@ -16,7 +16,7 @@ function MainNavigator() {
 
     return (
         <>
-            <StatusBar backgroundColor={colors.primary['700']}
+            <StatusBar backgroundColor={colors.primary['800']}
                        barStyle={colorMode ? `${colorMode}-content` : 'default'}/>
             <Navigator initialRouteName={'playlists'}>
                 <Screen component={PlayListsNavigator}
@@ -35,7 +35,7 @@ function MainNavigator() {
                             tabBarLabel: 'Search'
                         }}/>
                 <Screen component={SongListNavigator}
-                        name={'saved-audio'}
+                        name={'SongList'}
                         options={{
                             headerShown: false,
                             tabBarIcon: ({color, size}) => (

@@ -1,6 +1,7 @@
 import {Musicly} from '../../types';
 import PlayListController from '../datastore/PlayListController';
 import SongsController from '../datastore/SongsController';
+import useAssetRemoval from '../hooks/useAssetRemoval';
 import useRandomId from '../hooks/useRandomId';
 
 
@@ -29,5 +30,10 @@ export default class PlayListService {
             await SongsController.removeFromPlayList(song.id, id);
 
         await PlayListController.store.removeAsync({id: id}, {});
+    }
+
+    static async removeCover(id: string, coverUri: string) {
+        await useAssetRemoval(coverUri);
+        await PlayListController.updateCover(id);
     }
 }
