@@ -5,7 +5,7 @@ import LoadingView from '../../../components/LoadingView';
 import Stack from '../../../components/Stack';
 import usePlayLists from '../../../hooks/usePlayLists';
 import {PlayList} from '../../../services/ResourceManager';
-import ChipAvatar from '../List/ChipAvatar';
+import ChipAvatar from './ChipAvatar';
 
 
 function ChangeOrder() {

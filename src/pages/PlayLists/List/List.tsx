@@ -1,162 +1,102 @@
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {NavigationContext} from '@react-navigation/native';
+import {Fab, FlatList, Icon, Menu, Text} from 'native-base';
 import React, {useContext, useState} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-import {Appbar, FAB, Menu, Provider, Text, useTheme} from 'react-native-paper';
-import {Musicly} from '../../../../types';
+import {AppBar, AppBarButton} from '../../../components/AppBar';
 import usePlayLists from '../../../hooks/usePlayLists';
 import useVisibility from '../../../hooks/useVisibility';
-import Creator from './Creator';
-import EditDialog from './EditDialog';
 import PlayList from './PlayList';
+import PlayListActions from './PlayListActions';
+import PlayListCreator from './PlayListCreator';
 
 
 function List() {
-	// constants
-	const {colors} = useTheme();
-	const navigation = useContext(NavigationContext);
+    // constants
+    const navigation = useContext(NavigationContext);
 
-	const [isLoading, playLists, refreshPlayLists, sortPlayLists] = usePlayLists();
+    // state
+    const [actionsFor, setActionsFor] = useState<string | undefined>();
 
-	// todo: prevent going back
-	const [manageDialogOptions, setManageDialogOptions] = useState<Musicly.Components.ManageDialogOptions | null>(null);
+    const [isLoading, playLists, refreshPlayLists, sortPlayLists] = usePlayLists();
 
-	const [hideCreator, creatorShows, showCreator] = useVisibility();
-	const [hideMenu, menuShows, showMenu] = useVisibility();
-	const [hideSort, sortShows, showSort] = useVisibility();
+    // methods
+    const closeActions = () => setActionsFor(undefined);
 
-	const goToPlayListOrder = () => navigation?.navigate('PlayListOrder');
+    const goToPlayListOrder = () => navigation?.navigate('PlayListOrder');
 
-	const goToSettings = () => navigation?.navigate('Settings');
+    // showing and hiding elements
+    const [hideCreator, creatorShows, showCreator] = useVisibility();
 
-	// showing and hiding elements
-	const hideDeleteAndEditDialog = () => {
-		setManageDialogOptions(null);
-	};
+    // sorting playLists
+    const sortByNameAscending = () => sortPlayLists(item => item.name);
+    const sortByNameDescending = () => sortPlayLists(item => item.name, true);
+    const sortByOrderAscending = () => sortPlayLists(item => item.order);
+    const sortByOrderDescending = () => sortPlayLists(item => item.order, true);
 
-	const showDeleteDialog = () => {
-		hideMenu();
-		setManageDialogOptions({
-			isDelete: true
-		});
-	};
+    return (
+        <>
+            <AppBar subtitle={`${playLists.length} playlist${playLists.length != 1 ? 's' : ''}`} title={'Home'}>
+                <Menu trigger={triggerProps => <AppBarButton icon={'sort'} triggerProps={triggerProps}/>}>
+                    <Menu.Item onPress={sortByNameAscending}>
+                        <Icon as={MaterialCommunityIcons} name={'sort-alphabetical-ascending'} size={'md'}/>
+                        <Text>Asc by title</Text>
+                    </Menu.Item>
+                    <Menu.Item onPress={sortByNameDescending}>
+                        <Icon as={MaterialCommunityIcons} name={'sort-alphabetical-descending'} size={'md'}/>
+                        <Text>Desc by title</Text>
+                    </Menu.Item>
 
-	const showEditDialog = () => {
-		hideMenu();
-		setManageDialogOptions({
-			isEdit: true
-		});
-	};
+                    <Menu.Item onPress={sortByOrderAscending}>
+                        <Icon as={MaterialCommunityIcons} name={'sort-numeric-ascending'} size={'md'}/>
+                        <Text>Asc by order</Text>
+                    </Menu.Item>
+                    <Menu.Item onPress={sortByOrderDescending}>
+                        <Icon as={MaterialCommunityIcons} name={'sort-numeric-descending'} size={'md'}/>
+                        <Text>Desc by order</Text>
+                    </Menu.Item>
+                </Menu>
 
-	// sorting playLists
-	const sortByNameAscending = () => {
-		sortPlayLists(item => item.name);
-		hideSort();
-	};
-	const sortByNameDescending = () => {
-		sortPlayLists(item => item.name, true);
-		hideSort();
-	};
+                <Menu trigger={triggerProps => <AppBarButton icon={'dots-vertical'} triggerProps={triggerProps}/>}>
+                    <Menu.Item onPress={goToPlayListOrder}>
+                        <Icon as={MaterialCommunityIcons} name={'format-list-bulleted-type'} size={'md'}/>
+                        <Text>Change Order</Text>
+                    </Menu.Item>
+                </Menu>
+            </AppBar>
 
-	const sortByOrderAscending = () => {
-		sortPlayLists(item => item.order);
-		hideSort();
-	};
-	const sortByOrderDescending = () => {
-		sortPlayLists(item => item.order, true);
-		hideSort();
-	};
+            {creatorShows &&
+                <PlayListCreator hide={hideCreator}
+                                 isVisible={creatorShows}
+                                 reloadList={refreshPlayLists}/>
+            }
 
-	return (
-		<Provider>
-			<View style={[css.container, {backgroundColor: colors.background}]}>
-				<Appbar.Header dark={true} elevated mode={'small'}>
-					{(!manageDialogOptions || manageDialogOptions.isManage) &&
-						<Appbar.Content title={playLists.length + (playLists.length !== 1 ? ' playlists' : ' playlist')}/>
-					}
+            <FlatList bgColor={'primary.50'}
+                      data={playLists}
+                      keyExtractor={item => item.id}
+                      ListEmptyComponent={
+                          <Text fontSize={'md'} mt={'5'} textAlign={'center'}>You have no playlists yet.</Text>
+                      }
+                      onRefresh={refreshPlayLists}
+                      pb={0.5}
+                      pt={0.5}
+                      refreshing={isLoading}
+                      renderItem={({item}) =>
+                          <PlayList item={item}
+                                    openActions={setActionsFor}/>}
+            />
 
-					{!manageDialogOptions || manageDialogOptions.isManage ?
-						<>
-							<Menu anchor={<Appbar.Action icon={'sort'} onPress={showSort}/>}
-								  anchorPosition={'bottom'}
-								  onDismiss={hideSort}
-								  visible={sortShows}>
-								<Menu.Item leadingIcon={'sort-alphabetical-ascending'}
-										   onPress={sortByNameAscending}
-										   title={'Asc by name'}/>
-								<Menu.Item leadingIcon={'sort-alphabetical-descending'}
-										   onPress={sortByNameDescending}
-										   title={'Dsc by name'}/>
-								<Menu.Item leadingIcon={'sort-numeric-ascending'}
-										   onPress={sortByOrderAscending}
-										   title={'Asc by order'}/>
-								<Menu.Item leadingIcon={'sort-numeric-descending'}
-										   onPress={sortByOrderDescending}
-										   title={'Dsc by order'}/>
-							</Menu>
+            <Fab bottom={2}
+                 icon={<Icon as={MaterialCommunityIcons} name={'plus'} size={'xl'}/>}
+                 onPress={showCreator}
+                 renderInPortal={false}
+                 right={2}/>
 
-							<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
-								  anchorPosition={'bottom'}
-								  onDismiss={hideMenu}
-								  visible={menuShows}>
-								<Menu.Item leadingIcon={'delete'} onPress={showDeleteDialog} title={'Delete'}/>
-								<Menu.Item leadingIcon={'pencil'} onPress={showEditDialog} title={'Edit'}/>
-								<Menu.Item leadingIcon={'format-list-bulleted-type'}
-										   onPress={goToPlayListOrder}
-										   title={'Order'}/>
-								<Menu.Item leadingIcon={'cog'} onPress={goToSettings} title={'Settings'}/>
-							</Menu>
-						</>
-						:
-						<Appbar.Action icon={'cancel'} onPress={hideDeleteAndEditDialog} style={{marginLeft: 'auto'}}/>
-					}
-				</Appbar.Header>
-
-				<Creator hide={hideCreator}
-						 isVisible={creatorShows}
-						 reloadList={refreshPlayLists}/>
-
-				<EditDialog options={manageDialogOptions}
-							refreshPlaylistsList={refreshPlayLists}
-							setOptions={setManageDialogOptions}/>
-
-				<FlatList data={playLists}
-						  keyExtractor={item => item.id}
-						  ListEmptyComponent={
-							  <Text style={css.flatListText} variant={'bodyMedium'}>You have no playlists yet.</Text>
-						  }
-						  onRefresh={refreshPlayLists}
-						  refreshing={isLoading}
-						  renderItem={({item}) => <PlayList manageOptions={manageDialogOptions}
-															item={item}
-															setManageDialogOptions={setManageDialogOptions}/>}
-						  style={css.flatList}/>
-
-				<FAB icon={'plus'}
-					 onPress={showCreator}
-					 style={css.fab}/>
-			</View>
-		</Provider>
-	);
+            <PlayListActions close={closeActions}
+                             isOpen={!!actionsFor}
+                             playListId={actionsFor}
+                             refreshPlaylistsList={refreshPlayLists}/>
+        </>
+    );
 }
-
-const css = StyleSheet.create({
-	container: {
-		flex: 1,
-		position: 'relative'
-	},
-	fab: {
-		bottom: 10,
-		position: 'absolute',
-		right: 10
-	},
-	flatList: {
-		paddingBottom: 2.5,
-		paddingTop: 2.5
-	},
-	flatListText: {
-		margin: 15,
-		textAlign: 'center'
-	}
-});
 
 export default List;

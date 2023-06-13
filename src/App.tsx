@@ -3,7 +3,7 @@ import {NativeBaseProvider} from 'native-base';
 import React, {useEffect} from 'react';
 import {MD3DarkTheme, Provider as PaperProvider} from 'react-native-paper';
 import useSchemaUpdate from './hooks/useSchemaUpdate';
-import BottomTabNavigator from './navigation/BottomTabNavigator';
+import MainNavigator from './pages/Navigator';
 import ResourceManager from './services/ResourceManager';
 
 
@@ -32,24 +32,20 @@ import ResourceManager from './services/ResourceManager';
 // }
 
 export default function App() {
-	useEffect(() => {
-		// playerSetup();
+    useEffect(() => {
+        // playerSetup();
 
-		ResourceManager.Net.loadRemote();
-		useSchemaUpdate();
+        ResourceManager.Net.loadRemote();
+        useSchemaUpdate();
+    }, []);
 
-		return () => {
-			// TrackPlayer.
-		}
-	}, []);
-
-	return (
-		<NativeBaseProvider>
-			<PaperProvider theme={MD3DarkTheme}>
-				<NavigationContainer theme={DarkTheme}>
-					<BottomTabNavigator/>
-				</NavigationContainer>
-			</PaperProvider>
-		</NativeBaseProvider>
-	);
+    return (
+        <NativeBaseProvider>
+            <PaperProvider theme={MD3DarkTheme}>
+                <NavigationContainer theme={DarkTheme}>
+                    <MainNavigator/>
+                </NavigationContainer>
+            </PaperProvider>
+        </NativeBaseProvider>
+    );
 }
