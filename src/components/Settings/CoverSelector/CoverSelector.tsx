@@ -1,8 +1,8 @@
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Box, Button, HStack, Icon} from 'native-base';
 import React from 'react';
-import {Cover} from '../Cover';
-import {Overlay} from '../Overlay';
+import {Cover} from '../../Cover';
+import {Overlay} from '../../Overlay';
 
 
 interface CoverChangeProps {

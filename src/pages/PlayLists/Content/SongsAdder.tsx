@@ -74,7 +74,7 @@ function SongsAdder({close, playListID, refreshPlayList, isOpen}: SongsAdderProp
                            width='100%'
                     />
 
-                    <Box mt={4}>
+                    <Box mt={3}>
                         {searchedSongs.map(song =>
                             <TouchableOpacity key={song.id} onPress={() => addToPlaylist(song.id)}>
                                 <Box bg={'primary.100'} mb={0.5} mt={0.5} p={2} rounded={'md'}>
@@ -92,7 +92,7 @@ function SongsAdder({close, playListID, refreshPlayList, isOpen}: SongsAdderProp
                         )}
 
                         {searchedSongs.length === 0 &&
-                            <Text fontSize={'md'} mb={4} textAlign={'center'}>No results.</Text>
+                            <Text fontSize={'md'} mb={3} textAlign={'center'}>No results.</Text>
                         }
                     </Box>
                 </Modal.Body>

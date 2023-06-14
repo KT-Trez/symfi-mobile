@@ -1,87 +1,145 @@
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {RouteProp, useRoute} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Text} from 'react-native-paper';
+import {Button, Divider, HStack, Icon, VStack} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {SavedSongMetadata} from '../../../../types/interfaces';
 import {RootSongsStackParamList} from '../../../../types/navigation';
-import CoverChange from '../../../components/CoverChange';
-import LoadingView from '../../../components/LoadingView';
-import Setting from '../../../components/Setting';
+import {AppBar} from '../../../components/AppBar';
+import {CoverSelector, TextSetting} from '../../../components/Settings';
 import SongsController from '../../../datastore/SongsController';
-import useAssetRemoval from '../../../hooks/useAssetRemoval';
 import useImagePicker from '../../../hooks/useImagePicker';
 import ResourceManager from '../../../services/ResourceManager';
+import SongService from '../../../services/song.service';
+import useSongUpdate from '../hooks/useSongUpdate';
 
 
 type ProfileScreenRouteProp = RouteProp<RootSongsStackParamList, 'SongEdit'>;
 
 function SongEdit() {
-	// constants
-	const route = useRoute<ProfileScreenRouteProp>();
-	const songID = route.params?.id;
+    // constants
+    const route = useRoute<ProfileScreenRouteProp>();
+    const songId = route.params?.id;
 
-	// flags
-	const [isLoading, setIsLoading] = useState(false);
+    // song metadata
+    const [song, setSong] = useState<SavedSongMetadata | undefined>(undefined);
 
-	// song metadata
-	const [song, setSong] = useState<SavedSongMetadata | undefined>(undefined);
+    const [author, setAuthor] = useState('');
+    const [published, setPublished] = useState('');
+    const [title, setTitle] = useState('');
+    const [views, setViews] = useState('');
 
-	// methods
-	const changeCover = async () => {
-		if (!song)
-			return;
+    // updating
+    const [isAuthorUpdating, updateAuthor] = useSongUpdate('author', song?.id, author);
+    const [isPublishedUpdating, updatePublished] = useSongUpdate('published on', song?.id, published);
+    const [isTitleUpdating, updateTitle] = useSongUpdate('title', song?.id, title);
+    const [isViewsUpdating, updateViews] = useSongUpdate('views', song?.id, views);
 
-		const [uri, isCanceled] = await useImagePicker(songID, [16, 9]);
+    const [isCoverDownloading, setIsCoverDownloading] = useState(false);
 
-		if (isCanceled)
-			return;
+    // methods
+    const deleteCover = async () => {
+        if (!song || !song.musicly.flags.hasCover)
+            return;
 
-		await SongsController.updateCover(songID, uri);
-		await getSong();
-	};
+        await SongService.removeCover(song.id, song.musicly.cover.uri!);
+        await getSong();
+    };
 
-	const getOriginalCover = async () => {
-		const songResource = await ResourceManager.Song.deserialize(songID);
-		await songResource.getRemoteCover(song?.metadata.thumbnails[0].url!);
-		await getSong();
-	};
+    const editCover = async () => {
+        const [uri, isCanceled] = await useImagePicker(songId, [16, 9]);
 
-	const getSong = useCallback(async () => {
-		setIsLoading(true);
-		setSong(await SongsController.store.findOneAsync({id: songID}) as SavedSongMetadata);
-		setIsLoading(false);
-	}, []);
+        if (isCanceled)
+            return;
 
-	const removeCover = async () => {
-		if (!song || !song.musicly.flags.hasCover)
-			return;
+        await SongsController.updateCover(songId, uri);
+        await getSong();
+    };
 
-		await useAssetRemoval(song.musicly.cover.uri!);
-		await SongsController.updateCover(songID);
-		await getSong();
-	};
+    const getYouTubeCover = async () => {
+        setIsCoverDownloading(true);
 
-	// effects
-	useEffect(() => {
-		if (songID)
-			getSong();
-	}, []);
+        const songResource = await ResourceManager.Song.deserialize(songId);
+        await songResource.getRemoteCover(song?.metadata.thumbnails[0].url!);
 
-	return (
-		<LoadingView isLoading={isLoading} title={'Edit song'}>
-			<CoverChange aspectRatio={1.77}
-						 borderRadius={0}
-						 coverUri={song?.musicly.cover.uri}
-						 hasCover={song?.musicly.flags.hasCover ?? false}
-						 onChange={changeCover}
-						 onRemove={removeCover}/>
+        setIsCoverDownloading(false);
 
-			<Setting buttons={[
-				{fun: getOriginalCover, icon: 'file-download-outline', name: 'Original'}
-			]}>
-				<Text variant={'titleSmall'}>Get original cover</Text>
-			</Setting>
-		</LoadingView>
-	);
+        await getSong();
+    };
+
+    const getSong = async () => {
+        setSong(await SongsController.store.findOneAsync({id: songId}) as SavedSongMetadata);
+    };
+
+    // effects
+    useEffect(() => {
+        if (songId)
+            getSong();
+    }, []);
+
+    useEffect(() => {
+        if (song) {
+            setAuthor(song.channel.name);
+            setPublished(song.metadata.published);
+            setTitle(song.title); // @ts-ignore
+            if (song.metadata?.views?.label) // @ts-ignore
+                setViews(song.metadata.views.label);
+        }
+    }, [song]);
+
+    return (
+        <>
+            <AppBar subtitle={song?.title ?? ''} title={'Edit Song'}/>
+
+            <VStack bg={'primary.50'} h={'full'}>
+                <CoverSelector coverUri={song?.musicly.cover.uri} onDelete={deleteCover} onEdit={editCover}/>
+                <HStack justifyContent={'flex-end'} m={1} mt={-1} p={2} pt={0} w={'100%'}>
+                    <Button.Group direction={'column'} w={'1/3'}>
+                        <Button isLoading={isCoverDownloading}
+                                onPress={getYouTubeCover}
+                                startIcon={
+                                    <Icon as={MaterialCommunityIcons} name={'youtube'} size={6}/>
+                                }>YouTube</Button>
+                    </Button.Group>
+                </HStack>
+
+                <Divider/>
+                <TextSetting isInvalid={author.length === 0}
+                             isSaving={isAuthorUpdating}
+                             name={'Author'}
+                             onSave={updateAuthor}
+                             onTextChange={setAuthor}
+                             value={author}
+                />
+
+                <Divider/>
+                <TextSetting isInvalid={published.length === 0}
+                             isSaving={isPublishedUpdating}
+                             name={'Published On'}
+                             onSave={updatePublished}
+                             onTextChange={setPublished}
+                             value={published}
+                />
+
+                <Divider/>
+                <TextSetting isInvalid={title.length === 0}
+                             isSaving={isTitleUpdating}
+                             name={'Title'}
+                             onSave={updateTitle}
+                             onTextChange={setTitle}
+                             value={title}
+                />
+
+                <Divider/>
+                <TextSetting isInvalid={views.length === 0}
+                             isSaving={isViewsUpdating}
+                             name={'Views'}
+                             onSave={updateViews}
+                             onTextChange={setViews}
+                             value={views}
+                />
+            </VStack>
+        </>
+    );
 }
 
 export default SongEdit;

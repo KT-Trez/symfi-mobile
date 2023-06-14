@@ -1,5 +1,5 @@
 import {HStack, Text, VStack} from 'native-base';
-import React from 'react';
+import React, {memo} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {Musicly} from '../../../types';
 import {Song as SongC} from '../../services/ResourceManager';
@@ -25,7 +25,8 @@ function Song({bottomLabel, data, imageURI, selectOnLongPress, selectOnPress}: S
             selectOnPress(data.id);
     };
 
-    return (<TouchableOpacity onLongPress={handleLongPress} onPress={handlePress}>
+    return (
+        <TouchableOpacity onLongPress={handleLongPress} onPress={handlePress}>
             <HStack bg={'primary.100'} m={'1'} rounded={'md'}>
                 <Thumbnail id={data.id}
                            loadPlaceholder={!!imageURI} //@ts-ignore todo
@@ -48,4 +49,4 @@ function Song({bottomLabel, data, imageURI, selectOnLongPress, selectOnPress}: S
     );
 }
 
-export default Song;
+export default memo(Song);

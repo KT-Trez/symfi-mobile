@@ -5,7 +5,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {PlaylistMetadata} from '../../../../types/interfaces';
 import {RootPlayListsStackParamList} from '../../../../types/navigation';
 import {AppBar} from '../../../components/AppBar';
-import {CoverSelector} from '../../../components/CoverSelector';
+import {CoverSelector} from '../../../components/Settings';
 import PlayListController from '../../../datastore/PlayListController';
 import useImagePicker from '../../../hooks/useImagePicker';
 import PlayListService from '../../../services/playlist.service';
@@ -31,7 +31,7 @@ function PlayListEdit() {
             return;
 
         await PlayListService.removeCover(playList.id, playList.cover.uri!);
-        await getPlaylist();
+        await getPlayList();
     };
 
     const editCover = async () => {
@@ -41,12 +41,12 @@ function PlayListEdit() {
             return;
 
         await PlayListController.updateCover(playListId, uri);
-        await getPlaylist();
+        await getPlayList();
     };
 
-    const getPlaylist = useCallback(async () => {
+    const getPlayList = async () => {
         setPlayList(await PlayListController.store.findOneAsync({id: playListId}) as PlaylistMetadata);
-    }, []);
+    };
 
     const saveName = useCallback(async () => {
         if (!name)
@@ -54,7 +54,7 @@ function PlayListEdit() {
         setIsSavingName(true);
 
         await PlayListController.store.updateAsync({id: playListId}, {$set: {name: name}}, {});
-        await getPlaylist();
+        await getPlayList();
 
         setIsSavingName(false);
     }, [name]);
@@ -62,7 +62,7 @@ function PlayListEdit() {
     // effects
     useEffect(() => {
         if (playListId)
-            getPlaylist();
+            getPlayList();
     }, []);
 
     useEffect(() => {

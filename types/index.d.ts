@@ -1,6 +1,3 @@
-import {PlayList} from '../src/services/ResourceManager';
-
-
 export declare module Musicly {
 	export module Api {
 		export interface MediaInfo {
@@ -30,17 +27,6 @@ export declare module Musicly {
 			height: number;
 			url: string;
 			width: number;
-		}
-	}
-
-	export module Components {
-		export interface ManageDialogOptions {
-			isDelete?: boolean;
-			isEdit?: boolean;
-			isManage?: boolean;
-			message?: string;
-			playList?: PlayList;
-			title?: string;
 		}
 	}
 

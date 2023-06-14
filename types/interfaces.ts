@@ -1,3 +1,5 @@
+export type SongId = string;
+
 export interface PlaylistData {
 	id: string;
 	isFavourite: boolean;

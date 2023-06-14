@@ -82,7 +82,7 @@ function List() {
                       refreshing={isLoading}
                       renderItem={({item}) =>
                           <PlayList item={item}
-                                    openActions={setActionsFor}/>}
+                                    selectOnPress={setActionsFor}/>}
             />
 
             <Fab bottom={2}

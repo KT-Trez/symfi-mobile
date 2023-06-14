@@ -1,23 +1,27 @@
 import {NavigationContext} from '@react-navigation/native';
 import {Avatar, HStack, Text, VStack} from 'native-base';
-import React, {useContext} from 'react';
+import React, {memo, useContext} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {PlayList as CPlayList} from '../../../services/ResourceManager';
 
 
 interface PlayListProps {
     item: CPlayList;
-    openActions: (id: string) => void;
+    selectOnPress: (id: string) => void;
 }
 
-function PlayList({item, openActions}: PlayListProps) {
+function PlayList({item, selectOnPress}: PlayListProps) {
     const navigation = useContext(NavigationContext);
 
     const goToPlayList = () => navigation?.navigate('PlaylistContent', {id: item.id});
 
+    const handleLongPress = () => {
+        selectOnPress(item.id);
+    };
+
     return (
         <TouchableOpacity onPress={goToPlayList}
-                          onLongPress={() => openActions(item.id)}>
+                          onLongPress={handleLongPress}>
             <HStack bg={'primary.100'} m={'auto'} mt={0.5} mb={0.5} rounded={'md'} w={'98%'}>
                 <HStack alignItems={'center'} justifyContent={'center'} w={'20%'}>
                     <Avatar bg={'gray.400'} source={{uri: item.cover.uri}}>
@@ -43,4 +47,4 @@ function PlayList({item, openActions}: PlayListProps) {
     );
 }
 
-export default PlayList;
+export default memo(PlayList);
