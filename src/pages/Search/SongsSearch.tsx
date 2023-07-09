@@ -1,108 +1,96 @@
+import {MaterialIcons} from '@expo/vector-icons';
+import {Box, FlatList, HStack, Icon, Input, Spinner, Text} from 'native-base';
 import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
-import {Appbar, Menu, Searchbar, useTheme} from 'react-native-paper';
+import {ToastAndroid} from 'react-native';
 import {Musicly} from '../../../types';
+import {AppBar} from '../../components/AppBar';
 import Song from '../../components/Song/Song';
-import useVisibility from '../../hooks/useVisibility';
-import ResourceManager from '../../services/ResourceManager';
-import ServerSetup from './ServerSetup';
+import useOpen from '../../hooks/useOpen';
+import ApiService from '../../services/api.service';
 import SongActions from './SongActions';
 
 
 function SongsSearch() {
-	const {colors} = useTheme();
+    const [searchQuery, setSearchQuery] = useState('');
 
-	const [searchQuery, setSearchQuery] = useState('');
+    const [selectedSong, setSelectedSong] = useState<Musicly.Api.MediaInfo>();
+    const [songs, setSongs] = useState<Musicly.Api.MediaInfo[]>([]);
 
-	const [selectedSong, setSelectedSong] = useState<Musicly.Api.MediaInfo>();
-	const [songs, setSongs] = useState<Musicly.Api.MediaInfo[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [hideActionSheet, actionSheetShows, showActionSheet] = useOpen([() => setSelectedSong(undefined)]);
 
-	const [isLoading, setIsLoading] = useState(false);
-	const [hideMenu, menuShows, showMenu] = useVisibility();
-	const [hideActionSheet, actionSheetShows, showActionSheet] = useVisibility([() => setSelectedSong(undefined)]);
-	const [hideServerSetup, serverSetupShows, showServerSetup] = useVisibility(undefined, [hideMenu]);
+    const fetchSongs = useCallback(async () => {
+        if (!searchQuery || isLoading)
+            return;
 
-	const search = useCallback(async () => {
-		setIsLoading(true);
-		if (searchQuery) {
-			try {
-				const response = await ResourceManager.Net.axios({
-					method: 'get',
-					responseType: 'json',
-					url: '/v2/search/youtube?query=' + encodeURI(searchQuery)
-				});
+        setIsLoading(true);
+        try {
+            setSongs(await ApiService.searchSongs(searchQuery));
+        } catch (err) {
+            console.error(err);
+            ToastAndroid.showWithGravity(`Server returned an error [${err ?? 'unknown'}]. Try again later`, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [searchQuery])
 
-				setSongs(response.data);
-			} catch (err) {
-				console.error(err);
-				ToastAndroid.showWithGravity('Server returned an error, try again later', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-			} finally {
-				setIsLoading(false);
-			}
-		}
-	}, [searchQuery]);
+    // useDebounce(fetchSongs, 2500, [searchQuery]);
 
-	useEffect(() => {
-		if (selectedSong)
-			showActionSheet();
-	}, [selectedSong]);
+    useEffect(() => {
+        if (selectedSong)
+            showActionSheet();
+    }, [selectedSong]);
 
-	return (
-		<View style={[css.container, {backgroundColor: colors.background}]}>
-			<Appbar.Header elevated mode={'small'}>
-				<Appbar.Content title={'Search'}/>
+    return (
+        <>
+            <AppBar subtitle={'Powered by YouTube'} title={'Search'}/>
 
-				<Menu anchor={<Appbar.Action icon={'dots-vertical'} onPress={showMenu}/>}
-				      anchorPosition={'bottom'}
-				      onDismiss={hideMenu}
-				      visible={menuShows}>
-					<Menu.Item leadingIcon={'server'} onPress={showServerSetup} title={'Change Server'}/>
-				</Menu>
-			</Appbar.Header>
+            <Box bg={'primary.100'}>
+                <Input bg={'#fff'}
+                       borderRadius={'4'}
+                       fontSize={'md'}
+                       InputLeftElement={
+                           <Icon color='gray.400' m={2} ml={3} size='6' as={<MaterialIcons name='search'/>}/>
+                       }
+                       m={'auto'}
+                       mb={3}
+                       mt={3}
+                       onChangeText={setSearchQuery}
+                       onSubmitEditing={fetchSongs}
+                       placeholder={'Search Songs'}
+                       px={'1'}
+                       py={'3'}
+                       value={searchQuery}
+                       width='94%'
+                />
+            </Box>
 
-			<SafeAreaView>
-				<Searchbar onChangeText={setSearchQuery}
-				           onEndEditing={search}
-				           placeholder={'Search for music'}
-				           style={css.searchbar}
-				           value={searchQuery}/>
-			</SafeAreaView>
+            {isLoading ?
+                <HStack alignItems={'flex-start'} bg={'primary.50'} h={'full'} justifyContent={'center'}>
+                    <Spinner accessibilityLabel='Loading songs' size={'lg'}/>
+                </HStack>
+                :
+                <FlatList bg={'primary.100'}
+                          data={songs}
+                          ListEmptyComponent={
+                              <Text color={'gray.400'} fontSize={'xs'} mt={'2'} textAlign={'center'}>
+                                  Use search bar to view results.
+                              </Text>
+                          }
+                          keyExtractor={item => item.id}
+                          renderItem={({item}) =>
+                              <Song bottomLabel={item.metadata.views.label}
+                                    data={item}
+                                    imageURI={item.metadata.thumbnails[0].url}
+                                    selectOnPress={() => setSelectedSong(item)}/>
+                          }/>
+            }
 
-			<ServerSetup hide={hideServerSetup} shows={serverSetupShows}/>
-
-			{isLoading ?
-				<ActivityIndicator size={'large'} style={css.activityIndicator}/>
-				:
-				<FlatList
-					data={songs}
-					keyExtractor={item => item.id}
-					renderItem={({item}) =>
-						<Song bottomLabel={item.metadata.views.label}
-						      data={item}
-						      imageURI={item.metadata.thumbnails[0].url}
-						      selectOnPress={() => setSelectedSong(item)}/>
-						// <Song item={item}/>
-					}/>
-			}
-
-			<SongActions data={selectedSong}
-			             hide={hideActionSheet}
-			             isVisible={actionSheetShows}/>
-		</View>
-	);
+            <SongActions data={selectedSong}
+                         hide={hideActionSheet}
+                         isVisible={actionSheetShows}/>
+        </>
+    );
 }
-
-const css = StyleSheet.create({
-	activityIndicator: {
-		marginTop: 10
-	},
-	container: {
-		flex: 1
-	},
-	searchbar: {
-		margin: 5,
-		marginBottom: 2.5
-	}
-});
 
 export default SongsSearch;

@@ -5,6 +5,7 @@ import React, {useEffect, useState} from 'react';
 
 interface SearchBarProps<T extends object> {
     data: T[];
+    onSubmitEnding?: () => void;
     placeholder: string;
     // todo: replace with array
     searchFnOne: (item: T) => string;
@@ -14,6 +15,7 @@ interface SearchBarProps<T extends object> {
 
 function SearchBar<T extends object>({
                                          data,
+                                         onSubmitEnding,
                                          placeholder,
                                          searchFnOne,
                                          searchFnTwo,
@@ -26,9 +28,9 @@ function SearchBar<T extends object>({
     }, [searchQuery]);
 
     return (
-        <Box bg={'primary.50'}>
+        <Box bg={'primary.100'}>
             <Input bg={'#fff'}
-                   borderRadius={'4'}
+                   borderRadius={4}
                    fontSize={'md'}
                    InputLeftElement={
                        <Icon color='gray.400' m={2} ml={3} size='6' as={<MaterialIcons name='search'/>}/>
@@ -37,11 +39,12 @@ function SearchBar<T extends object>({
                    mb={3}
                    mt={3}
                    onChangeText={setSearchQuery}
+                   onSubmitEditing={onSubmitEnding}
                    placeholder={placeholder}
                    px={'1'}
                    py={'3'}
                    value={searchQuery}
-                   width='94%'
+                   w={'96%'}
             />
         </Box>
     );

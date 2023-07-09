@@ -39,15 +39,15 @@ function List() {
                        setSearchedData={setQueriedSongs}
             />
 
-            <FlatList bgColor={'primary.50'}
+            <FlatList bgColor={'primary.100'}
                       data={queriedSongs}
                       keyExtractor={(item) => item.id}
                       ListEmptyComponent={
                           <Text fontSize={'md'} mt={'5'} textAlign={'center'}>You have no saved songs yet.</Text>
                       }
                       onRefresh={refreshSongs}
-                      pb={0.5}
-                      pt={0.5}
+                      mt={-0.5}
+                      pb={1}
                       refreshing={isLoading}
                       renderItem={({item}) =>
                           <Song

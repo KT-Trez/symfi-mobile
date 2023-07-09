@@ -90,7 +90,7 @@ function SongEdit() {
         <>
             <AppBar subtitle={song?.title ?? ''} title={'Edit Song'}/>
 
-            <VStack bg={'primary.50'} h={'full'}>
+            <VStack bg={'primary.100'} h={'full'}>
                 <CoverSelector coverUri={song?.musicly.cover.uri} onDelete={deleteCover} onEdit={editCover}/>
                 <HStack justifyContent={'flex-end'} m={1} mt={-1} p={2} pt={0} w={'100%'}>
                     <Button.Group direction={'column'} w={'1/3'}>

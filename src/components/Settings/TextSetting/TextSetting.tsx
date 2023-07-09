@@ -8,11 +8,22 @@ interface TextSettingProps {
     isSaving: boolean;
     name: string;
     onSave: () => void;
+    onSubmitEditing?: () => void;
     onTextChange: (text: string) => void;
+    placeholder?: string;
     value: string;
 }
 
-function TextSetting({isInvalid, isSaving, name, onSave, onTextChange, value}: TextSettingProps) {
+function TextSetting({
+                         isInvalid,
+                         isSaving,
+                         name,
+                         onSave,
+                         onSubmitEditing,
+                         onTextChange,
+                         placeholder,
+                         value
+                     }: TextSettingProps) {
     return (
         <FormControl isInvalid={isInvalid} m={1} p={2}>
             <FormControl.Label>{name}</FormControl.Label>
@@ -31,6 +42,8 @@ function TextSetting({isInvalid, isSaving, name, onSave, onTextChange, value}: T
                     </Button>
                 }
                 onChangeText={onTextChange}
+                onSubmitEditing={onSubmitEditing}
+                placeholder={placeholder}
                 size={'md'}
                 variant={'filled'}
                 value={value}

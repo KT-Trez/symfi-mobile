@@ -8,7 +8,7 @@ import {AppBar, AppBarButton} from '../../../components/AppBar';
 import {Song} from '../../../components/Song';
 import {Store} from '../../../datastore/Store';
 import useCompare from '../../../hooks/useCompare';
-import useVisibility from '../../../hooks/useVisibility';
+import useOpen from '../../../hooks/useOpen';
 import ResourceManager, {Song as SongC} from '../../../services/ResourceManager';
 import SongActions from './SongActions';
 import SongsAdder from './SongsAdder';
@@ -25,8 +25,8 @@ function PlayListContent() {
     const [actionsFor, setActionsFor] = useState<string | undefined>();
     const [currentSongID, setCurrentSongID] = useState<string | undefined>();
 
-    const [closeAudioPlayer, isAudioPlayerOpen, openAudioPlayer] = useVisibility();
-    const [closeSongsAdder, isSongsAdderOpen, openSongsAdder] = useVisibility();
+    const [closeAudioPlayer, isAudioPlayerOpen, openAudioPlayer] = useOpen();
+    const [closeSongsAdder, isSongsAdderOpen, openSongsAdder] = useOpen();
 
     const closeActions = () => setActionsFor(undefined);
 
@@ -91,11 +91,13 @@ function PlayListContent() {
                             isOpen={isSongsAdderOpen}/>
             }
 
-            <FlatList bg={'primary.50'}
+            <FlatList bg={'primary.100'}
                       data={songs}
                       ListEmptyComponent={
                           <Text fontSize={'md'} mt={'5'} textAlign={'center'}>This playlist is empty.</Text>
                       }
+                      pb={0.5}
+                      pt={0.5}
                       renderItem={({item}) =>
                           <Song bottomLabel={`${Math.round((item.musicly.file.size ?? 0) / 1024 / 1024 * 100) / 100}MB`}
                                 data={item}

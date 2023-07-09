@@ -3,8 +3,8 @@ import {NavigationContext} from '@react-navigation/native';
 import {Fab, FlatList, Icon, Menu, Text} from 'native-base';
 import React, {useContext, useState} from 'react';
 import {AppBar, AppBarButton} from '../../../components/AppBar';
+import useOpen from '../../../hooks/useOpen';
 import usePlayLists from '../../../hooks/usePlayLists';
-import useVisibility from '../../../hooks/useVisibility';
 import PlayList from './PlayList';
 import PlayListActions from './PlayListActions';
 import PlayListCreator from './PlayListCreator';
@@ -25,7 +25,7 @@ function List() {
     const goToPlayListOrder = () => navigation?.navigate('PlayListOrder');
 
     // showing and hiding elements
-    const [hideCreator, creatorShows, showCreator] = useVisibility();
+    const [hideCreator, creatorShows, showCreator] = useOpen();
 
     // sorting playLists
     const sortByNameAscending = () => sortPlayLists(item => item.name);
@@ -70,15 +70,15 @@ function List() {
                                  refreshList={refreshPlayLists}/>
             }
 
-            <FlatList bgColor={'primary.50'}
+            <FlatList bgColor={'primary.100'}
                       data={playLists}
                       keyExtractor={item => item.id}
                       ListEmptyComponent={
                           <Text fontSize={'md'} mt={'5'} textAlign={'center'}>You have no playlists yet.</Text>
                       }
                       onRefresh={refreshPlayLists}
-                      pb={0.5}
-                      pt={0.5}
+                      pb={1}
+                      pt={1}
                       refreshing={isLoading}
                       renderItem={({item}) =>
                           <PlayList item={item}

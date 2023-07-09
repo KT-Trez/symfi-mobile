@@ -27,13 +27,13 @@ function Song({bottomLabel, data, imageURI, selectOnLongPress, selectOnPress}: S
 
     return (
         <TouchableOpacity onLongPress={handleLongPress} onPress={handlePress}>
-            <HStack bg={'primary.100'} m={'1'} rounded={'md'}>
+            <HStack bg={'primary.50'} m={'auto'} mb={1} mt={1} rounded={'md'} w={'96%'}>
                 <Thumbnail id={data.id}
                            loadPlaceholder={!!imageURI} //@ts-ignore todo
                            timestamp={data.metadata.duration.label ?? data.metadata.duration.simple_text}
                            uri={imageURI}/>
 
-                <VStack alignItems={'flex-start'} ml={2} pr={2} w={'60%'}>
+                <VStack alignItems={'flex-start'} ml={2} pr={2.5} w={'60%'}>
                     <Text
                         bold
                         color={'text.900'}

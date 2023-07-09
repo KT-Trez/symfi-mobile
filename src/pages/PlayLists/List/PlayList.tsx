@@ -22,7 +22,7 @@ function PlayList({item, selectOnPress}: PlayListProps) {
     return (
         <TouchableOpacity onPress={goToPlayList}
                           onLongPress={handleLongPress}>
-            <HStack bg={'primary.100'} m={'auto'} mt={0.5} mb={0.5} rounded={'md'} w={'98%'}>
+            <HStack bg={'primary.50'} m={'auto'} mt={1} mb={1} rounded={'md'} w={'96%'}>
                 <HStack alignItems={'center'} justifyContent={'center'} w={'20%'}>
                     <Avatar bg={'gray.400'} source={{uri: item.cover.uri}}>
                         {item.name[0].toUpperCase()}

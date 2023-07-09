@@ -74,7 +74,7 @@ function PlayListEdit() {
         <>
             <AppBar subtitle={playList?.name ?? ''} title={'Edit Playlist'}/>
 
-            <VStack bg={'primary.50'} h={'full'}>
+            <VStack bg={'primary.100'} h={'full'}>
                 <CoverSelector coverUri={playList?.cover.uri} onEdit={editCover} onDelete={deleteCover}/>
 
                 <Divider/>

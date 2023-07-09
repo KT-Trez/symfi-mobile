@@ -1,10 +1,9 @@
 import {DarkTheme, NavigationContainer} from '@react-navigation/native';
 import {NativeBaseProvider} from 'native-base';
 import React, {useEffect} from 'react';
-import {MD3DarkTheme, Provider as PaperProvider} from 'react-native-paper';
 import useSchemaUpdate from './hooks/useSchemaUpdate';
 import MainNavigator from './pages/Navigator';
-import ResourceManager from './services/ResourceManager';
+import ApiService from './services/api.service';
 
 
 // async function playerSetup() {
@@ -35,17 +34,15 @@ export default function App() {
     useEffect(() => {
         // playerSetup();
 
-        ResourceManager.Net.loadRemote();
+        ApiService.loadRemote();
         useSchemaUpdate();
     }, []);
 
     return (
         <NativeBaseProvider>
-            <PaperProvider theme={MD3DarkTheme}>
-                <NavigationContainer theme={DarkTheme}>
-                    <MainNavigator/>
-                </NavigationContainer>
-            </PaperProvider>
+            <NavigationContainer theme={DarkTheme}>
+                <MainNavigator/>
+            </NavigationContainer>
         </NativeBaseProvider>
     );
 }

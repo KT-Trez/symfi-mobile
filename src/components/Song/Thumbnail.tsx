@@ -1,7 +1,7 @@
 import {Box} from 'native-base';
 import React from 'react';
 import {Cover} from '../Cover';
-import Timestamp from '../Timestamp';
+import {Overlay} from '../Overlay';
 
 
 interface ThumbnailProps {
@@ -15,7 +15,7 @@ function Thumbnail({id, loadPlaceholder, timestamp, uri}: ThumbnailProps) {
 	return (
 		<Box w={'40%'}>
 			<Cover alt={`${id}'s cover`} uri={loadPlaceholder ? undefined : uri}/>
-			<Timestamp time={timestamp}/>
+			<Overlay bottom={1} right={1} size={'xs'} text={timestamp}/>
 		</Box>
 	);
 }

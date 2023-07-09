@@ -61,7 +61,8 @@ function SongsAdder({close, playListID, refreshPlayList, isOpen}: SongsAdderProp
                 <Modal.CloseButton/>
                 <Modal.Header>Add Song To Playlist</Modal.Header>
                 <Modal.Body>
-                    <Input borderRadius={'4'}
+                    <Input bg={'#fff'}
+                           borderRadius={'4'}
                            fontSize={'md'}
                            InputLeftElement={
                                <Icon color='gray.400' m={2} ml={3} size='6' as={<MaterialIcons name='search'/>}/>
@@ -77,7 +78,7 @@ function SongsAdder({close, playListID, refreshPlayList, isOpen}: SongsAdderProp
                     <Box mt={3}>
                         {searchedSongs.map(song =>
                             <TouchableOpacity key={song.id} onPress={() => addToPlaylist(song.id)}>
-                                <Box bg={'primary.100'} mb={0.5} mt={0.5} p={2} rounded={'md'}>
+                                <Box bg={'gray.100'} mb={1} mt={1} p={2} rounded={'md'}>
                                     <Text fontSize={'xs'} textAlign={'right'}>
                                         {moment(song.musicly.file.downloadDate).format('HH:mm:ss • DD/MM/YYYY')}
                                     </Text>

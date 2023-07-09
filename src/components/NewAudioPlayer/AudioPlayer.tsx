@@ -95,7 +95,7 @@ function AudioPlayer({shows, tracks}: AudioPlayerProps) {
 
             {/* todo: implement progress */}
             {/*	<View style={css.containerProgress}>*/}
-            {/*		<Text style={css.progressText}>{progressSimpleText ?? '00:00'}</Text>*/}
+            {/*		<TextSetting style={css.progressText}>{progressSimpleText ?? '00:00'}</TextSetting>*/}
             {/*		<View style={css.progressBar}>*/}
             {/*			<Slider maximumValue={duration ?? 1}*/}
             {/*			        maximumTrackTintColor={colors.primary}*/}
@@ -106,7 +106,7 @@ function AudioPlayer({shows, tracks}: AudioPlayerProps) {
             {/*			        thumbTintColor={colors.primary}*/}
             {/*			        value={progress ?? 0}/>*/}
             {/*		</View>*/}
-            {/*		<Text style={css.progressText}>{song?.metadata.duration.simple_text ?? '00:00'}</Text>*/}
+            {/*		<TextSetting style={css.progressText}>{song?.metadata.duration.simple_text ?? '00:00'}</TextSetting>*/}
             {/*	</View>*/}
         </Box>
     );
