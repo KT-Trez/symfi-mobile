@@ -1,10 +1,10 @@
-# dependencies
-/.expo/
-/node_modules/
+# build artifacts
+/android
+/dist
 
-# dist
-/dist/
-/web-build/
+# dependencies
+/.expo
+/node_modules
 
 # editors
 /.idea

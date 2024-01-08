@@ -1,6 +1,4 @@
-import {registerRootComponent} from 'expo';
-import App from './src/App';
+import { registerRootComponent } from 'expo';
+import { AppWrapper } from './src/App';
 
-
-registerRootComponent(App);
-// TrackPlayer.registerPlaybackService(() => require('./src/services/playback.service'));
+registerRootComponent(AppWrapper);
