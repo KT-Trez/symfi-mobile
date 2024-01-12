@@ -1,6 +1,1 @@
-import Overlay from './Overlay';
-
-
-export {
-    Overlay
-};
+export * from './Overlay';

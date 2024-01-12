@@ -1,6 +1,1 @@
-import Cover from './Cover';
-
-
-export {
-	Cover
-}
+export * from './Cover'

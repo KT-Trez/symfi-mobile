@@ -1,0 +1,16 @@
+import { Box } from 'native-base';
+import { Cover, Overlay } from '../';
+
+type ThumbnailProps = {
+  id: string;
+  loadPlaceholder: boolean;
+  timestamp: string;
+  uri?: string;
+};
+
+export const Thumbnail = ({ id, loadPlaceholder, timestamp, uri }: ThumbnailProps) => (
+  <Box w={'40%'}>
+    <Cover alt={`${id}'s cover`} uri={loadPlaceholder ? undefined : uri} />
+    <Overlay bottom={1} right={1} size={'xs'} text={timestamp} />
+  </Box>
+);

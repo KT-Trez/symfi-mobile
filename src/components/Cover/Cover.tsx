@@ -1,37 +1,37 @@
-import {AspectRatio, Image, Skeleton} from 'native-base';
-import {ResponsiveValue} from 'native-base/lib/typescript/components/types';
-import React, {useState} from 'react';
-import usePlaceholder from '../../hooks/usePlaceholder';
+import { AspectRatio, Image, Skeleton } from 'native-base';
+import { ResponsiveValue } from 'native-base/lib/typescript/components/types';
+import { useState } from 'react';
+import { useRandomV2 } from '../../hooks';
 
+type CoverProps = {
+  alt?: string;
+  uri?: false | string | undefined;
+  width?: ResponsiveValue<'px' | '0' | 'sm' | 'md' | 'lg' | 'xl' | string | number>;
+};
 
-interface CoverProps {
-    alt?: string;
-    uri?: string | undefined;
-    width?: ResponsiveValue<'px' | '0' | 'sm' | 'md' | 'lg' | 'xl' | string | number>;
-}
+export const Cover = ({ alt, uri, width }: CoverProps) => {
+  const { randomImage } = useRandomV2();
+  const [imageLoadingError, setImageLoadingError] = useState(false);
 
-function Cover({alt, uri, width}: CoverProps) {
-    // flag corresponding to image loading errors
-    const [imageNotLoaded, setImageNotLoaded] = useState(false);
-
-    return (
-        <AspectRatio ratio={16 / 9} w={width}>
-            {imageNotLoaded ?
-                <Skeleton startColor={'light.600'} endColor={'light.700'} h={'100%'}
-                          rounded={'md'}/>
-                :
-                <Image alt={alt ?? 'cover image'}
-                       onError={() => setImageNotLoaded(true)}
-                       resizeMode={'contain'}
-                       resizeMethod={'resize'}
-                       rounded={'md'}
-                       h={'100%'}
-                       w={'100%'}
-                       source={uri ? {uri} : usePlaceholder()}/>
-
-            }
-        </AspectRatio>
-    );
-}
+  // todo: select color based on color mode
+  return (
+    <AspectRatio ratio={16 / 9} w={width}>
+      {imageLoadingError ? (
+        <Skeleton endColor={'light.700'} h={'100%'} rounded={'md'} startColor={'light.600'} />
+      ) : (
+        <Image
+          alt={alt ?? 'Cover'}
+          h={'100%'}
+          onError={() => setImageLoadingError(true)}
+          resizeMethod={'resize'}
+          resizeMode={'contain'}
+          rounded={'md'}
+          source={uri ? { uri } : randomImage()}
+          w={'100%'}
+        />
+      )}
+    </AspectRatio>
+  );
+};
 
 export default Cover;
