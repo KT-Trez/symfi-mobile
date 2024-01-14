@@ -1,11 +1,11 @@
-import {FlatList, Text} from 'native-base';
-import React, {useCallback, useEffect, useState} from 'react';
-import {AppBar} from '../../../components/AppBar';
-import AudioPlayer from '../../../components/AudioPlayer';
-import {SearchBar} from '../../../components/SearchBar';
-import {Song} from '../../../components/Song';
+import { FlatList, Text } from 'native-base';
+import React, { useCallback, useEffect, useState } from 'react';
+import { AppBar } from '../../../components/AppBar';
+import DeprecatedAudioPlayer from '../../../components/DeprecatedAudioPlayer';
+import { SearchBar } from '../../../components/SearchBar';
+import { Song } from '../../../components/SongCard';
 import useSongs from '../../../hooks/useSongs';
-import {Song as SongR} from '../../../services/ResourceManager';
+import { Song as SongR } from '../../../services/ResourceManager';
 import SongActions from './SongActions';
 
 
@@ -29,7 +29,7 @@ function List() {
         <>
             <AppBar subtitle={songs.length + (songs.length !== 1 ? ' songs' : ' song')} title={'Local Audio'}/>
 
-            <AudioPlayer audioID={inPlaybackId} setAudioID={setInPlaybackId} songs={songs}/>
+      <DeprecatedAudioPlayer audioID={inPlaybackId} setAudioID={setInPlaybackId} songs={songs} />
 
             {/* todo: searchbar */}
             <SearchBar data={songs}
