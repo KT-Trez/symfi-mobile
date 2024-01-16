@@ -1,48 +1,41 @@
-import {DarkTheme, NavigationContainer} from '@react-navigation/native';
-import {NativeBaseProvider} from 'native-base';
-import React, {useEffect} from 'react';
-import useSchemaUpdate from './hooks/useSchemaUpdate';
-import MainNavigator from './pages/Navigator';
+import { NavigationContainer } from '@react-navigation/native';
+import { RealmProvider } from '@realm/react';
+import { NativeBaseProvider, StatusBar, useColorMode, useTheme } from 'native-base';
+import { useEffect } from 'react';
+import { AudioPlayerProvider, Loader } from './components';
+import { useCustomTheme } from './hooks';
+import useSchemaUpdate, { useSchemaUpdate2 } from './hooks/useSchemaUpdate';
+import { CollectionModel, ConfigItemModel } from './models';
+import { MainNavigator } from './modules';
 import ApiService from './services/api.service';
 
+export const AppWrapper = () => (
+  <NativeBaseProvider>
+    <RealmProvider deleteRealmIfMigrationNeeded fallback={Loader} schema={[CollectionModel, ConfigItemModel]}>
+      <App />
+    </RealmProvider>
+  </NativeBaseProvider>
+);
 
-// async function playerSetup() {
-// 	TrackPlayer.registerPlaybackService(() => PlaybackService);
-//
-// 	await TrackPlayer.setupPlayer();
-// 	await TrackPlayer.updateOptions({
-// 		android: {
-// 			appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback
-// 		},
-// 		capabilities: [
-// 			Capability.Play,
-// 			Capability.Pause,
-// 			Capability.SeekTo,
-// 			Capability.SkipToNext,
-// 			Capability.SkipToPrevious,
-// 			Capability.Stop
-// 		],
-// 		compactCapabilities: [Capability.Play, Capability.Pause],
-// 		// color: 'argb',
-// 		// icon: require('path'),
-// 		progressUpdateEventInterval: 1,
-// 		// ratingType: RatingType.Heart
-// 	});
-// }
+const App = () => {
+  const { colorMode } = useColorMode();
+  const { customTheme } = useCustomTheme();
+  const { getMigratedSchemas } = useSchemaUpdate2();
+  const { colors } = useTheme();
 
-export default function App() {
-    useEffect(() => {
-        // playerSetup();
+  useEffect(() => {
+    ApiService.loadRemote();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useSchemaUpdate();
+    getMigratedSchemas();
+  }, [getMigratedSchemas]);
 
-        ApiService.loadRemote();
-        useSchemaUpdate();
-    }, []);
-
-    return (
-        <NativeBaseProvider>
-            <NavigationContainer theme={DarkTheme}>
-                <MainNavigator/>
-            </NavigationContainer>
-        </NativeBaseProvider>
-    );
-}
+  return (
+    <AudioPlayerProvider>
+      <NavigationContainer theme={customTheme}>
+        <StatusBar backgroundColor={colors.primary['800']} barStyle={colorMode ? `${colorMode}-content` : 'default'} />
+        <MainNavigator />
+      </NavigationContainer>
+    </AudioPlayerProvider>
+  );
+};

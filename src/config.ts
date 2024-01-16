@@ -1,5 +1,7 @@
-const config = {
-	current_schema_version: 3
-}
+export const config = {
+  current_schema_version: 4,
+};
 
-export default config
+export const CURRENT_SCHEMA_VERSION = config.current_schema_version;
+
+export default config;
