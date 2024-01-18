@@ -1,11 +1,11 @@
 export declare type RootPlayListsStackParamList = {
-	PlaylistContent: { id: string, };
-	PlaylistEdit: { id: string };
-	PlaylistMenu: undefined;
-	PlayListOrder: undefined;
+  PlaylistContent: { id: string };
+  PlaylistEdit: { id: string };
+  PlaylistMenu: undefined;
+  PlayListOrder: undefined;
 };
 
 export declare type RootSongsStackParamList = {
-	SongEdit: { id: string };
-	SongsList: undefined;
+  SongEdit: { id: string };
+  SongsList: undefined;
 };
