@@ -1,15 +1,15 @@
+import { AudioPlayer, List, PageHeader, useAudioPlayer } from '@/components';
+import { ListProvider, useList } from '@/contexts';
+import { Store } from '@/datastore/Store';
+import { useCollection } from '@/hooks';
+import { usePluralFormV2 } from '@/hooks/usePluralForm';
+import { SongAdapter } from '@/models';
+import type { CollectionNavigatorParams, SongType } from '@/types';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useCallback } from 'react';
-import type { CollectionNavigatorParams, SongType } from 'types';
 import { Musicly } from '../../../../types';
 import { SavedSongMetadata } from '../../../../types/interfaces';
-import { AudioPlayer, List, PageHeader, useAudioPlayer } from '../../../components';
-import { ListProvider, useList } from '../../../contexts';
 import SongsController from '../../../datastore/SongsController';
-import { Store } from '../../../datastore/Store';
-import { useCollection } from '../../../hooks';
-import { usePluralFormV2 } from '../../../hooks/usePluralFormV2';
-import { SongAdapter } from '../../../models/Song';
 import { usePageHeaderActions } from './hooks';
 import { Song } from './Song';
 

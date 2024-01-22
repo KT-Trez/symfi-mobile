@@ -1,8 +1,7 @@
+import type { BaseListItem } from '@/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FlatList, HStack, Icon, Text } from 'native-base';
-import React from 'react';
+import { FlatList, HStack, Icon, Text, useTheme } from 'native-base';
 import { FlatListProps } from 'react-native';
-import type { BaseListItem } from 'types';
 
 type ListProps<T extends BaseListItem> = {
   data: T[];
@@ -13,11 +12,15 @@ type ListProps<T extends BaseListItem> = {
 };
 
 export const List = <T extends BaseListItem>({ data, emptyText, isLoading, onRefresh, renderItem }: ListProps<T>) => {
+  const { space } = useTheme();
+
   return (
     <FlatList
+      contentContainerStyle={{ gap: space[1], paddingBottom: space[2], paddingTop: space[2] }}
       data={data}
       keyExtractor={item => item.id}
       h={'100%'}
+      // ItemSeparatorComponent={ItemSeparator}
       ListEmptyComponent={
         <HStack alignItems="center" m={'auto'} mt={'5'}>
           <Text color="text.600" fontSize="sm" key={0}>
@@ -27,8 +30,8 @@ export const List = <T extends BaseListItem>({ data, emptyText, isLoading, onRef
         </HStack>
       }
       onRefresh={onRefresh}
-      pb={1}
-      pt={1}
+      pl={2}
+      pr={2}
       refreshing={isLoading}
       renderItem={renderItem}
     />

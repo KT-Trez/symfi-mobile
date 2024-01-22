@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
 import { NativeBaseProvider, StatusBar, useColorMode, useTheme } from 'native-base';
 import { useEffect } from 'react';
+
 import { AudioPlayerProvider, Loader } from './components';
 import { useCustomTheme } from './hooks';
 import useSchemaUpdate, { useSchemaUpdate2 } from './hooks/useSchemaUpdate';
