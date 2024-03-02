@@ -1,4 +1,4 @@
-import Realm from 'realm';
+import { Realm } from '@realm/react';
 
 export type BaseItem = {
   id: string | Realm.BSON.ObjectId;

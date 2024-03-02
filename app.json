@@ -48,7 +48,7 @@
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
-    "slug": "symfi",
+    "slug": "musicly",
     "splash": {
       "backgroundColor": "#1c1b1f",
       "image": "./assets/splash.png",

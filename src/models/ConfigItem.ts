@@ -1,4 +1,5 @@
 import { ConfigItem } from '@/types';
+import { Realm } from '@realm/react';
 
 export class ConfigItemModel extends Realm.Object<ConfigItem> {
   static schema: Realm.ObjectSchema = {

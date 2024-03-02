@@ -1,7 +1,7 @@
 import { Store } from '@/datastore/Store';
 import { CollectionModel, SongModel } from '@/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useQuery, useRealm } from '@realm/react';
+import { Realm, useQuery, useRealm } from '@realm/react';
 import { CollectionId } from '@types';
 import { useCallback, useEffect, useState } from 'react';
 import { PlaylistMetadata, SavedSongMetadata } from '../../types/interfaces';

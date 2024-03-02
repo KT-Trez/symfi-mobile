@@ -21,8 +21,6 @@ import ApiService from './services/api.service';
 export const AppWrapper = () => (
   <NativeBaseProvider>
     <RealmProvider
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       deleteRealmIfMigrationNeeded={!!process.env.EXPO_PUBLIC_DEVELOPMENT}
       fallback={Loader}
       schema={[
@@ -61,7 +59,7 @@ const App = () => {
   return (
     <AudioPlayerProvider>
       <NavigationContainer theme={customTheme}>
-        <StatusBar backgroundColor={colors.primary['800']} barStyle={colorMode ? `${colorMode}-content` : 'default'} />
+        <StatusBar backgroundColor={colors.primary['900']} barStyle={colorMode ? `${colorMode}-content` : 'default'} />
         <MainNavigator />
       </NavigationContainer>
     </AudioPlayerProvider>

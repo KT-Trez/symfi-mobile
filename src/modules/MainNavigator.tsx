@@ -26,7 +26,7 @@ export const MainNavigator = () => (
       name={'SettingsNavigator'}
       options={{
         headerShown: false,
-        tabBarIcon: ({ color, size }) => <MaterialIcons color={color} name={'settings'} size={size} />,
+        tabBarIcon: iconProps => <MaterialIcons {...iconProps} name={'settings'} />,
         tabBarLabel: 'Settings',
       }}
     />

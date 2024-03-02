@@ -18,6 +18,7 @@ export const CollectionPage = () => {
       <CollectionList />
       <Fab
         bottom={2}
+        bgColor="primary.700"
         icon={<Icon as={MaterialCommunityIcons} name={'plus'} size={'xl'} />}
         onPress={() => navigate('CollectionForm')}
         renderInPortal={false}

@@ -3,18 +3,23 @@
     "version": ">= 2.7.1"
   },
   "build": {
-    "preview": {
-      "distribution": "internal",
+    "base": {
       "android": {
         "buildType": "apk"
-      }
+      },
+      "distribution": "internal"
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true
+    },
+    "preview": {
+      "extends": "base",
+      "channel": "nightly"
     },
     "production": {
-      "channel": "latest",
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
+      "extends": "base",
+      "channel": "latest"
     }
   }
 }

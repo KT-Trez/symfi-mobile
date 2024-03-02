@@ -1,4 +1,5 @@
 import { CURRENT_SCHEMA_VERSION } from '@config';
+import { Realm } from '@realm/react';
 import type { Channel, CollectionId, Cover, Duration, File, PartialBy, SongId, SongType, Views } from '@types';
 import { Musicly } from '../../types';
 import type { SavedSongMetadata } from '../../types/interfaces';

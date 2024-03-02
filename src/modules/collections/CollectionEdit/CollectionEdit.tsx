@@ -2,7 +2,7 @@ import { CollectionModel } from '@/models';
 import { PageHeader, TextField } from '@components';
 import { useImagePickerV2 } from '@hooks';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { useObject, useRealm } from '@realm/react';
+import { Realm, useObject, useRealm } from '@realm/react';
 import type { CollectionNavigatorParams } from '@types';
 import { Divider, VStack } from 'native-base';
 import { useCallback } from 'react';
