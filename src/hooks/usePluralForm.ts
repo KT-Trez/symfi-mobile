@@ -13,11 +13,22 @@ function usePluralForm(objectsCount: number) {
  * @example const { s } = usePluralForm(2);
  * @param count - number of objects
  * @returns `s` if count !== 1
+ * @deprecated
  */
 export const usePluralFormV2 = (count: number) => {
   const s = count === 1 ? '' : 's';
 
   return { s };
+};
+
+/**
+ * Returns `s` if objects count not equal to 1.
+ * @example const s = usePluralForm(2);
+ * @param count - number of objects
+ * @returns `s` if count !== 1
+ */
+export const usePluralFormV3 = (count: number) => {
+  return count === 1 ? '' : 's';
 };
 
 export default usePluralForm;

@@ -1,15 +1,11 @@
-import { AudioPlayer, List, PageHeader, useAudioPlayer } from '@/components';
-import { ListProvider, useList } from '@/contexts';
-import { Store } from '@/datastore/Store';
-import { useCollection } from '@/hooks';
-import { usePluralFormV2 } from '@/hooks/usePluralForm';
-import { SongAdapter } from '@/models';
-import type { CollectionNavigatorParams, SongType } from '@/types';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { useCallback } from 'react';
-import { Musicly } from '../../../../types';
-import { SavedSongMetadata } from '../../../../types/interfaces';
-import SongsController from '../../../datastore/SongsController';
+import { AudioPlayer, List, PageHeader, useAudioPlayer } from '@components';
+import { useListContextProps, usePluralFormV2 } from '@hooks';
+import { CollectionModel, SongModel } from '@models';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import { useObject, useQuery } from '@realm/react';
+import type { CollectionNavigatorParams, SongListItem } from '@types';
+import { useMemo } from 'react';
+import { CollectionDetailsContext, useList } from './context';
 import { usePageHeaderActions } from './hooks';
 import { Song } from './Song';
 
@@ -20,53 +16,22 @@ export const CollectionDetails = () => {
     params: { id },
   } = useRoute<CollectionDetailsRouteProp>();
 
-  const onFetch = useCallback(async () => {
-    const songs: SongType[] = [];
-    const playListItems = (await Store.songPlayLists.findAsync({ playListID: id })) as Musicly.Data.SongPlayList[];
-
-    const songsToFetch = playListItems
-      .map(({ songID }) => songID)
-      .concat((await Store.playLists.findOneAsync({ id }))?.songs ?? []);
-
-    for (const songID of songsToFetch) {
-      const song = (await SongsController.store.findOneAsync({ id: songID })) as SavedSongMetadata;
-      songs.push(new SongAdapter(song));
-    }
-
-    return songs;
-  }, [id]);
-
-  return (
-    <ListProvider onFetch={onFetch}>
-      <CollectionDetailsComponent />
-    </ListProvider>
-  );
-};
-
-export const CollectionDetailsComponent = () => {
   const { currentSong } = useAudioPlayer();
-  const { displayedData, isLoading, reload } = useList<SongType>();
+  const { items } = useList();
+  const collection = useObject(CollectionModel, new Realm.BSON.ObjectId(id));
   const actions = usePageHeaderActions();
-  const { s } = usePluralFormV2(displayedData.length);
-  const {
-    params: { id },
-  } = useRoute<CollectionDetailsRouteProp>();
+  const { s } = usePluralFormV2(items.length);
 
-  const { collection } = useCollection(id);
+  const songs = useQuery(SongModel);
+  const filteredSongs = useMemo(() => songs.filtered(`$0 in collections`, new Realm.BSON.ObjectId(id)), [id, songs]);
+  const value = useListContextProps<SongListItem, SongModel>(filteredSongs);
 
   return (
-    <PageHeader
-      actions={actions}
-      subtitle={`${displayedData.length} item${s}`}
-      title={`Collection: ${collection?.name}`}
-    >
-      {currentSong && <AudioPlayer />}
-      <List
-        data={displayedData}
-        isLoading={isLoading}
-        onRefresh={reload}
-        renderItem={({ item }) => <Song item={item} />}
-      />
-    </PageHeader>
+    <CollectionDetailsContext.Provider value={value}>
+      <PageHeader actions={actions} subtitle={`${items.length} item${s}`} title={`Collection: ${collection?.name}`}>
+        {currentSong && <AudioPlayer />}
+        <List data={items} isLoading={false} renderItem={({ item }) => <Song item={item} />} />
+      </PageHeader>
+    </CollectionDetailsContext.Provider>
   );
 };

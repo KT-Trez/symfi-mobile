@@ -1,11 +1,12 @@
-import { CURRENT_SCHEMA_VERSION } from '@/config';
-import type { Channel, Cover, File, SongId, SongType } from '@/types';
+import { CURRENT_SCHEMA_VERSION } from '@config';
+import type { Channel, CollectionId, Cover, Duration, File, PartialBy, SongId, SongType, Views } from '@types';
 import { Musicly } from '../../types';
 import type { SavedSongMetadata } from '../../types/interfaces';
 import SongData from '../classes/SongData';
 
 export class SongAdapter implements SongType {
   channel: Channel;
+  collections: CollectionId[];
   cover?: Cover | undefined;
   duration: { label: string; seconds: number };
   file?: File | undefined;
@@ -21,6 +22,7 @@ export class SongAdapter implements SongType {
       name: data.channel.name,
       url: data.channel.url,
     };
+    this.collections = [];
     this.cover = data.musicly.flags.hasCover
       ? {
           name: data.musicly.cover.name,
@@ -107,27 +109,115 @@ export class SongAdapter implements SongType {
   }
 }
 
+export class ChannelModel extends Realm.Object<Channel, keyof Channel> {
+  static schema: Realm.ObjectSchema = {
+    name: 'Channel',
+    properties: {
+      name: 'string',
+      url: 'string',
+    },
+  };
+
+  name!: string;
+  url!: string;
+}
+
+export class CoverModel extends Realm.Object<Channel, keyof Channel> {
+  static schema: Realm.ObjectSchema = {
+    name: 'Cover',
+    properties: {
+      name: 'string',
+      uri: 'string',
+    },
+  };
+
+  name!: string;
+  uri!: string;
+}
+
+export class DurationModel extends Realm.Object<Duration, keyof Duration> {
+  static schema: Realm.ObjectSchema = {
+    name: 'Duration',
+    properties: {
+      label: 'string',
+      seconds: 'int',
+    },
+  };
+
+  label!: string;
+  seconds!: number;
+}
+
+export class FileModel extends Realm.Object<File, keyof File> {
+  static schema: Realm.ObjectSchema = {
+    name: 'File',
+    properties: {
+      downloadedAt: 'date',
+      id: 'string',
+      path: 'string',
+      size: 'int',
+    },
+  };
+
+  downloadedAt!: Date;
+  id!: string;
+  path!: string;
+  size!: number;
+}
+
+export class ViewsModel extends Realm.Object<Views, keyof Views> {
+  static schema: Realm.ObjectSchema = {
+    name: 'Views',
+    properties: {
+      count: 'int',
+      label: 'string',
+    },
+  };
+
+  count!: number;
+  label!: string;
+}
+
 export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cover' | 'file'>> {
   static schema: Realm.ObjectSchema = {
     name: 'Song',
     primaryKey: 'id',
     properties: {
-      channel: 'Channel',
-      file: 'File?',
+      channel: {
+        objectType: ChannelModel.schema.name,
+        type: 'object',
+      },
+      collections: 'objectId[]',
+      cover: {
+        objectType: CoverModel.schema.name,
+        optional: true,
+        type: 'object',
+      },
+      duration: {
+        objectType: DurationModel.schema.name,
+        type: 'object',
+      },
+      file: {
+        objectType: FileModel.schema.name,
+        optional: true,
+        type: 'object',
+      },
       id: 'string',
-      metadata: 'Metadata',
-      url: 'string',
-      title: 'string',
+      name: 'string',
+      published: 'string',
+      thumbnail: 'string',
       version: 'int',
+      views: {
+        objectType: ViewsModel.schema.name,
+        type: 'object',
+      },
     },
   };
 
   channel!: Channel;
+  collections!: CollectionId[];
   cover?: Cover;
-  duration!: {
-    label: string;
-    seconds: number;
-  };
+  duration!: Duration;
   file?: File;
   id!: SongId;
   name!: string;
@@ -141,16 +231,22 @@ export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cove
 
   static generate({
     channel,
+    collections,
+    cover,
     duration,
+    file,
     id,
     name,
     published,
     thumbnail,
     views,
-  }: Omit<SongType, 'cover' | 'file' | 'version'>): SongType {
+  }: PartialBy<SongType, 'cover' | 'collections' | 'file' | 'version'>): SongType {
     return {
       channel,
+      collections: collections || [],
+      cover,
       duration,
+      file,
       id,
       name,
       published,

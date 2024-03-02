@@ -1,7 +1,8 @@
 import { Store } from '@/datastore/Store';
-import { CollectionModel } from '@/models';
+import { CollectionModel, SongModel } from '@/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useRealm } from '@realm/react';
+import { CollectionId } from '@types';
 import { useCallback, useEffect, useState } from 'react';
 import { PlaylistMetadata, SavedSongMetadata } from '../../types/interfaces';
 import SongPlayListData, { SongPlayListDataConstructor } from '../classes/SongPlayListData';
@@ -25,7 +26,8 @@ const useSchemaUpdate = async () => {
         { id: song.id },
         {
           $set: {
-            // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             'musicly.file.downloadDate': song.createdAt,
             'musicly.flags.isDownloaded': true,
             'musicly.version': 1,
@@ -120,16 +122,77 @@ export const useSchemaUpdate2 = () => {
         version: { $lt: CURRENT_SCHEMA_VERSION },
       })) as PlaylistMetadata[];
 
+      const legacySongs = (await SongsController.store.findAsync({
+        'musicly.version': { $lt: CURRENT_SCHEMA_VERSION },
+      })) as SavedSongMetadata[];
+
+      const mappedCollectionIds = legacyCollections.reduce<Record<string, CollectionId>>((acc, { id }) => {
+        acc[id] = new Realm.BSON.ObjectId();
+
+        return acc;
+      }, {});
+
+      await realm.write(async () => {
+        for (const song of legacySongs) {
+          const legacySongPlayLists = (await PlayListController.store.findAsync({
+            songID: 'temp',
+            version: { $lt: CURRENT_SCHEMA_VERSION },
+          })) as SongPlayListData[];
+          const collectionIds = legacySongPlayLists.map(playlist => playlist.playListID);
+
+          const cover = song.musicly.cover.uri
+            ? {
+                name: song.musicly.cover.name,
+                uri: song.musicly.cover.uri,
+              }
+            : undefined;
+
+          const file = song.musicly.file.path
+            ? {
+                downloadedAt: song.musicly.file.downloadDate,
+                id: song.musicly.file.id!,
+                uri: song.musicly.file.path!,
+                size: song.musicly.file.size!,
+              }
+            : undefined;
+
+          const newSong = SongModel.generate({
+            channel: {
+              name: song.channel.name,
+              url: song.channel.url,
+            },
+            collections: collectionIds.map(id => mappedCollectionIds[id]),
+            cover,
+            duration: {
+              label: song.metadata.duration.simple_text,
+              seconds: song.metadata.duration.seconds,
+            },
+            file,
+            id: song.id,
+            name: song.title,
+            published: song.metadata.published,
+            thumbnail: song.metadata.thumbnails[0].url,
+            views: {
+              count: Number(song.metadata.view_count),
+              label: song.metadata.short_view_count_text.simple_text,
+            },
+          });
+          realm.create(SongModel.schema.name, newSong);
+        }
+      });
+
       realm.write(() => {
         for (const collection of legacyCollections) {
-          if (realm.objects(CollectionModel.schema.name).filtered(`id == "${collection.id}"`).length > 0) {
+          if (
+            realm.objects(CollectionModel.schema.name).filtered(`id == "${mappedCollectionIds[collection.id]}"`)
+              .length > 0
+          ) {
             continue;
           }
           const newCollection = CollectionModel.generate({
             coverUri: collection.cover.uri,
             order: collection.order,
-            title: collection.name,
-            version: 4,
+            name: collection.name,
           });
           realm.create(CollectionModel.schema.name, newCollection);
         }

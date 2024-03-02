@@ -1,37 +1,14 @@
-import type { SongId } from './song';
+import { Realm } from '@realm/react';
+import type { BaseItem } from '@types';
+
+export type CollectionId = Realm.BSON.ObjectId;
 
 export type CollectionType = {
-  cover: {
-    alt: string;
-  };
+  coverUri?: string;
   id: CollectionId;
   name: string;
   order: number;
-  songs: SongId[];
-  version: number;
-} & (CollectionWithCover | CollectionWithoutCover);
-
-export type CollectionId = string;
-
-type CollectionWithCover = {
-  cover: {
-    uri: string;
-  };
-  hasCover: true;
-};
-
-type CollectionWithoutCover = {
-  cover: {
-    uri?: undefined;
-  };
-  hasCover: false;
-};
-
-export type CollectionType_FINAL = {
-  coverUri?: string;
-  id: Realm.BSON.ObjectId;
-  order: number;
-  songs: SongId[];
-  title: string;
   version: number;
 };
+
+export type CollectionListItem = CollectionType & BaseItem;

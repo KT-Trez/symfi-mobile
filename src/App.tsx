@@ -1,18 +1,41 @@
+import { AudioPlayerProvider, Loader } from '@components';
+import { useCustomTheme } from '@hooks';
+import {
+  ChannelModel,
+  CollectionModel,
+  ConfigItemModel,
+  CoverModel,
+  DurationModel,
+  FileModel,
+  SongModel,
+  ViewsModel,
+} from '@models';
 import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
 import { NativeBaseProvider, StatusBar, useColorMode, useTheme } from 'native-base';
 import { useEffect } from 'react';
-
-import { AudioPlayerProvider, Loader } from './components';
-import { useCustomTheme } from './hooks';
 import useSchemaUpdate, { useSchemaUpdate2 } from './hooks/useSchemaUpdate';
-import { CollectionModel, ConfigItemModel } from './models';
 import { MainNavigator } from './modules';
 import ApiService from './services/api.service';
 
 export const AppWrapper = () => (
   <NativeBaseProvider>
-    <RealmProvider deleteRealmIfMigrationNeeded fallback={Loader} schema={[CollectionModel, ConfigItemModel]}>
+    <RealmProvider
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      deleteRealmIfMigrationNeeded={!!process.env.EXPO_PUBLIC_DEVELOPMENT}
+      fallback={Loader}
+      schema={[
+        ChannelModel,
+        CollectionModel,
+        ConfigItemModel,
+        CoverModel,
+        DurationModel,
+        FileModel,
+        SongModel,
+        ViewsModel,
+      ]}
+    >
       <App />
     </RealmProvider>
   </NativeBaseProvider>
@@ -30,6 +53,10 @@ const App = () => {
     useSchemaUpdate();
     getMigratedSchemas();
   }, [getMigratedSchemas]);
+
+  useEffect(() => {
+    console.log('re-rendered');
+  }, []);
 
   return (
     <AudioPlayerProvider>

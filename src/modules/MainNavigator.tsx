@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MainNavigatorParams } from '../types';
+import { MainNavigatorParams } from '@types';
 import { CollectionNavigator } from './collections';
 import { SettingsNavigator } from './settings';
 

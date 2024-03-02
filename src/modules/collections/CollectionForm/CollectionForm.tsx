@@ -1,25 +1,24 @@
+import { PageHeader, TextField } from '@components';
+import { CollectionModel } from '@models';
 import { useNavigation } from '@react-navigation/native';
+import { useRealm } from '@realm/react';
+import type { CollectionNavigatorProps } from '@types';
 import { Divider } from 'native-base';
 import { useCallback } from 'react';
-import type { CollectionNavigatorProps } from 'types';
-import { PageHeader, TextField } from '../../../components';
-import PlayListController from '../../../datastore/PlayListController';
-import PlayListService from '../../../services/playlist.service';
-import { useList } from '../context';
 
 export const CollectionForm = () => {
-  const { reload } = useList();
   const { navigate } = useNavigation<CollectionNavigatorProps>();
+  const realm = useRealm();
 
-  // todo: add validation ?
   const createCollection = useCallback(
-    async (name: string) => {
-      const collectionsCount = await PlayListController.countAsync({});
-      await PlayListService.create(name.length !== 0 ? name : `collection #${collectionsCount + 1}`);
-      await reload();
+    (input: string) => {
+      const name = input.length !== 0 ? input : `collection #0`;
+      realm.write(() => {
+        realm.create(CollectionModel.schema.name, CollectionModel.generate({ name }));
+      });
       navigate('CollectionPage');
     },
-    [navigate, reload],
+    [navigate, realm],
   );
 
   return (

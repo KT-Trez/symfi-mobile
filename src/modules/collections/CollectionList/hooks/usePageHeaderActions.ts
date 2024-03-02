@@ -1,21 +1,29 @@
+import { useList } from '@/modules/collections/context';
+import type { CollectionNavigatorProps } from '@/types';
 import { useNavigation } from '@react-navigation/native';
 import { useMemo } from 'react';
 import { Action } from '../../../../components';
-import type { CollectionNavigatorProps } from 'types';
-import { useList } from '../../context';
 
 export const usePageHeaderActions = (): Action[] => {
-  const { selectedData } = useList();
+  const { isInSelectionMode, items } = useList();
   const { navigate } = useNavigation<CollectionNavigatorProps>();
+
+  const id = useMemo(() => {
+    if (!isInSelectionMode) {
+      return '';
+    }
+
+    return items.find(item => item.isSelected)?.id.toHexString() || '';
+  }, [isInSelectionMode, items]);
 
   return useMemo(
     () => [
       {
         icon: 'pencil',
-        isHidden: selectedData.size !== 1,
-        onPress: () => navigate('CollectionEdit', { id: selectedData.keys().next().value }),
+        isHidden: !isInSelectionMode,
+        onPress: () => navigate('CollectionEdit', { id }),
       },
     ],
-    [navigate, selectedData],
+    [id, isInSelectionMode, navigate],
   );
 };

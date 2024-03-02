@@ -1,16 +1,9 @@
-import { List } from '../../../components';
+import { List } from '@components';
 import { useList } from '../context';
 import { Collection } from './Collection';
 
 export const CollectionList = () => {
-  const { displayedData, isLoading, reload } = useList();
+  const { items } = useList();
 
-  return (
-    <List
-      data={displayedData}
-      isLoading={isLoading}
-      onRefresh={reload}
-      renderItem={({ item }) => <Collection item={item} />}
-    />
-  );
+  return <List data={items} isLoading={false} renderItem={({ item }) => <Collection item={item} />} />;
 };

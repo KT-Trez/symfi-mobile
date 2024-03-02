@@ -1,13 +1,12 @@
+import type { SongListItem } from '@types';
 import { HStack, Text, useColorModeValue, VStack } from 'native-base';
 import { memo } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Musicly } from '../../../types';
-import { Song as SongC } from '../../services/ResourceManager';
 import { Thumbnail } from './Thumbnail';
 
-interface SongProps {
+interface SongCardProps {
   bottomLabel: string;
-  data: Musicly.Api.MediaInfo | SongC;
+  data: SongListItem;
   imageUri?: string;
   isHighlighted?: boolean;
   onLongPress?: (id: string) => void;
@@ -15,21 +14,17 @@ interface SongProps {
 }
 
 export const SongCard = memo(
-  ({ bottomLabel, data, imageUri, isHighlighted, onLongPress, onPress }: SongProps) => {
+  ({ bottomLabel, data, imageUri, isHighlighted, onLongPress, onPress }: SongCardProps) => {
     const bgColor = useColorModeValue('light.200', 'light.700');
 
     const onLongPressHandler = () => {
       // song card's onLongPress handle
-      if (onLongPress) {
-        onLongPress(data.id);
-      }
+      if (onLongPress) onLongPress(data.id);
     };
 
     const onPressHandler = () => {
       // song card's onPress handle
-      if (onPress) {
-        onPress(data.id);
-      }
+      if (onPress) onPress(data.id);
     };
 
     return (
@@ -46,13 +41,13 @@ export const SongCard = memo(
 
           <VStack alignItems={'flex-start'} ml={2} pr={2.5} w={'60%'}>
             <Text bold color={'text.900'} fontSize={'md'} isTruncated numberOfLines={2}>
-              {data.title + '\n'}
+              {data.name + '\n'}
             </Text>
             <Text bold color={'text.900'} fontSize={'xs'}>
               {data.channel.name}
             </Text>
             <Text color={'text.700'} fontSize={'xs'}>
-              {bottomLabel} • {data.metadata.published}
+              {bottomLabel} • {data.published}
             </Text>
           </VStack>
         </HStack>
@@ -61,5 +56,3 @@ export const SongCard = memo(
   },
   (prevProps, newProps) => prevProps.data.id === newProps.data.id && prevProps.isHighlighted === newProps.isHighlighted,
 );
-
-export default SongCard;

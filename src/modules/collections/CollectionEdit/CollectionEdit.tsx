@@ -1,11 +1,12 @@
+import { CollectionModel } from '@/models';
+import { PageHeader, TextField } from '@components';
+import { useImagePickerV2 } from '@hooks';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { useObject, useRealm } from '@realm/react';
+import type { CollectionNavigatorParams } from '@types';
 import { Divider, VStack } from 'native-base';
 import { useCallback } from 'react';
-import type { CollectionNavigatorParams } from 'types';
-import { Loader, PageHeader, SongPicker, TextField } from '../../../components';
 import { CoverSelector } from '../../../components/Settings';
-import PlayListController from '../../../datastore/PlayListController';
-import { useCollection, useImagePickerV2 } from '../../../hooks';
 
 type CollectionEditRouteProp = RouteProp<CollectionNavigatorParams, 'CollectionEdit'>;
 
@@ -15,40 +16,52 @@ export const CollectionEdit = () => {
     params: { id },
   } = useRoute<CollectionEditRouteProp>();
 
-  const { collection, isLoading, update } = useCollection(id);
+  const collection = useObject(CollectionModel, new Realm.BSON.ObjectId(id));
+  const realm = useRealm();
+
   const { pickImage, removeImage } = useImagePickerV2();
 
   // methods
   const editCover = useCallback(async () => {
     const imageUri = await pickImage([1, 1]);
-    if (!imageUri) {
-      return;
-    }
-    await PlayListController.updateCover(id, imageUri);
-  }, [id, pickImage]);
+    if (!collection || !imageUri) return;
+
+    realm.write(() => {
+      collection.coverUri = imageUri;
+    });
+  }, [collection, pickImage, realm]);
 
   const removeCover = useCallback(async () => {
-    if (!collection?.hasCover) {
-      return;
-    }
-    await removeImage(collection.cover.uri);
-    await PlayListController.updateCover(id);
-  }, [collection?.cover.uri, collection?.hasCover, id, removeImage]);
+    console.log('removeCover', collection?.coverUri);
+    if (!collection?.coverUri) return;
 
-  if (isLoading) {
-    return <Loader />;
-  }
+    await removeImage(collection.coverUri);
+    realm.write(() => {
+      collection.coverUri = undefined;
+    });
+  }, [collection, realm, removeImage]);
+
+  const updateName = useCallback(
+    (name: string) => {
+      if (!collection || !name) return;
+
+      realm.write(() => {
+        collection.name = name;
+      });
+    },
+    [collection, realm],
+  );
 
   return (
     <PageHeader subtitle={collection?.name} title="Edit Collection">
       <VStack h={'full'}>
-        <CoverSelector coverUri={collection?.cover.uri} onEdit={editCover} onDelete={removeCover} />
+        <CoverSelector coverUri={collection?.coverUri} onEdit={editCover} onDelete={removeCover} />
 
         <Divider />
-        <TextField clearOnUpdate initialValue={collection?.name} label="Name" onUpdate={name => update({ name })} />
+        <TextField initialValue={collection?.name} label="Name" onUpdate={updateName} />
 
         <Divider />
-        <SongPicker collectionId={collection?.id} collectionSongs={collection?.songs} />
+        {/*<SongPicker collectionId={collection?.id} collectionSongs={collection?.songs} />*/}
       </VStack>
     </PageHeader>
   );

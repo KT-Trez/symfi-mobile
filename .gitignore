@@ -3,6 +3,7 @@
 /dist
 
 # dependencies
+/.env
 /.expo
 /node_modules
 
