@@ -5,7 +5,7 @@
   },
   "bugs": {
     "email": "bartlomiej.p.was+bugs@gmail.com",
-    "url": "https://github.com/KT-Trez/musicly/issues"
+    "url": "https://github.com/KT-Trez/symfi-mobile/issues"
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
@@ -52,7 +52,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "github:KT-Trez/musicly"
+    "url": "https://github.com/KT-Trez/symfi-mobile"
   },
   "scripts": {
     "android": "npx expo run:android",

@@ -6,7 +6,7 @@
         "foregroundImage": "./assets/adaptive-icon.png"
       },
       "backgroundColor": "#1c1b1f",
-      "package": "pl.org.was.musicly",
+      "package": "pl.was.org.symfi",
       "permissions": [
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
@@ -19,7 +19,7 @@
       "**/*"
     ],
     "backgroundColor": "#1c1b1f",
-    "description": "Mobile app that lets you download, manage and play your favourite music anywhere you are.",
+    "description": "",
     "extra": {
       "eas": {
         "projectId": "c3d32469-5a23-400a-a37b-2537f76ea04a"
@@ -34,7 +34,7 @@
         ]
       }
     },
-    "name": "Musicly",
+    "name": "Symfi",
     "orientation": "portrait",
     "owner": "kt-trez",
     "platforms": [
@@ -45,7 +45,7 @@
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
-    "slug": "musicly",
+    "slug": "symfi",
     "splash": {
       "backgroundColor": "#1c1b1f",
       "image": "./assets/splash.png",
@@ -57,10 +57,10 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/c3d32469-5a23-400a-a37b-2537f76ea04a"
     },
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "white",
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "version": "2.0.0-alpha.0"
+    "version": "2.0.0-0"
   }
 }
