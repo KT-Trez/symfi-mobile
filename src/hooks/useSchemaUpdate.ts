@@ -137,7 +137,7 @@ export const useSchemaUpdate2 = () => {
 
       await AsyncStorage.setItem('version', '4');
       setVersion(await AsyncStorage.getItem('version'));
-      await PlayListController.store.removeAsync({ version: { $lt: CURRENT_SCHEMA_VERSION } });
+      // await PlayListController.store.removeAsync({ version: { $lt: CURRENT_SCHEMA_VERSION } });
 
       console.log('schema updated to v4');
     }

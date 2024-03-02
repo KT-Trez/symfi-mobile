@@ -25,11 +25,6 @@ const RANDOM_IMAGE_PATHS = [
   require('../../assets/cover-placeholders/cover-17.jpg'),
   require('../../assets/cover-placeholders/cover-18.jpg'),
   require('../../assets/cover-placeholders/cover-19.jpg'),
-  require('../../assets/cover-placeholders/cover-20.jpg'),
-  require('../../assets/cover-placeholders/cover-21.jpg'),
-  require('../../assets/cover-placeholders/cover-22.jpg'),
-  require('../../assets/cover-placeholders/cover-23.jpg'),
-  require('../../assets/cover-placeholders/cover-24.jpg'),
 ];
 
 export const useRandomV2 = () => {

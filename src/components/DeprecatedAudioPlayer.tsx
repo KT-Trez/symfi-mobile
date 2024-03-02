@@ -1,5 +1,4 @@
 import { Audio, AVPlaybackStatus, PitchCorrectionQuality } from 'expo-av';
-import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import useRandomInt from '../hooks/useRandomInt';
@@ -37,9 +36,9 @@ function DeprecatedAudioPlayer({ audioID, setAudioID, songs }: AudioPlayerProps)
       if (currentSecond >= (progress ?? 0) + 1) setProgress(currentSecond);
     }
 
-    const timestamp = moment.utc(status.positionMillis).format('HH:mm:ss');
-    if (timestamp !== progressSimpleText)
-      setProgressSimpleText(timestamp.slice(0, 2) === '00' ? timestamp.slice(3, timestamp.length) : timestamp);
+    // const timestamp = moment.utc(status.positionMillis).format('HH:mm:ss');
+    // if (timestamp !== progressSimpleText)
+    //   setProgressSimpleText(timestamp.slice(0, 2) === '00' ? timestamp.slice(3, timestamp.length) : timestamp);
 
     if (status.didJustFinish) {
       cleanControls();
