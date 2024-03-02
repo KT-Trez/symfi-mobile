@@ -1,33 +1,38 @@
-import type { File } from './file';
-
 export type SongId = string;
 
 export type SongType = {
-  channel: {
-    name: string;
-    url: string;
+  channel: Channel;
+  cover?: Cover;
+  duration: {
+    label: string;
+    seconds: number;
   };
-  file: File;
+  file?: File;
   id: SongId;
-  metadata: {
-    duration: {
-      label: string;
-      seconds: number;
-    };
-    published: string;
-    thumbnail: Thumbnail;
-    views: {
-      count: number;
-      label: string;
-    };
-  };
-  title: string;
-  url: string;
+  name: string;
+  published: string;
+  thumbnail: string;
   version: number;
+  views: {
+    count: number;
+    label: string;
+  };
 };
 
-export type Thumbnail = {
-  height: number;
+// helper types
+export type Channel = {
+  name: string;
   url: string;
-  width: number;
+};
+
+export type Cover = {
+  name: string;
+  uri: string;
+};
+
+export type File = {
+  downloadedAt: Date;
+  id: string;
+  uri: string;
+  size: number;
 };

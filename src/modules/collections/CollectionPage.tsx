@@ -1,9 +1,9 @@
+import { PageHeader } from '@/components';
+import { usePluralFormV2 } from '@/hooks/usePluralForm';
+import type { CollectionNavigatorProps } from '@/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Fab, Icon } from 'native-base';
-import { PageHeader } from '../../components';
-import { usePluralFormV2 } from '../../hooks/usePluralFormV2';
-import { CollectionNavigatorProps } from '../../types';
 import { CollectionList, usePageHeaderActions } from './CollectionList';
 import { useList } from './context';
 

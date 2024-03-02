@@ -1,76 +1,53 @@
-import type { File, SongId, Thumbnail } from 'types';
-import { SongType } from 'types';
+import { CURRENT_SCHEMA_VERSION } from '@/config';
+import type { Channel, Cover, File, SongId, SongType } from '@/types';
 import { Musicly } from '../../types';
-import { SavedSongMetadata } from '../../types/interfaces';
+import type { SavedSongMetadata } from '../../types/interfaces';
 import SongData from '../classes/SongData';
 
 export class SongAdapter implements SongType {
-  channel: {
-    name: string;
-    url: string;
-  };
-  file: File;
-  id: SongId;
-  metadata: {
-    duration: {
-      label: string;
-      seconds: number;
-    };
-    published: string;
-    thumbnail: Thumbnail;
-    views: {
-      count: number;
-      label: string;
-    };
-  };
-  url: string;
-  title: string;
+  channel: Channel;
+  cover?: Cover | undefined;
+  duration: { label: string; seconds: number };
+  file?: File | undefined;
+  id: string;
+  name: string;
+  published: string;
+  thumbnail: string;
   version: number;
+  views: { count: number; label: string };
 
   constructor(data: SavedSongMetadata) {
     this.channel = {
       name: data.channel.name,
       url: data.channel.url,
     };
-    this.file = data.musicly.file.path
+    this.cover = data.musicly.flags.hasCover
       ? {
-          cover: {
-            color: 'red',
-            name: 'cover',
-          },
-          hasCover: false,
-          download: {
-            downloadedAt: data.musicly.file.downloadDate ?? new Date(0),
-            id: data.musicly.file.id ?? '',
-            path: data.musicly.file.path ?? '',
-            size: data.musicly.file.size ?? 0,
-          },
-          isDownloaded: true,
+          name: data.musicly.cover.name,
+          uri: data.musicly.cover.uri!,
         }
-      : {
-          cover: {
-            color: 'red',
-            name: 'cover',
-          },
-          hasCover: false,
-          isDownloaded: false,
-        };
-    this.id = data.id;
-    this.metadata = {
-      duration: {
-        label: data.metadata.duration.simple_text,
-        seconds: data.metadata.duration.seconds,
-      },
-      published: data.metadata.published,
-      thumbnail: data.metadata.thumbnails[0],
-      views: {
-        count: isNaN(parseInt(data.metadata.view_count)) ? 0 : parseInt(data.metadata.view_count),
-        label: data.metadata.short_view_count_text.simple_text,
-      },
+      : undefined;
+    this.duration = {
+      label: data.metadata.duration.simple_text,
+      seconds: data.metadata.duration.seconds,
     };
-    this.url = data.url;
-    this.title = data.title;
+    this.file = data.musicly.flags.isDownloaded
+      ? {
+          downloadedAt: data.musicly.file.downloadDate,
+          id: data.musicly.file.id!,
+          uri: data.musicly.file.path!,
+          size: data.musicly.file.size!,
+        }
+      : undefined;
+    this.id = data.id;
+    this.name = data.title;
+    this.published = data.metadata.published;
+    this.thumbnail = data.metadata.thumbnails[0].url;
     this.version = data.musicly.version;
+    this.views = {
+      count: isNaN(parseInt(data.metadata.view_count)) ? 0 : parseInt(data.metadata.view_count),
+      label: data.metadata.short_view_count_text.simple_text,
+    };
   }
 
   static intoMediaInfo(data: SongAdapter): Musicly.Api.MediaInfo & SongData {
@@ -86,46 +63,100 @@ export class SongAdapter implements SongType {
         badges: [],
         duration: {
           accessibility_label: '',
-          label: data.metadata.duration.label,
-          seconds: data.metadata.duration.seconds,
+          label: data.duration.label,
+          seconds: data.duration.seconds,
           simple_text: '',
         },
         owner_badges: [],
-        published: data.metadata.published,
+        published: data.published,
         short_view_count_text: {
           accessibility_label: '',
           simple_text: '',
         },
-        thumbnails: [data.metadata.thumbnail],
+        thumbnails: [{ height: 0, url: data.thumbnail, width: 0 }],
         view_count: '0',
         views: {
-          count: data.metadata.views.count,
-          label: data.metadata.views.label,
+          count: data.views.count,
+          label: data.views.label,
         },
       },
       musicly: {
         cover: {
           color: '#fff',
-          name: data.title,
+          name: data.cover?.name ?? '',
           uri: '',
         },
         file: {
-          downloadDate: data.file.download?.downloadedAt ?? new Date(0),
-          id: data.file.download?.id ?? '',
-          path: data.file.download?.id ?? '',
-          size: data.file.download?.size ?? 0,
+          downloadDate: data.file?.downloadedAt ?? new Date(0),
+          id: data.file?.id ?? '',
+          path: data.file?.id ?? '',
+          size: data.file?.size ?? 0,
         },
         flags: {
           hasCover: false,
-          isDownloaded: data.file.isDownloaded,
+          isDownloaded: !!data.file,
           isFavourite: false,
         },
         playListsIDs: [],
         version: data.version,
         wasPlayed: 0,
       },
-      url: data.url,
-      title: data.title,
+      url: '',
+      title: data.name,
+    };
+  }
+}
+
+export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cover' | 'file'>> {
+  static schema: Realm.ObjectSchema = {
+    name: 'Song',
+    primaryKey: 'id',
+    properties: {
+      channel: 'Channel',
+      file: 'File?',
+      id: 'string',
+      metadata: 'Metadata',
+      url: 'string',
+      title: 'string',
+      version: 'int',
+    },
+  };
+
+  channel!: Channel;
+  cover?: Cover;
+  duration!: {
+    label: string;
+    seconds: number;
+  };
+  file?: File;
+  id!: SongId;
+  name!: string;
+  published!: string;
+  thumbnail!: string;
+  version!: number;
+  views!: {
+    count: number;
+    label: string;
+  };
+
+  static generate({
+    channel,
+    duration,
+    id,
+    name,
+    published,
+    thumbnail,
+    views,
+  }: Omit<SongType, 'cover' | 'file' | 'version'>): SongType {
+    return {
+      channel,
+      duration,
+      id,
+      name,
+      published,
+      thumbnail,
+      version: CURRENT_SCHEMA_VERSION,
+      views,
     };
   }
 }

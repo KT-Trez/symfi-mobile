@@ -1,6 +1,16 @@
-import { ConfigItem } from 'types';
+import { ConfigItem } from '@/types';
 
 export class ConfigItemModel extends Realm.Object<ConfigItem> {
+  static schema: Realm.ObjectSchema = {
+    name: 'ConfigItem',
+    primaryKey: 'id',
+    properties: {
+      id: 'objectId',
+      key: 'string',
+      value: 'string',
+    },
+  };
+
   id!: string;
   key!: string;
   value!: string;
@@ -12,14 +22,4 @@ export class ConfigItemModel extends Realm.Object<ConfigItem> {
       value,
     };
   }
-
-  static schema: Realm.ObjectSchema = {
-    name: 'ConfigItem',
-    primaryKey: 'id',
-    properties: {
-      id: 'objectId',
-      key: 'string',
-      value: 'string',
-    },
-  };
 }

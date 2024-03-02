@@ -1,9 +1,9 @@
+import { usePluralFormV2 } from '@/hooks/usePluralForm';
+import type { CollectionNavigatorProps, CollectionType } from '@/types';
 import { useNavigation } from '@react-navigation/native';
 import { Avatar, Checkbox, HStack, Text, useColorModeValue, VStack } from 'native-base';
 import React, { memo, useCallback, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
-import type { CollectionNavigatorProps, CollectionType } from 'types';
-import { usePluralFormV2 } from '../../../hooks/usePluralFormV2';
 import { useList } from '../context';
 
 type CollectionProps = {
@@ -37,11 +37,11 @@ export const Collection = memo(({ item }: CollectionProps) => {
 
   useEffect(() => {
     console.log(new Date(), 'collection render');
-  }, []);
+  });
 
   return (
     <TouchableOpacity onLongPress={() => onSelect(true)} onPress={onPress}>
-      <HStack bgColor={bgColor} m={'auto'} mt={1} mb={1} rounded={'md'} w={'96%'}>
+      <HStack bgColor={bgColor} rounded={'md'}>
         <HStack alignItems={'center'} justifyContent={'center'} p={2} w={'20%'}>
           <Avatar bg={'secondary.700'} color={'red.50'} source={{ uri: item.cover.uri }}>
             {item.name[0].toUpperCase()}

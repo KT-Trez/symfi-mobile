@@ -1,3 +1,5 @@
+import { Store } from '@/datastore/Store';
+import { CollectionModel } from '@/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useRealm } from '@realm/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -6,8 +8,6 @@ import SongPlayListData, { SongPlayListDataConstructor } from '../classes/SongPl
 import config, { CURRENT_SCHEMA_VERSION } from '../config';
 import PlayListController from '../datastore/PlayListController';
 import SongsController from '../datastore/SongsController';
-import { Store } from '../datastore/Store';
-import { CollectionModel } from '../models';
 
 /**
  * Performs schema update for database models

@@ -1,7 +1,7 @@
+import { PlayList } from '@/services/ResourceManager';
+import { BaseListItem, CollectionId, CollectionType_FINAL, SongId } from '@/types';
 import { Realm } from '@realm/react';
-import { BaseListItem, CollectionId, CollectionType_FINAL, SongId } from 'types';
 import type { PlaylistMetadata } from '../../types/interfaces';
-import { PlayList } from '../services/ResourceManager';
 
 export class CollectionAdapter implements BaseListItem {
   cover: {
@@ -29,6 +29,12 @@ export class CollectionAdapter implements BaseListItem {
     this.fromPLAYLIST_METADATA(original);
   }
 
+  static fromPLAYLIST(data: PlayList, songs: string[]) {
+    const ca = new CollectionAdapter(data);
+    ca.songs = songs;
+    return ca;
+  }
+
   private fromPLAYLIST_METADATA(data: PlaylistMetadata) {
     this.cover = {
       alt: data.cover.name,
@@ -41,15 +47,22 @@ export class CollectionAdapter implements BaseListItem {
     this.order = data.order;
     this.version = data.version;
   }
-
-  static fromPLAYLIST(data: PlayList, songs: string[]) {
-    const ca = new CollectionAdapter(data);
-    ca.songs = songs;
-    return ca;
-  }
 }
 
 export class CollectionModel extends Realm.Object<CollectionType_FINAL, keyof Omit<CollectionType_FINAL, 'coverUri'>> {
+  static schema: Realm.ObjectSchema = {
+    name: 'Collection',
+    primaryKey: 'id',
+    properties: {
+      coverUri: 'string?',
+      id: 'objectId',
+      order: 'int',
+      songs: 'string[]',
+      title: 'string',
+      version: 'int',
+    },
+  };
+
   coverUri?: string;
   id!: Realm.BSON.ObjectId;
   order!: number;
@@ -72,17 +85,4 @@ export class CollectionModel extends Realm.Object<CollectionType_FINAL, keyof Om
       version,
     };
   }
-
-  static schema: Realm.ObjectSchema = {
-    name: 'Collection',
-    primaryKey: 'id',
-    properties: {
-      coverUri: 'string?',
-      id: 'objectId',
-      order: 'int',
-      songs: 'string[]',
-      title: 'string',
-      version: 'int',
-    },
-  };
 }

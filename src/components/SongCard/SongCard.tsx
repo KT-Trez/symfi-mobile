@@ -34,7 +34,7 @@ export const SongCard = memo(
 
     return (
       <TouchableOpacity onLongPress={onLongPressHandler} onPress={onPressHandler}>
-        <HStack bgColor={isHighlighted ? 'primary.200' : bgColor} m={'auto'} mb={1} mt={1} rounded={'md'} w={'96%'}>
+        <HStack bgColor={isHighlighted ? 'primary.200' : bgColor} m={'auto'} rounded={'md'}>
           <Thumbnail
             id={data.id}
             // todo: fix ts silencers
