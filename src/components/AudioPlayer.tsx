@@ -104,6 +104,7 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 		setIsPaused(value => !value);
 	};
 
+	// todo: add exception catch
 	const playResource = async () => {
 		await Audio.setAudioModeAsync({
 			allowsRecordingIOS: false,

@@ -26,7 +26,7 @@ function SongsManager({hide, playListID, refreshPlayList, shows}: SongsManagerPr
 	const [songs, setSongs] = useState<SavedSongMetadata[]>([]);
 
 	const getSongs = useCallback(async () => {
-		setSongs(useCompare(await SongsController.store.findAsync({$not: {'musicly.playListsIDs': playListID}}) as SavedSongMetadata[], item => item.musicly.file.downloadDate));
+		setSongs(useCompare(await SongsController.store.findAsync({$not: {'musicly.playListsIDs': playListID}}) as SavedSongMetadata[], item => item.musicly.file.downloadDate, true));
 	}, []);
 
 	const addToPlaylist = async (itemID: string) => {

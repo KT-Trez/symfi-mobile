@@ -1,10 +1,10 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, Button, Modal, Portal, Text, TextInput, useTheme} from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ResourceManager from '../../services/ResourceManager';
-import {SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
-import Stack from '../../components/Stack';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useCallback, useEffect, useState} from 'react';
+import {SafeAreaView, StyleSheet, ToastAndroid, View} from 'react-native';
+import {ActivityIndicator, Button, Modal, Portal, Text, TextInput, useTheme} from 'react-native-paper';
+import Stack from '../../components/Stack';
+import ResourceManager from '../../services/ResourceManager';
 
 
 interface ServerSetUpProps {
@@ -35,6 +35,11 @@ function ServerSetup({hide, shows}: ServerSetUpProps) {
 		setRemote(await AsyncStorage.getItem('remote') ?? '');
 	}, []);
 
+	const resetRemote = async () => {
+		await AsyncStorage.removeItem('remote');
+		setRemote('');
+	};
+
 	const testConnection = async () => {
 		setIsLoading(true);
 		try {
@@ -47,7 +52,7 @@ function ServerSetup({hide, shows}: ServerSetUpProps) {
 			});
 
 			setIsConnected(res.data.success ?? false);
-			return res.data.success
+			return res.data.success;
 		} catch (err) {
 			console.error(err);
 			setIsConnected(false);
@@ -63,37 +68,37 @@ function ServerSetup({hide, shows}: ServerSetUpProps) {
 	return (
 		<Portal>
 			<Modal contentContainerStyle={[css.modal, {backgroundColor: colors.elevation.level3}]}
-				   onDismiss={hide} visible={shows}>
-				<Text style={css.title} variant={'titleMedium'}>Change server</Text>
+			       onDismiss={hide} visible={shows}>
+				<Text style={css.title} variant={'titleMedium'}>Change Server</Text>
 
 				<SafeAreaView>
+					{/* todo: fix broken input */}
 					<TextInput dense
-							   label={'address'}
-							   mode={'outlined'}
-							   onChangeText={setRemote}
-							   placeholder={'https://api-musicly.onrender.com'}
-							   value={remote}/>
+					           label={'Protocol & Address'}
+					           mode={'outlined'}
+					           onChangeText={setRemote}
+					           placeholder={'https://api-musicly.onrender.com'}
+					           value={remote}/>
 				</SafeAreaView>
 
-				{isConnected !== null ?
+				{isConnected &&
 					<Stack alignItems={'center'} direction={'row'} sx={css.status}>
 						<MaterialCommunityIcons color={isConnected ? colors.onSurface : colors.error}
-												name={isConnected ? 'access-point-network' : 'access-point-network-off'}
-												size={14}
-												style={css.statusLabel}/>
+						                        name={isConnected ? 'access-point-network' : 'access-point-network-off'}
+						                        size={14}
+						                        style={css.statusLabel}/>
 
 						<Text style={[css.statusLabel, {color: isConnected ? colors.onSurface : colors.error}]}
-							  variant={'labelLarge'}>{isConnected ? 'Connection established' : 'Can\'t connect to server'}</Text>
+						      variant={'labelLarge'}>{isConnected ? 'Connection established' : 'Can\'t connect to server'}</Text>
 
 						{isLoading &&
 							<ActivityIndicator size={14} style={css.statusLabel}/>
 						}
 					</Stack>
-					:
-					undefined
 				}
 
 				<View style={css.buttonContainer}>
+					<Button onPress={resetRemote} textColor={colors.error}>Reset</Button>
 					<Button onPress={hide}>Back</Button>
 					<Button icon={'access-point'} onPress={testConnection}>Test</Button>
 					<Button onPress={changeRemote}>Change</Button>

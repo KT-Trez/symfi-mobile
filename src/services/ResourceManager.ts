@@ -148,13 +148,13 @@ class Song extends SongData {
 		return songsArr;
 	}
 
-	public static async create(data: SongMetadata) {
+	public static async create(data: SongMetadata, musicly?: Partial<Musicly.Data.SongMusicly>) {
 		const options: SongDataConstructor = {
 			channel: data.channel,
 			description: data.description,
 			id: data.id,
 			metadata: data.metadata,
-			musicly: {},
+			musicly: musicly ?? {},
 			title: data.title,
 			url: data.url
 		};
@@ -174,7 +174,15 @@ class Song extends SongData {
 		if (type === 'audio' && this.musicly.flags.isDownloaded)
 			throw new Error('audio already downloaded');
 
-		const downloadURL = await ResourceManager.Net.axios({
+		// todo: find solution for other formats
+		const ext = type === 'audio' ? '.wav' : '.png';
+		if (remoteURL)
+			return await FileSystem.downloadAsync(remoteURL, FileSystem.cacheDirectory + this.id + ext, {
+				cache: true,
+				sessionType: FileSystemSessionType.BACKGROUND
+			});
+
+		let downloadURL = await ResourceManager.Net.axios({
 			responseType: 'json',
 			url: '/v2/media/youtube/' + this.id
 		});
@@ -182,7 +190,6 @@ class Song extends SongData {
 		// todo: add resumable download
 		console.log(remoteURL ?? downloadURL.data.link);
 
-		const ext = type === 'audio' ? '.wav' : '.png';
 		return await FileSystem.downloadAsync(remoteURL ?? downloadURL.data.link, FileSystem.cacheDirectory + this.id + ext, {
 			cache: true,
 			sessionType: FileSystemSessionType.BACKGROUND

@@ -35,7 +35,8 @@ function SongEntry({item, onLongPress, onPress}: SongEntryProps) {
 					</Text>
 				</View>
 				<View style={css.containerMetadata}>
-					<Text variant={'bodySmall'}>{item.metadata.short_view_count_text.simple_text}</Text>
+					{/* todo: remove after patch 1.5.0 merge */}
+					<Text variant={'bodySmall'}>{item.metadata.short_view_count_text?.simple_text ?? 'N/A'}</Text>
 					<Text variant={'bodySmall'}>{item.metadata.duration.simple_text}</Text>
 				</View>
 			</View>
