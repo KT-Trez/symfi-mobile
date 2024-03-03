@@ -1,17 +1,14 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, ToastAndroid} from 'react-native';
 import {Text, TextInput} from 'react-native-paper';
 import LoadingView from '../../components/LoadingView';
 import Setting from '../../components/Setting';
-import PlayListController from '../../datastore/PlayListController';
-import SongsController from '../../datastore/SongsController';
 import ResourceManager from '../../services/ResourceManager';
+import SongsController from '../../datastore/SongsController';
+import PlayListController from '../../datastore/PlayListController';
 
 
 function Settings() {
-	const playlistsDB = useRef(new PlayListController());
-	const songsDB = useRef(new SongsController());
-
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [playListsCount, setPlayListsCount] = useState(0);
@@ -19,6 +16,7 @@ function Settings() {
 	const [syncID, setSyncID] = useState();
 	const [uid, setUID] = useState('');
 
+	// todo: export 3rd database
 	const exportData = async () => {
 		if (syncID)
 			return ToastAndroid.showWithGravity('UID: ' + syncID, ToastAndroid.LONG, ToastAndroid.BOTTOM);
@@ -28,8 +26,8 @@ function Settings() {
 		try {
 			const res = await ResourceManager.Net.axios({
 				data: {
-					playLists: await playlistsDB.current.db.findAsync({}),
-					songsList: await songsDB.current.db.findAsync({})
+					playLists: await PlayListController.store.findAsync({}),
+					songsList: await SongsController.store.findAsync({})
 				},
 				headers: {
 					'Access-Control-Allow-Origin': '*'
@@ -50,10 +48,11 @@ function Settings() {
 	};
 
 	const getCounts = async () => {
-		setPlayListsCount(await playlistsDB.current.countAsync({}));
-		setSongsCount(await songsDB.current.countAsync({}));
+		setPlayListsCount(await PlayListController.countAsync({}));
+		setSongsCount(await SongsController.countAsync({}));
 	};
 
+	// todo: import 3rd database
 	const importData = async () => {
 		if (uid.length > 6)
 			setUID(val => val.slice(0, 6));
@@ -75,7 +74,7 @@ function Settings() {
 			});
 
 			for (const playList of res.data.playLists)
-				await playlistsDB.current.db.updateAsync({id: playList.id}, playList, {upsert: true});
+				await PlayListController.store.updateAsync({id: playList.id}, playList, {upsert: true});
 
 			// todo: find a better way to download songs
 			// IMPORTANT: update database in case of duplicated song

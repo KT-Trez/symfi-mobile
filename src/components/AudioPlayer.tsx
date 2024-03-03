@@ -4,14 +4,14 @@ import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Surface, Text, useTheme} from 'react-native-paper';
-import {SavedSongMetadata} from '../../typings/interfaces';
 import useRandomInt from '../hooks/useRandomInt';
+import {Song as SongC} from '../services/ResourceManager';
 
 
 interface AudioPlayerProps {
 	audioID: string | undefined;
 	setAudioID: (id: string | undefined) => void;
-	songs: SavedSongMetadata[];
+	songs: SongC[];
 }
 
 function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
@@ -26,8 +26,8 @@ function AudioPlayer({audioID, setAudioID, songs}: AudioPlayerProps) {
 	const [progress, setProgress] = useState<number | undefined>();
 	const [progressSimpleText, setProgressSimpleText] = useState<string | undefined>();
 
-	const [song, setSong] = useState<SavedSongMetadata | undefined>(undefined);
-	const [songsLeft, setSongsLeft] = useState<SavedSongMetadata[]>([]);
+	const [song, setSong] = useState<SongC | undefined>(undefined);
+	const [songsLeft, setSongsLeft] = useState<SongC[]>([]);
 
 	const [autoplay, setAutoplay] = useState(true);
 	const [shuffle, setShuffle] = useState(false);

@@ -1,14 +1,14 @@
 import {NavigationContext} from '@react-navigation/native';
 import * as MediaLibrary from 'expo-media-library';
 import {PermissionStatus} from 'expo-media-library';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ToastAndroid} from 'react-native';
-import {SavedSongMetadata} from '../../../typings/interfaces';
 import ManageDialog from '../../components/ManageDialog';
-import PlayListController from '../../datastore/PlayListController';
-import SongsController from '../../datastore/SongsController';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
-import useVisibility from '../../hooks/useVisibility';
+import {Store} from '../../datastore/Store';
+import PlayListController from '../../datastore/PlayListController';
+import {Musicly} from '../../../typings';
+import SongsController from '../../datastore/SongsController';
 
 
 interface EditDialogProps {
@@ -22,16 +22,18 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 	// constants
 	const navigation = React.useContext(NavigationContext);
 
-	const playlistsDB = useRef(new PlayListController());
-	const songsDB = useRef(new SongsController());
-
 	// flags
-	const [hideDialog, dialogShows, showDialog] = useVisibility([() => setSongID(undefined)]);
+	const [isVisible, setIsVisible] = useState(false);
 
 	// methods
 	const editSong = () => {
 		navigation?.navigate('SongEdit', {id: songID});
 		hideDialog();
+	};
+
+	const hideDialog = () => {
+		setSongID(undefined);
+		setIsVisible(false);
 	};
 
 	// todo: load song from DB
@@ -51,7 +53,7 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 		// todo: check if resource is downloaded
 		try {
 			// get song and it's file metadata
-			const song = await songsDB.current.db.findOneAsync({id: songID}) as SavedSongMetadata;
+			const song = await SongsController.store.findOneAsync({id: songID}) as Musicly.Data.Song;
 			const asset = await MediaLibrary.getAssetInfoAsync(song.musicly.file.id!);
 
 			// delete song and it's cover
@@ -59,19 +61,22 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 			if (song.musicly.flags.hasCover)
 				await useAssetRemoval(song.musicly.cover.uri!);
 
-			// decrease songsCount in playLists
-			await playlistsDB.current.decreaseSongsCount(song.musicly.playlists);
+			// decrease songsCount and remove from playLists
+			await PlayListController.decreaseSongsCount(song.musicly.playListsIDs);
+			await Store.songPlayLists.removeAsync({songID});
 		} catch (err) {
 			// handle missing id in old db entries
 			ToastAndroid.showWithGravity('Insufficient data, please delete audio file manually from file system', ToastAndroid.LONG, ToastAndroid.BOTTOM);
 		} finally {
 			// remove from db
-			await songsDB.current.db.remove({id: songID}, {});
+			await SongsController.store.removeAsync({id: songID}, {});
 
 			refreshSongsList();
 			hideDialog();
 		}
 	};
+
+	const showDialog = () => setIsVisible(true);
 
 	// effects
 	useEffect(() => {
@@ -81,7 +86,7 @@ function EditDialog({playingSongID, refreshSongsList, setSongID, songID}: EditDi
 
 	return (
 		<ManageDialog hide={hideDialog}
-					  isVisible={dialogShows}
+					  isVisible={isVisible}
 					  onCancel={hideDialog}
 					  onDelete={removeSong}
 					  onEdit={editSong}

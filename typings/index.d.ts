@@ -1,4 +1,3 @@
-import {PlaylistData} from './interfaces';
 import {PlayList} from '../src/services/ResourceManager';
 
 
@@ -46,6 +45,42 @@ export declare module Musicly {
 	}
 
 	export module Data {
+		export interface Song extends SongInfo {
+			musicly: SongMusicly;
+		}
+
+		export interface SongInfo {
+			channel: {
+				id: string;
+				name: string;
+				url: string;
+			};
+			description: string;
+			id: string;
+			metadata: {
+				badges: string[];
+				duration: {
+					accessibility_label: string;
+					seconds: number;
+					simple_text: string;
+				}
+				owner_badges: string[];
+				published: string;
+				short_view_count_text: {
+					accessibility_label: string;
+					simple_text: string;
+				}
+				thumbnails: {
+					height: number;
+					url: string;
+					width: number;
+				}[];
+				view_count: string;
+			};
+			title: string;
+			url: string;
+		}
+
 		export interface SongMusicly {
 			cover: {
 				color: string;
@@ -63,7 +98,8 @@ export declare module Musicly {
 				isDownloaded: boolean;
 				isFavourite: boolean;
 			},
-			playlists: PlaylistData[];
+			playList?: SongPlayList;
+			playListsIDs: string[];
 			version: number;
 			wasPlayed: number;
 		}
@@ -72,8 +108,9 @@ export declare module Musicly {
 			flags: {
 				isFavourite: boolean;
 			};
-			id: string;
+      id: string;
 			order: number;
+			playListID: string;
 			songID: string;
 		}
 	}

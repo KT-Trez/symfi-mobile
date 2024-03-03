@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button, Modal, Portal, Text, TextInput, useTheme} from 'react-native-paper';
 import PlayListController from '../../datastore/PlayListController';
@@ -13,8 +13,6 @@ interface CreatorProps {
 function Creator({hide, isVisible, reloadList}: CreatorProps) {
 	// constants
 	const {colors} = useTheme();
-	const playlistsDB = useRef(new PlayListController());
-
 
 	const [name, setName] = useState('');
 
@@ -23,7 +21,7 @@ function Creator({hide, isVisible, reloadList}: CreatorProps) {
 			return;
 
 		const id = new Date().getTime() + Math.round(Math.random() * 1000).toString();
-		await playlistsDB.current.db.insertAsync({
+		await PlayListController.store.insertAsync({
 			id: id,
 			cover: {
 				name: id + '_cover_' + name,
@@ -33,7 +31,7 @@ function Creator({hide, isVisible, reloadList}: CreatorProps) {
 				hasCover: false
 			},
 			name,
-			order: await playlistsDB.current.countAsync({}),
+			order: await PlayListController.countAsync({}),
 			songsCount: 0,
 			version: 1
 		});

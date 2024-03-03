@@ -32,7 +32,7 @@ export default class PlayListData implements PlaylistMetadata {
 
 	constructor(options: PlayListDataConstructor) {
 		this.cover = options.cover ?? {
-			name: [options.name, parseInt(Math.round(Math.random() * 100).toString() + new Date().getTime()).toString(16)].join('-'),
+			name: [options.name, parseInt(Math.round(Math.random() * 100).toString() + new Date().getTime()).toString(16)].join('-').replace(/\s*/, ''),
 			uri: undefined
 		};
 		this.flags = options.flags ?? {

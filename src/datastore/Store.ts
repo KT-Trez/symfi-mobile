@@ -1,14 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DataStore from 'react-native-local-mongodb';
-import PlayListController from './PlayListController';
-import SongsController from './SongsController';
 
 
 const storeFactory = (name: string) => {
 	return new DataStore({
 		autoload: true,
 		corruptAlertThreshold: 0,
-		filename: name.endsWith('.db') ? name : name + '.db',
+		// todo: migrate filenames
+		filename: name,
+		// filename: name.endsWith('.db') ? name : name + '.db',
 		storage: {
 			async getItem(key: string, cb): Promise<string | null> {
 				const item = await AsyncStorage.getItem(key);
@@ -32,12 +32,12 @@ const storeFactory = (name: string) => {
 	});
 };
 
-const dbs = {
-	playLists: new PlayListController().db,
-	songs: new SongsController().db,
+const Store = {
+	playLists: storeFactory('playlists'),
+	songs: storeFactory('songs'),
 	songPlayLists: storeFactory('songPlayLists')
 };
 
 export {
-	dbs
+	Store
 };

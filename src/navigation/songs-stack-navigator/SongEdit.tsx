@@ -1,15 +1,15 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Text} from 'react-native-paper';
 import {SavedSongMetadata} from '../../../typings/interfaces';
 import {RootSongsStackParamList} from '../../../typings/navigation';
 import CoverChange from '../../components/CoverChange';
 import LoadingView from '../../components/LoadingView';
 import Setting from '../../components/Setting';
-import SongsController from '../../datastore/SongsController';
 import useAssetRemoval from '../../hooks/useAssetRemoval';
 import useImagePicker from '../../hooks/useImagePicker';
 import ResourceManager from '../../services/ResourceManager';
+import SongsController from '../../datastore/SongsController';
 
 
 type ProfileScreenRouteProp = RouteProp<RootSongsStackParamList, 'SongEdit'>;
@@ -18,8 +18,6 @@ function SongEdit() {
 	// constants
 	const route = useRoute<ProfileScreenRouteProp>();
 	const songID = route.params?.id;
-
-	const songsDB = useRef(new SongsController);
 
 	// flags
 	const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +35,7 @@ function SongEdit() {
 		if (isCanceled)
 			return;
 
-		await songsDB.current.updateCover(songID, uri);
+		await SongsController.updateCover(songID, uri);
 		await getSong();
 	};
 
@@ -49,7 +47,7 @@ function SongEdit() {
 
 	const getSong = useCallback(async () => {
 		setIsLoading(true);
-		setSong(await songsDB.current.db.findOneAsync({id: songID}) as SavedSongMetadata);
+		setSong(await SongsController.store.findOneAsync({id: songID}) as SavedSongMetadata);
 		setIsLoading(false);
 	}, []);
 
@@ -58,7 +56,7 @@ function SongEdit() {
 			return;
 
 		await useAssetRemoval(song.musicly.cover.uri!);
-		await songsDB.current.updateCover(songID);
+		await SongsController.updateCover(songID);
 		await getSong();
 	};
 
