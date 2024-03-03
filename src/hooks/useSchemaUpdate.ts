@@ -97,16 +97,24 @@ const useSchemaUpdate = async () => {
  */
 export const useSchemaUpdate2 = () => {
   const collections = useQuery(CollectionModel);
+  const songs = useQuery(SongModel);
   const realm = useRealm();
   const [version, setVersion] = useState<string | null>(null);
 
   const getMigratedSchemas = useCallback(async () => {
-    const legacyCollections = await PlayListController.countAsync({ version: { $lt: CURRENT_SCHEMA_VERSION } });
-    const legacySongs = await SongsController.countAsync({ 'musicly.version': { $lt: CURRENT_SCHEMA_VERSION } });
+    const legacyCollectionsCount = await PlayListController.countAsync({ version: { $lt: CURRENT_SCHEMA_VERSION } });
+    const legacySongsCount = await SongsController.countAsync({ 'musicly.version': { $lt: CURRENT_SCHEMA_VERSION } });
 
-    console.log(
-      `COLLECTIONS: new - ${collections.length}; old - ${legacyCollections} | SONGS: new - 0; old - ${legacySongs}`,
-    );
+    return {
+      collections: {
+        new: collections.length,
+        old: legacyCollectionsCount,
+      },
+      songs: {
+        new: songs.length,
+        old: legacySongsCount,
+      },
+    };
   }, [collections.length]);
 
   const getSchemaVersion = useCallback(async () => {
@@ -115,95 +123,93 @@ export const useSchemaUpdate2 = () => {
   }, []);
 
   const updateSchemas = useCallback(async () => {
-    if (!version || version < '4') {
-      console.info('updating schema to v4');
+    console.info('updating schema to v4');
 
-      const legacyCollections = (await PlayListController.store.findAsync({
-        version: { $lt: CURRENT_SCHEMA_VERSION },
-      })) as PlaylistMetadata[];
+    const legacyCollections = (await PlayListController.store.findAsync({
+      version: { $lt: CURRENT_SCHEMA_VERSION },
+    })) as PlaylistMetadata[];
 
-      const legacySongs = (await SongsController.store.findAsync({
-        'musicly.version': { $lt: CURRENT_SCHEMA_VERSION },
-      })) as SavedSongMetadata[];
+    const legacySongs = (await SongsController.store.findAsync({
+      'musicly.version': { $lt: CURRENT_SCHEMA_VERSION },
+    })) as SavedSongMetadata[];
 
-      const mappedCollectionIds = legacyCollections.reduce<Record<string, CollectionId>>((acc, { id }) => {
-        acc[id] = new Realm.BSON.ObjectId();
+    const mappedCollectionIds = legacyCollections.reduce<Record<string, CollectionId>>((acc, { id }) => {
+      acc[id] = new Realm.BSON.ObjectId();
 
-        return acc;
-      }, {});
+      return acc;
+    }, {});
 
-      await realm.write(async () => {
-        for (const song of legacySongs) {
-          const legacySongPlayLists = (await PlayListController.store.findAsync({
-            songID: 'temp',
-            version: { $lt: CURRENT_SCHEMA_VERSION },
-          })) as SongPlayListData[];
-          const collectionIds = legacySongPlayLists.map(playlist => playlist.playListID);
+    await realm.write(async () => {
+      for (const song of legacySongs) {
+        const legacySongPlayLists = (await PlayListController.store.findAsync({
+          songID: 'temp',
+          version: { $lt: CURRENT_SCHEMA_VERSION },
+        })) as SongPlayListData[];
+        const collectionIds = legacySongPlayLists.map(playlist => playlist.playListID);
 
-          const cover = song.musicly.cover.uri
-            ? {
-                name: song.musicly.cover.name,
-                uri: song.musicly.cover.uri,
-              }
-            : undefined;
+        const cover = song.musicly.cover.uri
+          ? {
+              name: song.musicly.cover.name,
+              uri: song.musicly.cover.uri,
+            }
+          : undefined;
 
-          const file = song.musicly.file.path
-            ? {
-                downloadedAt: song.musicly.file.downloadDate,
-                id: song.musicly.file.id!,
-                uri: song.musicly.file.path!,
-                size: song.musicly.file.size!,
-              }
-            : undefined;
+        const file = song.musicly.file.path
+          ? {
+              downloadedAt: song.musicly.file.downloadDate,
+              id: song.musicly.file.id!,
+              uri: song.musicly.file.path!,
+              size: song.musicly.file.size!,
+            }
+          : undefined;
 
-          const newSong = SongModel.generate({
-            channel: {
-              name: song.channel.name,
-              url: song.channel.url,
-            },
-            collections: collectionIds.map(id => mappedCollectionIds[id]),
-            cover,
-            duration: {
-              label: song.metadata.duration.simple_text,
-              seconds: song.metadata.duration.seconds,
-            },
-            file,
-            id: song.id,
-            name: song.title,
-            published: song.metadata.published,
-            thumbnail: song.metadata.thumbnails[0].url,
-            views: {
-              count: Number(song.metadata.view_count),
-              label: song.metadata.short_view_count_text.simple_text,
-            },
-          });
-          realm.create(SongModel.schema.name, newSong);
+        const newSong = SongModel.generate({
+          channel: {
+            name: song.channel.name,
+            url: song.channel.url,
+          },
+          collections: collectionIds.map(id => mappedCollectionIds[id]),
+          cover,
+          duration: {
+            label: song.metadata.duration.simple_text,
+            seconds: song.metadata.duration.seconds,
+          },
+          file,
+          id: song.id,
+          name: song.title,
+          published: song.metadata.published,
+          thumbnail: song.metadata.thumbnails[0].url,
+          views: {
+            count: Number(song.metadata.view_count),
+            label: song.metadata.short_view_count_text.simple_text,
+          },
+        });
+        realm.create(SongModel.schema.name, newSong);
+      }
+    });
+
+    realm.write(() => {
+      for (const collection of legacyCollections) {
+        if (
+          realm.objects(CollectionModel.schema.name).filtered(`id == "${mappedCollectionIds[collection.id]}"`).length >
+          0
+        ) {
+          continue;
         }
-      });
+        const newCollection = CollectionModel.generate({
+          coverUri: collection.cover.uri,
+          order: collection.order,
+          name: collection.name,
+        });
+        realm.create(CollectionModel.schema.name, newCollection);
+      }
+    });
 
-      realm.write(() => {
-        for (const collection of legacyCollections) {
-          if (
-            realm.objects(CollectionModel.schema.name).filtered(`id == "${mappedCollectionIds[collection.id]}"`)
-              .length > 0
-          ) {
-            continue;
-          }
-          const newCollection = CollectionModel.generate({
-            coverUri: collection.cover.uri,
-            order: collection.order,
-            name: collection.name,
-          });
-          realm.create(CollectionModel.schema.name, newCollection);
-        }
-      });
+    await AsyncStorage.setItem('version', '4');
+    setVersion(await AsyncStorage.getItem('version'));
+    // await PlayListController.store.removeAsync({ version: { $lt: CURRENT_SCHEMA_VERSION } });
 
-      await AsyncStorage.setItem('version', '4');
-      setVersion(await AsyncStorage.getItem('version'));
-      // await PlayListController.store.removeAsync({ version: { $lt: CURRENT_SCHEMA_VERSION } });
-
-      console.log('schema updated to v4');
-    }
+    console.log('schema updated to v4');
   }, [realm, version]);
 
   useEffect(() => {
@@ -211,10 +217,17 @@ export const useSchemaUpdate2 = () => {
   }, [getSchemaVersion]);
 
   useEffect(() => {
-    if (!version || version < CURRENT_SCHEMA_VERSION.toString()) {
-      updateSchemas();
-    }
-  }, [updateSchemas, version]);
+    getMigratedSchemas().then(({ collections, songs }) => {
+      const hasNoMigratedResources = collections.new === 0 || songs.new === 0;
+      const hasNoVersion = !version;
+      const hasOutdatedResources = collections.old !== 0 || songs.old !== 0;
+      const isOutdated = Number(version) < CURRENT_SCHEMA_VERSION;
+
+      if ((hasNoMigratedResources && hasOutdatedResources) || hasNoVersion || isOutdated) {
+        updateSchemas();
+      }
+    });
+  }, [getMigratedSchemas, updateSchemas, version]);
 
   return {
     getMigratedSchemas,

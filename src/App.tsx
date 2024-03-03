@@ -49,7 +49,7 @@ const App = () => {
     ApiService.loadRemote();
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useSchemaUpdate();
-    getMigratedSchemas();
+    getMigratedSchemas().then(r => console.log(r));
   }, [getMigratedSchemas]);
 
   useEffect(() => {
