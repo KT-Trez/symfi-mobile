@@ -1,3 +1,4 @@
+import { theme } from '@/theme';
 import { AudioPlayerProvider, Loader } from '@components';
 import { useCustomTheme } from '@hooks';
 import {
@@ -14,6 +15,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
 import { NativeBaseProvider, StatusBar, useColorMode, useTheme } from 'native-base';
 import { useEffect } from 'react';
+import { PaperProvider } from 'react-native-paper';
 import useSchemaUpdate, { useSchemaUpdate2 } from './hooks/useSchemaUpdate';
 import { MainNavigator } from './modules';
 import ApiService from './services/api.service';
@@ -34,7 +36,9 @@ export const AppWrapper = () => (
         ViewsModel,
       ]}
     >
-      <App />
+      <PaperProvider theme={theme}>
+        <App />
+      </PaperProvider>
     </RealmProvider>
   </NativeBaseProvider>
 );
@@ -59,7 +63,7 @@ const App = () => {
   return (
     <AudioPlayerProvider>
       <NavigationContainer theme={customTheme}>
-        <StatusBar backgroundColor={colors.primary['900']} barStyle={colorMode ? `${colorMode}-content` : 'default'} />
+        <StatusBar backgroundColor="#007690" barStyle={colorMode ? `${colorMode}-content` : 'default'} />
         <MainNavigator />
       </NavigationContainer>
     </AudioPlayerProvider>

@@ -3,6 +3,7 @@ import { CollectionModel, SongModel } from '@/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { CollectionId } from '@types';
+import { useToast } from 'native-base';
 import { useCallback, useEffect, useState } from 'react';
 import { PlaylistMetadata, SavedSongMetadata } from '../../types/interfaces';
 import SongPlayListData, { SongPlayListDataConstructor } from '../classes/SongPlayListData';
@@ -100,6 +101,7 @@ export const useSchemaUpdate2 = () => {
   const songs = useQuery(SongModel);
   const realm = useRealm();
   const [version, setVersion] = useState<string | null>(null);
+  const { show } = useToast();
 
   const getMigratedSchemas = useCallback(async () => {
     const legacyCollectionsCount = await PlayListController.countAsync({ version: { $lt: CURRENT_SCHEMA_VERSION } });
@@ -139,14 +141,14 @@ export const useSchemaUpdate2 = () => {
       return acc;
     }, {});
 
+    const legacySongPlayLists = (await PlayListController.store.findAsync({
+      songID: 'temp',
+      version: { $lt: CURRENT_SCHEMA_VERSION },
+    })) as SongPlayListData[];
+    const collectionIds = legacySongPlayLists.map(playlist => playlist.playListID);
+
     await realm.write(async () => {
       for (const song of legacySongs) {
-        const legacySongPlayLists = (await PlayListController.store.findAsync({
-          songID: 'temp',
-          version: { $lt: CURRENT_SCHEMA_VERSION },
-        })) as SongPlayListData[];
-        const collectionIds = legacySongPlayLists.map(playlist => playlist.playListID);
-
         const cover = song.musicly.cover.uri
           ? {
               name: song.musicly.cover.name,
@@ -190,13 +192,6 @@ export const useSchemaUpdate2 = () => {
 
     realm.write(() => {
       for (const collection of legacyCollections) {
-        if (
-          realm
-            .objects(CollectionModel.schema.name)
-            .filtered(`id in $0`, Object.values(mappedCollectionIds[collection.id])).length > 0
-        ) {
-          continue;
-        }
         const newCollection = CollectionModel.generate({
           coverUri: collection.cover.uri,
           order: collection.order,
@@ -221,11 +216,14 @@ export const useSchemaUpdate2 = () => {
     getMigratedSchemas().then(({ collections, songs }) => {
       console.log(collections, songs);
       const hasNotMigratedCollections = collections.new < collections.old && collections.old !== 0;
-      const hasNoVersion = !version;
       const hasNotMigratedSongs = songs.new < songs.old && songs.old !== 0;
-      const isOutdated = Number(version) < CURRENT_SCHEMA_VERSION;
 
-      if (hasNotMigratedCollections || hasNotMigratedSongs || hasNoVersion || isOutdated) {
+      show({
+        description: `${hasNotMigratedCollections} n${collections.new}o${collections.old} ${hasNotMigratedSongs} n${songs.new}o${songs.old}`,
+        title: 'Success',
+      });
+
+      if (hasNotMigratedCollections || hasNotMigratedSongs) {
         updateSchemas();
       }
     });

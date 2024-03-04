@@ -19,7 +19,7 @@ export const List = <T extends BaseItem>({ data, emptyText, isLoading, onRefresh
 
   return (
     <FlatList
-      contentContainerStyle={{ gap: space[1], paddingBottom: space[2], paddingTop: space[2] }}
+      contentContainerStyle={{ gap: 16, paddingBottom: 16, paddingTop: 16 }}
       data={data}
       keyExtractor={keyExtractor}
       h={'100%'}

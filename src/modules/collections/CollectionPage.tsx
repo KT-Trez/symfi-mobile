@@ -1,29 +1,43 @@
-import { PageHeader } from '@components';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Actions, PageHeader } from '@components';
 import { usePluralFormV3 } from '@hooks';
 import { useNavigation } from '@react-navigation/native';
 import type { CollectionNavigatorProps } from '@types';
-import { Fab, Icon } from 'native-base';
+import { useCallback, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import { FAB } from 'react-native-paper';
 import { CollectionList, usePageHeaderActions } from './CollectionList';
 import { useList } from './context';
 
 export const CollectionPage = () => {
   const actions = usePageHeaderActions();
-  const { items } = useList();
+  const { isInSelectionMode, items, selectAllItems, unselectAllItems } = useList();
   const { navigate } = useNavigation<CollectionNavigatorProps>();
   const s = usePluralFormV3(items.length);
 
+  const isAllSelected = useMemo<boolean>(() => items.every(item => item.isSelected), [items]);
+  console.log('isAllSelected', isAllSelected);
+
+  const onBulkSelect = useCallback(() => {
+    isAllSelected ? unselectAllItems() : selectAllItems();
+  }, [isAllSelected, selectAllItems, unselectAllItems]);
+
   return (
-    <PageHeader actions={actions} subtitle={`${items.length} item${s}`} title="Collections">
+    <PageHeader
+      actions={isInSelectionMode && <Actions actions={actions} />}
+      subtitle={`${items.length} item${s}`}
+      title="Collections"
+    >
       <CollectionList />
-      <Fab
-        bottom={2}
-        bgColor="primary.700"
-        icon={<Icon as={MaterialCommunityIcons} name={'plus'} size={'xl'} />}
-        onPress={() => navigate('CollectionForm')}
-        renderInPortal={false}
-        right={2}
-      />
+      <FAB icon="plus" onPress={() => navigate('CollectionForm')} style={styles.fab} />
     </PageHeader>
   );
 };
+
+const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+});
