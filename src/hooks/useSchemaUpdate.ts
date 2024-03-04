@@ -115,7 +115,7 @@ export const useSchemaUpdate2 = () => {
         old: legacySongsCount,
       },
     };
-  }, [collections.length]);
+  }, [collections.length, songs.length]);
 
   const getSchemaVersion = useCallback(async () => {
     const version = await AsyncStorage.getItem('version');
@@ -191,8 +191,9 @@ export const useSchemaUpdate2 = () => {
     realm.write(() => {
       for (const collection of legacyCollections) {
         if (
-          realm.objects(CollectionModel.schema.name).filtered(`id == "${mappedCollectionIds[collection.id]}"`).length >
-          0
+          realm
+            .objects(CollectionModel.schema.name)
+            .filtered(`id in $0`, Object.values(mappedCollectionIds[collection.id])).length > 0
         ) {
           continue;
         }
@@ -210,7 +211,7 @@ export const useSchemaUpdate2 = () => {
     // await PlayListController.store.removeAsync({ version: { $lt: CURRENT_SCHEMA_VERSION } });
 
     console.log('schema updated to v4');
-  }, [realm, version]);
+  }, [realm]);
 
   useEffect(() => {
     getSchemaVersion();
@@ -218,12 +219,13 @@ export const useSchemaUpdate2 = () => {
 
   useEffect(() => {
     getMigratedSchemas().then(({ collections, songs }) => {
-      const hasNoMigratedResources = collections.new === 0 || songs.new === 0;
+      console.log(collections, songs);
+      const hasNotMigratedCollections = collections.new < collections.old && collections.old !== 0;
       const hasNoVersion = !version;
-      const hasOutdatedResources = collections.old !== 0 || songs.old !== 0;
+      const hasNotMigratedSongs = songs.new < songs.old && songs.old !== 0;
       const isOutdated = Number(version) < CURRENT_SCHEMA_VERSION;
 
-      if ((hasNoMigratedResources && hasOutdatedResources) || hasNoVersion || isOutdated) {
+      if (hasNotMigratedCollections || hasNotMigratedSongs || hasNoVersion || isOutdated) {
         updateSchemas();
       }
     });

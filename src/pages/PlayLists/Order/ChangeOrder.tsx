@@ -22,14 +22,12 @@ function ChangeOrder() {
 
   const reNumerate = () => {
     const playListsCopy = [...playLists];
-    for (let i = 0; i < playLists.length; i++)
-      playListsCopy[i].order = i;
+    for (let i = 0; i < playLists.length; i++) playListsCopy[i].order = i;
     save();
   };
 
   const save = () => {
-    for (const playList of playLists)
-      playList.updateOrder();
+    for (const playList of playLists) playList.updateOrder();
     refreshPlayLists();
   };
 
@@ -50,7 +48,6 @@ function ChangeOrder() {
       {/*                    uppercase>save</Button>*/}
       {/*        </Stack>*/}
       {/*    </Surface>*/}
-
       {/*    <Surface style={[css.section, css.chips]}>*/}
       {/*        <FlatList data={collections}*/}
       {/*                  keyExtractor={item => item.id}*/}

@@ -3,8 +3,11 @@ import ResourceManager, { PlayList } from '../services/ResourceManager';
 import useCompare from './useCompare';
 
 function usePlayLists(): [
-  boolean, PlayList[], () => Promise<void>, (
-    extractor: (item: PlayList) => (Date | number | string), revers?: boolean) => void, (item: PlayList[]) => void
+  boolean,
+  PlayList[],
+  () => Promise<void>,
+  (extractor: (item: PlayList) => Date | number | string, revers?: boolean) => void,
+  (item: PlayList[]) => void,
 ] {
   const [isLoading, setIsLoading] = useState(false);
   const [playLists, setPlayLists] = useState<PlayList[]>([]);
