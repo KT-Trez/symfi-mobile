@@ -4,7 +4,7 @@ import type { CollectionListItem, CollectionNavigatorProps } from '@types';
 import { Text } from 'native-base';
 import { memo, useCallback, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Avatar } from 'react-native-paper';
+import { Avatar, useTheme } from 'react-native-paper';
 import { useList } from '../context';
 
 type CollectionProps = {
@@ -16,6 +16,7 @@ export const Collection = memo(
     const { navigate } = useNavigation<CollectionNavigatorProps>();
     const { isInSelectionMode, items, selectItem, unselectItem } = useList();
     const s = usePluralFormV3(items.length);
+    const { colors } = useTheme();
 
     const onLongPress = useCallback(() => {
       selectItem(item);
@@ -37,7 +38,11 @@ export const Collection = memo(
       <TouchableOpacity onLongPress={onLongPress} onPress={onPress} style={styles.touchableOpacity}>
         <View>
           {item.isSelected ? (
-            <Avatar.Icon color="green" icon="check" style={styles.icon} />
+            <Avatar.Icon
+              color={colors.secondary}
+              icon="check"
+              style={[{ borderColor: colors.secondary }, styles.icon]}
+            />
           ) : item.coverUri ? (
             <Avatar.Image source={{ uri: item.coverUri }} />
           ) : (
@@ -66,7 +71,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     backgroundColor: 'transparent',
-    borderColor: 'green',
     borderStyle: 'dashed',
     borderWidth: 1,
   },

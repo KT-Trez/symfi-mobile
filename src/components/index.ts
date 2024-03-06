@@ -1,5 +1,6 @@
 export * from './Actions';
 export * from './AudioPlayer';
+export * from './ConfirmDialog';
 export * from './Cover';
 export * from './List';
 export * from './Loader';

@@ -1,25 +1,24 @@
 import { DefaultTheme, Theme } from '@react-navigation/native';
-import { useColorMode, useTheme } from 'native-base';
 import { useMemo } from 'react';
+import { useTheme } from 'react-native-paper';
 
 export const useCustomTheme = () => {
-  const { colorMode } = useColorMode();
   const { colors } = useTheme();
 
   const customTheme: Theme = useMemo(
     () => ({
       ...DefaultTheme,
       colors: {
-        background: colors.light['50'],
-        border: colors.light['500'],
-        card: colors.primary['900'],
-        notification: colors.light['500'],
-        primary: colors.text['50'],
-        text: colors.text['50'],
+        background: colors.background,
+        border: colors.onPrimary,
+        card: colors.surface,
+        notification: colors.surface,
+        primary: colors.onPrimary,
+        text: colors.onPrimary,
       },
-      dark: colorMode === 'dark',
+      dark: false,
     }),
-    [colorMode, colors.light, colors.primary, colors.text],
+    [colors.background, colors.onPrimary, colors.surface],
   );
 
   return { customTheme };

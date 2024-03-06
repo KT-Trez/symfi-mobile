@@ -1,5 +1,5 @@
 import { theme } from '@/theme';
-import { AudioPlayerProvider, Loader } from '@components';
+import { AudioPlayerProvider, ConfirmDialogProvider, Loader } from '@components';
 import { useCustomTheme } from '@hooks';
 import {
   ChannelModel,
@@ -13,7 +13,7 @@ import {
 } from '@models';
 import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
-import { NativeBaseProvider, StatusBar, useColorMode, useTheme } from 'native-base';
+import { NativeBaseProvider, StatusBar, useColorMode } from 'native-base';
 import { useEffect } from 'react';
 import { PaperProvider } from 'react-native-paper';
 import useSchemaUpdate, { useSchemaUpdate2 } from './hooks/useSchemaUpdate';
@@ -37,7 +37,9 @@ export const AppWrapper = () => (
       ]}
     >
       <PaperProvider theme={theme}>
-        <App />
+        <ConfirmDialogProvider>
+          <App />
+        </ConfirmDialogProvider>
       </PaperProvider>
     </RealmProvider>
   </NativeBaseProvider>
@@ -47,7 +49,6 @@ const App = () => {
   const { colorMode } = useColorMode();
   const { customTheme } = useCustomTheme();
   const { getMigratedSchemas } = useSchemaUpdate2();
-  const { colors } = useTheme();
 
   useEffect(() => {
     ApiService.loadRemote();
@@ -63,7 +64,7 @@ const App = () => {
   return (
     <AudioPlayerProvider>
       <NavigationContainer theme={customTheme}>
-        <StatusBar backgroundColor="#007690" barStyle={colorMode ? `${colorMode}-content` : 'default'} />
+        <StatusBar backgroundColor="#406d78" barStyle={colorMode ? `${colorMode}-content` : 'default'} />
         <MainNavigator />
       </NavigationContainer>
     </AudioPlayerProvider>
