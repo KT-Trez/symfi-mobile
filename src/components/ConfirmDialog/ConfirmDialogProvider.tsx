@@ -32,7 +32,9 @@ export const ConfirmDialogProvider = ({ children }: ConfirmDialogProviderProps) 
         <Dialog dismissableBackButton onDismiss={close} visible={!!confirmDialog}>
           <Dialog.Title style={{ color: colors.onBackground }}>{confirmDialog?.title}</Dialog.Title>
           <Dialog.Content>
-            <Text style={{ color: colors.onBackground }}>You are about to delete the following item{s}:</Text>
+            <Text style={{ color: colors.onBackground }}>
+              You are about to delete the following {(confirmDialog?.itemText || 'item') + s}:
+            </Text>
 
             <FlatList
               data={confirmDialog?.items}

@@ -1,21 +1,23 @@
-export type Action = {
-  color?: string;
-  icon?: string;
-  isHidden?: boolean;
-  onPress?: () => void;
-} & (ActionWithMenu | ActionWithoutMenu);
+import type { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
 
-type ActionWithMenu = {
+export type ActionType = {
+  color?: string;
+  icon: IconSource;
+  isHidden?: boolean;
+} & (ActionTypeWithMenu | ActionTypeWithoutMenu);
+
+type ActionTypeWithMenu = {
   isMenu: true;
-  options: MenuOption[];
+  options: MenuActionOptionType[];
 };
 
-type ActionWithoutMenu = {
+type ActionTypeWithoutMenu = {
+  onPress?: () => void;
   isMenu?: false;
 };
 
-type MenuOption = {
-  icon?: string;
+type MenuActionOptionType = {
+  icon?: IconSource;
   name: string;
   onPress?: () => void;
 };

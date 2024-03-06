@@ -1,63 +1,54 @@
-import type { Action } from '@/components/Actions/types';
-import { memo, useMemo } from 'react';
+import type { ActionType } from '@/components/Actions/types';
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { IconButton, useTheme } from 'react-native-paper';
+import { Action } from './Action';
 
 type ActionsProps = {
-  actions: Action[];
-  onBulkDeselect?: () => void;
+  actions: ActionType[];
   onBulkSelect?: () => void;
+  onCancel?: () => void;
 };
 
-export const Actions = memo(({ actions, onBulkDeselect, onBulkSelect }: ActionsProps) => {
-  const isVisible = useMemo<boolean>(() => actions.some(action => !action.isHidden), [actions]);
+export const Actions = memo(({ actions, onBulkSelect, onCancel }: ActionsProps) => {
+  const { colors } = useTheme();
+
+  const hasBulkSelect = !!onBulkSelect;
+  const hasCancel = !!onCancel;
 
   return (
-    <View style={styles.view}>
-      {/*{isVisible && !!onBulkSelect && <IconButton icon="cancel" onPress={onBulkSelect} />}*/}
+    <View style={[{ justifyContent: hasBulkSelect ? 'space-between' : 'flex-end' }, styles.view]}>
+      <View style={styles.bulkActionsView}>
+        {hasBulkSelect && <IconButton iconColor={colors.onSurface} icon="select-all" onPress={onBulkSelect} />}
+        {hasCancel && <IconButton iconColor={colors.onSurface} icon="cancel" onPress={onCancel} />}
+      </View>
 
-      {/*<HStack alignItems={'center'} justifyContent={'center'}>*/}
-      {/*  {actions.map((action, index) => {*/}
-      {/*    if (action.isHidden) {*/}
-      {/*      return undefined;*/}
-      {/*    }*/}
-
-      {/*    if (action.isMenu) {*/}
-      {/*      return (*/}
-      {/*        <Menu*/}
-      {/*          key={index}*/}
-      {/*          trigger={triggerProps => (*/}
-      {/*            <IconButton {...triggerProps} icon={<Icon as={MaterialCommunityIcons} name={action.icon} />} />*/}
-      {/*          )}*/}
-      {/*        >*/}
-      {/*          {action.options.map((option, index) => (*/}
-      {/*            <Menu.Item key={index} onPress={option.onPress}>*/}
-      {/*              /!*<Icon as={MaterialCommunityIcons} name={option.icon} />*!/*/}
-      {/*              {option.name}*/}
-      {/*            </Menu.Item>*/}
-      {/*          ))}*/}
-      {/*        </Menu>*/}
-      {/*      );*/}
-      {/*    }*/}
-
-      {/*    return (*/}
-      {/*      <IconButton*/}
-      {/*        icon={<Icon as={MaterialCommunityIcons} color={action.color || 'primary.500'} name={action.icon} />}*/}
-      {/*        key={index}*/}
-      {/*        onPress={action.onPress}*/}
-      {/*      />*/}
-      {/*    );*/}
-      {/*  })}*/}
-      {/*</HStack>*/}
+      <View style={styles.actionsView}>
+        {actions.map((action, index) => (
+          <Action item={action} key={index} />
+        ))}
+      </View>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
+  actionsView: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  bulkActionsView: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
   view: {
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     width: '100%',
   },
 });

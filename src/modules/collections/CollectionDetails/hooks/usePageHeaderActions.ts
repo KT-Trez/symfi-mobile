@@ -1,8 +1,8 @@
+import { ActionType } from '@components';
 import { useNavigation } from '@react-navigation/native';
 import { useMemo } from 'react';
-import { Action } from '../../../../components';
 
-export const usePageHeaderActions = (): Action[] => {
+export const usePageHeaderActions = (): ActionType[] => {
   const navigate = useNavigation();
 
   return useMemo(

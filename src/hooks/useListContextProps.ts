@@ -5,9 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 export type ListProviderProps<T extends BaseItem> = {
   isInSelectionMode: boolean;
   items: T[];
-  selectAllItems: () => void;
+  selectAllItems: (disableSelectionMode?: boolean) => void;
   selectItem: (item: T) => void;
-  unselectAllItems: () => void;
+  unselectAllItems: (disableSelectionMode?: boolean) => void;
   unselectItem: (item: T) => void;
 };
 
@@ -15,8 +15,8 @@ export const useListContextProps = <T extends BaseItem, TModel>(items: Realm.Res
   const [isInSelectionMode, setIsInSelectionMode] = useState<boolean>(false);
   const [visibleItems, setVisibleItems] = useState<T[]>([]);
 
-  const selectAllItems = useCallback(() => {
-    setIsInSelectionMode(true);
+  const selectAllItems = useCallback((disableSelectionMode?: boolean) => {
+    if (disableSelectionMode) setIsInSelectionMode(false);
     setVisibleItems(prevState => prevState.map(item => ({ ...item, isSelected: true })));
   }, []);
 
@@ -25,8 +25,8 @@ export const useListContextProps = <T extends BaseItem, TModel>(items: Realm.Res
     setVisibleItems(prevState => prevState.map(item => (item.id === itemT.id ? { ...item, isSelected: true } : item)));
   }, []);
 
-  const unselectAllItems = useCallback(() => {
-    setIsInSelectionMode(false);
+  const unselectAllItems = useCallback((disableSelectionMode?: boolean) => {
+    if (disableSelectionMode) setIsInSelectionMode(false);
     setVisibleItems(prevState => prevState.map(item => ({ ...item, isSelected: false })));
   }, []);
 

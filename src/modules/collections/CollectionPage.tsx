@@ -2,7 +2,7 @@ import { Actions, PageHeader } from '@components';
 import { usePluralFormV3 } from '@hooks';
 import { useNavigation } from '@react-navigation/native';
 import type { CollectionNavigatorProps } from '@types';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { FAB } from 'react-native-paper';
 import { CollectionList, usePageHeaderActions } from './CollectionList';
@@ -13,17 +13,25 @@ export const CollectionPage = () => {
   const { isInSelectionMode, items, selectAllItems, unselectAllItems } = useList();
   const { navigate } = useNavigation<CollectionNavigatorProps>();
   const s = usePluralFormV3(items.length);
+  const [isBulkSelected, setIsBulkSelected] = useState<boolean>(false);
 
-  const isAllSelected = useMemo<boolean>(() => items.every(item => item.isSelected), [items]);
-  console.log('isAllSelected', isAllSelected);
+  const handleCancelBulkSelect = useCallback(() => {
+    setIsBulkSelected(false);
+    unselectAllItems(true);
+  }, [unselectAllItems]);
 
   const onBulkSelect = useCallback(() => {
-    isAllSelected ? unselectAllItems() : selectAllItems();
-  }, [isAllSelected, selectAllItems, unselectAllItems]);
+    isBulkSelected ? unselectAllItems() : selectAllItems();
+    setIsBulkSelected(prev => !prev);
+  }, [isBulkSelected, selectAllItems, unselectAllItems]);
+
+  const areActionsVisible = isBulkSelected || isInSelectionMode;
 
   return (
     <PageHeader
-      actions={isInSelectionMode && <Actions actions={actions} />}
+      actions={
+        areActionsVisible && <Actions actions={actions} onBulkSelect={onBulkSelect} onCancel={handleCancelBulkSelect} />
+      }
       subtitle={`${items.length} item${s}`}
       title="Collections"
     >

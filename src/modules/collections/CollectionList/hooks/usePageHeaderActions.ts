@@ -1,16 +1,19 @@
 import { useList } from '@/modules/collections/context';
 import type { CollectionId, CollectionNavigatorProps } from '@/types';
-import { Action } from '@components';
+import { ActionType, useConfirmDialog } from '@components';
 import { CollectionModel } from '@models';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery, useRealm } from '@realm/react';
 import { useCallback, useMemo } from 'react';
+import { useTheme } from 'react-native-paper';
 
-export const usePageHeaderActions = (): Action[] => {
-  const { isInSelectionMode, items, unselectAllItems } = useList();
+export const usePageHeaderActions = (): ActionType[] => {
+  const { close, open } = useConfirmDialog();
+  const { isInSelectionMode, items } = useList();
   const { navigate } = useNavigation<CollectionNavigatorProps>();
   const collections = useQuery(CollectionModel);
   const realm = useRealm();
+  const { colors } = useTheme();
 
   const id = useMemo(() => {
     if (!isInSelectionMode) {
@@ -28,15 +31,25 @@ export const usePageHeaderActions = (): Action[] => {
     }, []);
     const filteredCollections = collections.filtered('id IN $0', selectedIds);
 
-    realm.write(() => {
-      realm.delete(filteredCollections);
-    });
-  }, [collections, items, realm]);
+    const s = filteredCollections.length !== 1 ? 's' : '';
 
-  return useMemo<Action[]>(
+    open({
+      items: filteredCollections.map(collection => collection.name),
+      itemText: 'collection',
+      onConfirm: () => {
+        close();
+        realm.write(() => {
+          realm.delete(filteredCollections);
+        });
+      },
+      title: `Delete collection${s}`,
+    });
+  }, [close, collections, items, open, realm]);
+
+  return useMemo<ActionType[]>(
     () => [
       {
-        color: 'error.700',
+        color: colors.error,
         icon: 'delete',
         onPress: deleteCollection,
       },
@@ -44,11 +57,7 @@ export const usePageHeaderActions = (): Action[] => {
         icon: 'pencil',
         onPress: () => navigate('CollectionEdit', { id }),
       },
-      // {
-      //   icon: 'cancel',
-      //   onPress: unselectAllItems,
-      // },
     ],
-    [id, isInSelectionMode, navigate],
+    [colors.error, deleteCollection, id, navigate],
   );
 };
