@@ -29,12 +29,17 @@ const MenuAction = ({ item }: MenuActionProps) => {
   return (
     <Menu
       anchor={<Appbar.Action color={item.color || colors.onSurface} icon={item.icon} onPress={openMenu} />}
-      anchorPosition="bottom"
       onDismiss={onDismiss}
       visible={isVisible}
     >
       {item.options.map((option, index) => (
-        <Menu.Item key={index} leadingIcon={option.icon} onPress={option.onPress} title={option.name} />
+        <Menu.Item
+          key={index}
+          leadingIcon={option.icon}
+          onPress={option.onPress}
+          title={option.name}
+          titleStyle={{ color: colors.onBackground }}
+        />
       ))}
     </Menu>
   );

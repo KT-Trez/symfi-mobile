@@ -8,6 +8,7 @@ import { CollectionEdit } from './CollectionEdit';
 import { CollectionForm } from './CollectionForm';
 import { CollectionPage } from './CollectionPage';
 import { CollectionListContext } from './context';
+import { SongsSearchPage } from './SongsSearch';
 
 const { Navigator, Screen } = createNativeStackNavigator<CollectionNavigatorParams>();
 
@@ -21,11 +22,12 @@ export const CollectionNavigator = () => {
 
   return (
     <CollectionListContext.Provider value={value}>
-      <Navigator initialRouteName={'CollectionPage'}>
-        <Screen component={CollectionDetails} name={'CollectionDetails'} options={defaultOptions} />
-        <Screen component={CollectionEdit} name={'CollectionEdit'} options={defaultOptions} />
-        <Screen component={CollectionForm} name={'CollectionForm'} options={defaultOptions} />
-        <Screen component={CollectionPage} name={'CollectionPage'} options={defaultOptions} />
+      <Navigator initialRouteName={'CollectionPage'} screenOptions={defaultOptions}>
+        <Screen component={CollectionDetails} name="CollectionDetails" />
+        <Screen component={CollectionEdit} name="CollectionEdit" />
+        <Screen component={CollectionForm} name="CollectionForm" />
+        <Screen component={CollectionPage} name="CollectionPage" />
+        <Screen component={SongsSearchPage} name="SongsSearch" />
       </Navigator>
     </CollectionListContext.Provider>
   );

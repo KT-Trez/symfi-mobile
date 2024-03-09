@@ -1,53 +1,67 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MainNavigatorParams } from '@types';
+import type { MainNavigatorParams } from '@types';
+import { Icon } from 'react-native-paper';
+import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
 import { CollectionNavigator } from './collections';
 import { SettingsNavigator } from './settings';
 
-const { Navigator, Screen } = createBottomTabNavigator<MainNavigatorParams>();
-
-const defaultOptions: BottomTabNavigationOptions = {
-  headerShown: false,
-};
+const Tab = createMaterialBottomTabNavigator<MainNavigatorParams>();
 
 export const MainNavigator = () => (
-  <Navigator initialRouteName={'CollectionNavigator'}>
-    <Screen
+  <Tab.Navigator initialRouteName="CollectionNavigator">
+    <Tab.Screen
       component={CollectionNavigator}
-      name={'CollectionNavigator'}
+      name="CollectionNavigator"
       options={{
-        ...defaultOptions,
-        tabBarIcon: iconProps => <MaterialIcons {...iconProps} name={'playlist-play'} />,
+        tabBarIcon: props => <Icon {...props} size={24} source="playlist-play" />,
         tabBarLabel: 'Collections',
       }}
     />
-    <Screen
+    <Tab.Screen
       component={SettingsNavigator}
-      name={'SettingsNavigator'}
+      name="SettingsNavigator"
       options={{
-        headerShown: false,
-        tabBarIcon: iconProps => <MaterialIcons {...iconProps} name={'settings'} />,
+        tabBarIcon: props => <Icon {...props} size={24} source="cog" />,
         tabBarLabel: 'Settings',
       }}
     />
-    {/*<Screen*/}
-    {/*  component={SongsSearch}*/}
-    {/*  name={'search'}*/}
-    {/*  options={{*/}
-    {/*    headerShown: false,*/}
-    {/*    tabBarIcon: ({ color, size }) => (<MaterialIcons color={color} name={'search'} size={size}/>),*/}
-    {/*    tabBarLabel: 'Search',*/}
-    {/*  }}*/}
-    {/*/>*/}
-    {/*<Screen*/}
-    {/*  component={SongListNavigator}*/}
-    {/*  name={'SongList'}*/}
-    {/*  options={{*/}
-    {/*    headerShown: false,*/}
-    {/*    tabBarIcon: ({ color, size }) => (*/}
-    {/*      <MaterialIcons color={color} name={'audiotrack'} size={size}/>),*/}
-    {/*    tabBarLabel: 'SongsList',*/}
-    {/*  }}*/}
-    {/*/>*/}
-  </Navigator>
+  </Tab.Navigator>
 );
+
+// {/*<Screen*/}
+// {/*  component={SongsSearch}*/}
+// {/*  name={'search'}*/}
+// {/*  options={{*/}
+// {/*    headerShown: false,*/}
+// {/*    tabBarIcon: ({ color, size }) => (<MaterialIcons color={color} name={'search'} size={size}/>),*/}
+// {/*    tabBarLabel: 'Search',*/}
+// {/*  }}*/}
+// {/*/>*/}
+// {/*<Screen*/}
+// {/*  component={SongListNavigator}*/}
+// {/*  name={'SongList'}*/}
+// {/*  options={{*/}
+// {/*    headerShown: false,*/}
+// {/*    tabBarIcon: ({ color, size }) => (*/}
+// {/*      <MaterialIcons color={color} name={'audiotrack'} size={size}/>),*/}
+// {/*    tabBarLabel: 'SongsList',*/}
+// {/*  }}*/}
+// {/*/>*/}
+
+// <Navigator initialRouteName={'CollectionNavigator'}>
+//   <Screen
+//     component={}
+//     name={'CollectionNavigator'}
+//     options={{
+//       ...defaultOptions,
+//       tabBarIcon: iconProps => <MaterialIcons {...iconProps} name={'playlist-play'} />,
+//       tabBarLabel: 'Collections',
+//     }}
+//   />
+//   <Screen
+//     component={SettingsNavigator}
+//     name={'SettingsNavigator'}
+//     options={{
+//       tabBarIcon: iconProps => <MaterialIcons {...iconProps} name={'settings'} />,
+//       tabBarLabel: 'Settings',
+//     }}
+//   />

@@ -1,3 +1,5 @@
+export * from './theme';
+
 export const config = {
   current_schema_version: 4,
 };

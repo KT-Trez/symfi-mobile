@@ -1,7 +1,7 @@
-import { PageHeaderContent } from '@/components/PageHeader/PageHeaderContent';
 import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import { Appbar } from 'react-native-paper';
+import { PageHeaderContent } from './PageHeaderContent';
 
 const APPBAR_HEIGHT = 70;
 
@@ -14,7 +14,9 @@ type PageHeaderProps = {
 
 export const PageHeader = ({ actions, children, subtitle, title }: PageHeaderProps) => (
   <>
-    <Appbar style={styles.appbar}>{actions ? actions : <PageHeaderContent subtitle={subtitle} title={title} />}</Appbar>
+    <Appbar elevated style={styles.appbar}>
+      {actions ? actions : <PageHeaderContent subtitle={subtitle} title={title} />}
+    </Appbar>
     {children}
   </>
 );

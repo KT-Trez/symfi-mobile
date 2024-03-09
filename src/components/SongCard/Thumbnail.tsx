@@ -1,5 +1,6 @@
 import { Box } from 'native-base';
-import { Cover, Overlay } from '../';
+import { Cover } from '../Cover';
+import { Overlay } from '../Overlay';
 
 type ThumbnailProps = {
   id: string;

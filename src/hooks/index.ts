@@ -1,4 +1,3 @@
-export * from './useCustomTheme';
 export * from './useImagePicker';
 export * from './useListContextProps';
 export * from './usePluralForm';
