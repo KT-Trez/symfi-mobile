@@ -1,6 +1,6 @@
-import { CollectionModel } from '@/models';
 import { PageHeader, TextField } from '@components';
 import { useImagePickerV2 } from '@hooks';
+import { CollectionModel } from '@models';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Realm, useObject, useRealm } from '@realm/react';
 import type { CollectionNavigatorParams } from '@types';

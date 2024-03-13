@@ -17,6 +17,9 @@
       ],
       "@types": [
         "types"
+      ],
+      "@utils": [
+        "utils"
       ]
     },
     "strict": true

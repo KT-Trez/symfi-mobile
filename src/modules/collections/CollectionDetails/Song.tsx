@@ -17,7 +17,7 @@ export const Song = ({ item }: SongProps) => {
   return (
     <SongCard
       bottomLabel={size}
-      data={item}
+      item={item}
       isHighlighted={currentSong?.id === item.id}
       onPress={() => addToQueue(item)}
     />

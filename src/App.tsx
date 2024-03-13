@@ -12,6 +12,7 @@ import {
 } from '@models';
 import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { NativeBaseProvider } from 'native-base';
 import { useEffect } from 'react';
@@ -20,6 +21,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import useSchemaUpdate, { useSchemaUpdate2 } from './hooks/useSchemaUpdate';
 import { MainNavigator } from './modules';
 import ApiService from './services/api.service';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 export const AppWrapper = () => (
   <NativeBaseProvider>
@@ -40,13 +49,15 @@ export const AppWrapper = () => (
           ViewsModel,
         ]}
       >
-        <PaperProvider theme={theme}>
-          <NavigationContainer>
-            <ConfirmDialogProvider>
-              <App />
-            </ConfirmDialogProvider>
-          </NavigationContainer>
-        </PaperProvider>
+        <QueryClientProvider client={queryClient}>
+          <PaperProvider theme={theme}>
+            <NavigationContainer>
+              <ConfirmDialogProvider>
+                <App />
+              </ConfirmDialogProvider>
+            </NavigationContainer>
+          </PaperProvider>
+        </QueryClientProvider>
       </RealmProvider>
     </SafeAreaProvider>
   </NativeBaseProvider>

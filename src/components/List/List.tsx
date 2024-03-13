@@ -1,25 +1,31 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { BaseItem } from '@types';
-import { FlatList, HStack, Icon, Text, useTheme } from 'native-base';
+import { FlatList, HStack, Icon, Text } from 'native-base';
 import { useCallback } from 'react';
-import { FlatListProps } from 'react-native';
+import { type FlatListProps, StyleSheet } from 'react-native';
 
 type ListProps<T extends BaseItem> = {
   data: T[];
   emptyText?: string;
-  isLoading: boolean;
+  Header?: FlatListProps<T>['ListHeaderComponent'];
+  isLoading?: boolean;
   onRefresh?: FlatListProps<T>['onRefresh'];
   renderItem: FlatListProps<T>['renderItem'];
 };
 
-export const List = <T extends BaseItem>({ data, emptyText, isLoading, onRefresh, renderItem }: ListProps<T>) => {
-  const { space } = useTheme();
-
+export const List = <T extends BaseItem>({
+  data,
+  emptyText,
+  Header,
+  isLoading,
+  onRefresh,
+  renderItem,
+}: ListProps<T>) => {
   const keyExtractor = useCallback((item: T) => (typeof item.id === 'string' ? item.id : item.id.toHexString()), []);
 
   return (
     <FlatList
-      contentContainerStyle={{ gap: 16, paddingBottom: 16, paddingTop: 16 }}
+      contentContainerStyle={styles.container}
       data={data}
       keyExtractor={keyExtractor}
       h={'100%'}
@@ -31,6 +37,7 @@ export const List = <T extends BaseItem>({ data, emptyText, isLoading, onRefresh
           <Icon as={MaterialCommunityIcons} color="text.600" key={1} ml={1} name="emoticon-sad-outline" size="sm" />
         </HStack>
       }
+      ListHeaderComponent={Header}
       onRefresh={onRefresh}
       pl={2}
       pr={2}
@@ -39,3 +46,11 @@ export const List = <T extends BaseItem>({ data, emptyText, isLoading, onRefresh
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 16,
+    paddingBottom: 16,
+    paddingTop: 16,
+  },
+});

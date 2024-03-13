@@ -1,11 +1,11 @@
-import { useList } from '@/modules/collections/context';
-import type { CollectionId, CollectionNavigatorProps } from '@/types';
 import { ActionType, useConfirmDialog } from '@components';
 import { CollectionModel } from '@models';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery, useRealm } from '@realm/react';
+import type { CollectionId, CollectionNavigatorProps } from '@types';
 import { useCallback, useMemo } from 'react';
 import { useTheme } from 'react-native-paper';
+import { useList } from '../../context';
 
 export const usePageHeaderActions = (): ActionType[] => {
   const { close, open } = useConfirmDialog();

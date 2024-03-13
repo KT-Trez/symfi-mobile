@@ -1,5 +1,5 @@
-import { PageHeader } from '@/components';
-import { usePluralFormV2 } from '@/hooks/usePluralForm';
+import { PageHeader } from '@components';
+import { usePluralFormV2 } from '@hooks';
 import { VStack } from 'native-base';
 import { useResourceCount } from './hooks';
 import { ReloadSongsFromDisc, ServerSetup } from './sections';

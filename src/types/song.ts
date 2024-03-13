@@ -16,6 +16,8 @@ export type SongType = {
   views: Views;
 };
 
+export type SongTypeApi = Omit<SongType, 'collections' | 'cover' | 'file'>;
+
 export type SongListItem = SongType & BaseItem;
 
 // helper types

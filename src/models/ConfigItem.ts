@@ -1,24 +1,21 @@
-import { ConfigItem } from '@/types';
 import { Realm } from '@realm/react';
+import type { ConfigItem } from '@types';
 
 export class ConfigItemModel extends Realm.Object<ConfigItem> {
   static schema: Realm.ObjectSchema = {
     name: 'ConfigItem',
-    primaryKey: 'id',
+    primaryKey: 'key',
     properties: {
-      id: 'objectId',
       key: 'string',
       value: 'string',
     },
   };
 
-  id!: string;
   key!: string;
   value!: string;
 
-  static generate({ key, value }: Omit<ConfigItem, 'id'>): ConfigItem {
+  static generate({ key, value }: ConfigItem): ConfigItem {
     return {
-      id: new Realm.BSON.ObjectId(),
       key,
       value,
     };
