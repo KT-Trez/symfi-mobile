@@ -1,4 +1,4 @@
-import { List, PageHeader, useAudioPlayer } from '@components';
+import { AudioPlayer, List, PageHeader, SongPicker } from '@components';
 import { usePluralFormV3 } from '@hooks';
 import { CollectionModel, SongModel } from '@models';
 import { type RouteProp, useRoute } from '@react-navigation/native';
@@ -17,7 +17,6 @@ export const CollectionDetails = () => {
     params: { id },
   } = useRoute<CollectionDetailsRouteProp>();
 
-  const { currentSong } = useAudioPlayer();
   const fabActions = useFABActions();
   const collection = useObject(CollectionModel, new Realm.BSON.ObjectId(id));
   // const actions = usePageHeaderActions();
@@ -35,6 +34,7 @@ export const CollectionDetails = () => {
       {/*{currentSong && <AudioPlayer />}*/}
       {/* @ts-ignore */}
       <List data={filteredSongs} isLoading={false} renderItem={({ item }) => <Song item={item} />} />
+      <AudioPlayer />
 
       <FAB.Group
         actions={fabActions}

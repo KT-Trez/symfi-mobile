@@ -41,9 +41,11 @@ export const AppWrapper = () => (
         >
           <QueryClientProvider client={queryClient}>
             <NavigationContainer>
-              <ConfirmDialogProvider>
-                <App />
-              </ConfirmDialogProvider>
+              <AudioPlayerProvider>
+                <ConfirmDialogProvider>
+                  <App />
+                </ConfirmDialogProvider>
+              </AudioPlayerProvider>
             </NavigationContainer>
           </QueryClientProvider>
         </RealmProvider>
@@ -60,9 +62,9 @@ const App = () => {
   });
 
   return (
-    <AudioPlayerProvider>
+    <>
       <StatusBar backgroundColor={colors.inversePrimary} style={dark ? 'light' : 'dark'} translucent={false} />
       <MainNavigator />
-    </AudioPlayerProvider>
+    </>
   );
 };

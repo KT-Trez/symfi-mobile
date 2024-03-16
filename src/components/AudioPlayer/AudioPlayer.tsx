@@ -1,11 +1,12 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Box, Heading, HStack, Icon, IconButton, Text, VStack } from 'native-base';
-import React from 'react';
 import { Cover } from '../Cover';
-import { useAudioPlayer } from './hooks';
+import { useAudioPlayer } from './context';
 
 export const AudioPlayer = () => {
-  const { currentSong, isPaused, togglePause } = useAudioPlayer();
+  const { currentSong, isPaused, playNext, playPrevious, stop, togglePause } = useAudioPlayer();
+
+  if (!currentSong) return null;
 
   return (
     <Box bg={'primary.900'} m={'1'} p={4} rounded={'md'}>
@@ -14,11 +15,11 @@ export const AudioPlayer = () => {
       </Heading>
 
       <HStack>
-        <Cover uri={currentSong?.file.hasCover && currentSong.file.cover.uri} width={'30%'} />
+        <Cover uri={currentSong?.cover} width={'30%'} />
 
         <VStack alignItems={'flex-start'} maxW={'70%'} ml={2} pr={2}>
           <Text bold color={'text.200'} fontSize={'md'} isTruncated lineHeight={20} maxW={'100%'} numberOfLines={2}>
-            {currentSong?.title ?? 'Title'}
+            {currentSong?.name ?? 'Title'}
           </Text>
           <Text color={'text.300'} fontSize={'xs'} isTruncated maxW={'100%'} numberOfLines={1}>
             {currentSong?.channel.name ?? 'Author'}
@@ -37,7 +38,7 @@ export const AudioPlayer = () => {
         <HStack alignItems={'center'} justifyContent={'center'} ml={2} mr={2}>
           <IconButton
             icon={<Icon as={MaterialCommunityIcons} name={'skip-previous-circle-outline'} size={'4xl'} />}
-            // onPress={previousSong}
+            onPress={playPrevious}
             size={'xs'}
           />
           <IconButton
@@ -48,13 +49,13 @@ export const AudioPlayer = () => {
                 <Icon as={MaterialCommunityIcons} name={'pause-circle-outline'} size={'5xl'} />
               )
             }
-            // onLongPress={endPlayback}
+            onLongPress={stop}
             onPress={togglePause}
             size={'xs'}
           />
           <IconButton
             icon={<Icon as={MaterialCommunityIcons} name={'skip-next-circle-outline'} size={'4xl'} />}
-            // onPress={nextSong}
+            onPress={playNext}
             size={'xs'}
           />
         </HStack>

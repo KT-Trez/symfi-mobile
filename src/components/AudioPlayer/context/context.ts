@@ -1,14 +1,4 @@
 import { createContext } from 'react';
-import type { SongType } from 'types';
+import type { UseAudioPlayer } from './types';
 
-export type AudioPlayerContextProps = {
-  addToQueue: (songs: SongType | SongType[]) => void;
-  currentSong: null | SongType;
-  isLooping: boolean;
-  isPaused: boolean;
-  toggleLooping: () => void;
-  togglePause: () => void;
-  removeFromQueue: (song: SongType | SongType[]) => void;
-};
-
-export const AudioPlayerContext = createContext<undefined | AudioPlayerContextProps>(undefined);
+export const AudioPlayerContext = createContext<undefined | UseAudioPlayer>(undefined);
