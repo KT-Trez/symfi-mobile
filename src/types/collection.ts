@@ -8,7 +8,6 @@ export type CollectionType = {
   id: CollectionId;
   name: string;
   order: number;
-  version: number;
 };
 
 export type CollectionListItem = CollectionType & BaseItem;

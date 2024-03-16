@@ -1,17 +1,29 @@
-import { CURRENT_SCHEMA_VERSION } from '@config';
 import { Realm } from '@realm/react';
 import type { CollectionId, CollectionType, PartialByAndOmit } from '@types';
+import { SongModel } from './Song';
 
-export class CollectionModel extends Realm.Object<CollectionType, keyof Omit<CollectionType, 'coverUri'>> {
+type GeneratedCollectionType = Pick<CollectionType, 'coverUri' | 'name'>;
+
+export class CollectionModel extends Realm.Object<CollectionType, Exclude<keyof CollectionType, 'coverUri'>> {
   static schema: Realm.ObjectSchema = {
     name: 'Collection',
     primaryKey: 'id',
     properties: {
       coverUri: 'string?',
-      id: 'objectId',
+      id: {
+        default: new Realm.BSON.ObjectId(),
+        type: 'objectId',
+      },
       name: 'string',
-      order: 'int',
-      version: 'int',
+      order: {
+        default: 0,
+        type: 'int',
+      },
+      songs: {
+        objectType: SongModel.schema.name,
+        property: 'collections',
+        type: 'linkingObjects',
+      },
     },
   };
 
@@ -19,19 +31,14 @@ export class CollectionModel extends Realm.Object<CollectionType, keyof Omit<Col
   id!: CollectionId;
   name!: string;
   order!: number;
-  version!: number;
 
   static generate({
     coverUri,
     name,
-    order,
-  }: PartialByAndOmit<CollectionType, 'coverUri' | 'order', 'id' | 'version'>): CollectionType {
+  }: PartialByAndOmit<CollectionType, 'coverUri', 'id' | 'order' | 'songs'>): GeneratedCollectionType {
     return {
       coverUri,
-      id: new Realm.BSON.ObjectId(),
-      name: name,
-      order: order ?? 0,
-      version: CURRENT_SCHEMA_VERSION,
+      name,
     };
   }
 }

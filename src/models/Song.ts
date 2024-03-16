@@ -1,114 +1,6 @@
-import { CURRENT_SCHEMA_VERSION } from '@config';
 import { Realm } from '@realm/react';
-import type { Channel, CollectionId, Cover, Duration, File, PartialBy, SongId, SongType, Views } from '@types';
-import { Musicly } from '../../types';
-import type { SavedSongMetadata } from '../../types/interfaces';
-import SongData from '../classes/SongData';
-
-export class SongAdapter implements SongType {
-  channel: Channel;
-  collections: CollectionId[];
-  cover?: Cover | undefined;
-  duration: { label: string; seconds: number };
-  file?: File | undefined;
-  id: string;
-  name: string;
-  published: string;
-  thumbnail: string;
-  version: number;
-  views: { count: number; label: string };
-
-  constructor(data: SavedSongMetadata) {
-    this.channel = {
-      name: data.channel.name,
-      url: data.channel.url,
-    };
-    this.collections = [];
-    this.cover = data.musicly.flags.hasCover
-      ? {
-          name: data.musicly.cover.name,
-          uri: data.musicly.cover.uri!,
-        }
-      : undefined;
-    this.duration = {
-      label: data.metadata.duration.simple_text,
-      seconds: data.metadata.duration.seconds,
-    };
-    this.file = data.musicly.flags.isDownloaded
-      ? {
-          downloadedAt: data.musicly.file.downloadDate,
-          id: data.musicly.file.id!,
-          uri: data.musicly.file.path!,
-          size: data.musicly.file.size!,
-        }
-      : undefined;
-    this.id = data.id;
-    this.name = data.title;
-    this.published = data.metadata.published;
-    this.thumbnail = data.metadata.thumbnails[0].url;
-    this.version = data.musicly.version;
-    this.views = {
-      count: isNaN(parseInt(data.metadata.view_count)) ? 0 : parseInt(data.metadata.view_count),
-      label: data.metadata.short_view_count_text.simple_text,
-    };
-  }
-
-  static intoMediaInfo(data: SongAdapter): Musicly.Api.MediaInfo & SongData {
-    return {
-      channel: {
-        id: '',
-        name: data.channel.name,
-        url: data.channel.url,
-      },
-      description: '',
-      id: data.id,
-      metadata: {
-        badges: [],
-        duration: {
-          accessibility_label: '',
-          label: data.duration.label,
-          seconds: data.duration.seconds,
-          simple_text: '',
-        },
-        owner_badges: [],
-        published: data.published,
-        short_view_count_text: {
-          accessibility_label: '',
-          simple_text: '',
-        },
-        thumbnails: [{ height: 0, url: data.thumbnail, width: 0 }],
-        view_count: '0',
-        views: {
-          count: data.views.count,
-          label: data.views.label,
-        },
-      },
-      musicly: {
-        cover: {
-          color: '#fff',
-          name: data.cover?.name ?? '',
-          uri: '',
-        },
-        file: {
-          downloadDate: data.file?.downloadedAt ?? new Date(0),
-          id: data.file?.id ?? '',
-          path: data.file?.id ?? '',
-          size: data.file?.size ?? 0,
-        },
-        flags: {
-          hasCover: false,
-          isDownloaded: !!data.file,
-          isFavourite: false,
-        },
-        playListsIDs: [],
-        version: data.version,
-        wasPlayed: 0,
-      },
-      url: '',
-      title: data.name,
-    };
-  }
-}
+import type { Channel, Duration, File, PartialBy, SongId, SongType, Views } from '@types';
+import type { CollectionModel } from './Collection';
 
 export class ChannelModel extends Realm.Object<Channel, keyof Channel> {
   static schema: Realm.ObjectSchema = {
@@ -121,19 +13,6 @@ export class ChannelModel extends Realm.Object<Channel, keyof Channel> {
 
   name!: string;
   url!: string;
-}
-
-export class CoverModel extends Realm.Object<Channel, keyof Channel> {
-  static schema: Realm.ObjectSchema = {
-    name: 'Cover',
-    properties: {
-      name: 'string',
-      uri: 'string',
-    },
-  };
-
-  name!: string;
-  uri!: string;
 }
 
 export class DurationModel extends Realm.Object<Duration, keyof Duration> {
@@ -153,17 +32,23 @@ export class FileModel extends Realm.Object<File, keyof File> {
   static schema: Realm.ObjectSchema = {
     name: 'File',
     properties: {
-      downloadedAt: 'date',
-      id: 'string',
-      path: 'string',
+      modifiedDate: 'date',
+      uri: 'string',
       size: 'int',
     },
   };
 
-  downloadedAt!: Date;
-  id!: string;
-  path!: string;
+  modifiedDate!: Date;
+  uri!: string;
   size!: number;
+
+  static generate({ modifiedDate, uri, size }: File): File {
+    return {
+      modifiedDate,
+      uri,
+      size,
+    };
+  }
 }
 
 export class ViewsModel extends Realm.Object<Views, keyof Views> {
@@ -179,7 +64,7 @@ export class ViewsModel extends Realm.Object<Views, keyof Views> {
   label!: string;
 }
 
-export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cover' | 'file'>> {
+export class SongModel extends Realm.Object<SongType, Exclude<keyof SongType, 'cover' | 'file'>> {
   static schema: Realm.ObjectSchema = {
     name: 'Song',
     primaryKey: 'id',
@@ -188,12 +73,8 @@ export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cove
         objectType: ChannelModel.schema.name,
         type: 'object',
       },
-      collections: 'objectId[]',
-      cover: {
-        objectType: CoverModel.schema.name,
-        optional: true,
-        type: 'object',
-      },
+      collections: 'Collection[]',
+      cover: 'string?',
       duration: {
         objectType: DurationModel.schema.name,
         type: 'object',
@@ -207,7 +88,6 @@ export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cove
       name: 'string',
       published: 'string',
       thumbnail: 'string',
-      version: 'int',
       views: {
         objectType: ViewsModel.schema.name,
         type: 'object',
@@ -216,23 +96,18 @@ export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cove
   };
 
   channel!: Channel;
-  collections!: CollectionId[];
-  cover?: Cover;
+  collections!: CollectionModel[];
+  cover?: string;
   duration!: Duration;
   file?: File;
   id!: SongId;
   name!: string;
   published!: string;
   thumbnail!: string;
-  version!: number;
-  views!: {
-    count: number;
-    label: string;
-  };
+  views!: Views;
 
   static generate({
     channel,
-    collections,
     cover,
     duration,
     file,
@@ -241,10 +116,9 @@ export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cove
     published,
     thumbnail,
     views,
-  }: PartialBy<SongType, 'cover' | 'collections' | 'file' | 'version'>): SongType {
+  }: PartialBy<SongType, 'cover' | 'file'>): SongType {
     return {
       channel,
-      collections: collections || [],
       cover,
       duration,
       file,
@@ -252,7 +126,6 @@ export class SongModel extends Realm.Object<SongType, keyof Omit<SongType, 'cove
       name,
       published,
       thumbnail,
-      version: CURRENT_SCHEMA_VERSION,
       views,
     };
   }

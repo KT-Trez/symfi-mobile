@@ -1,10 +1,9 @@
 import { AudioPlayerProvider, ConfirmDialogProvider, Loader } from '@components';
-import { theme } from '@config';
+import { SCHEMA_VERSION, theme } from '@config';
 import {
   ChannelModel,
   CollectionModel,
   ConfigItemModel,
-  CoverModel,
   DurationModel,
   FileModel,
   SongModel,
@@ -31,32 +30,24 @@ const queryClient = new QueryClient({
 export const AppWrapper = () => (
   <NativeBaseProvider>
     <SafeAreaProvider>
-      <RealmProvider
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        deleteRealmIfMigrationNeeded={!!process.env.EXPO_PUBLIC_DEVELOPMENT}
-        fallback={Loader}
-        schema={[
-          ChannelModel,
-          CollectionModel,
-          ConfigItemModel,
-          CoverModel,
-          DurationModel,
-          FileModel,
-          SongModel,
-          ViewsModel,
-        ]}
-      >
-        <QueryClientProvider client={queryClient}>
-          <PaperProvider theme={theme}>
+      <PaperProvider theme={theme}>
+        <RealmProvider
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          deleteRealmIfMigrationNeeded={!!process.env.EXPO_PUBLIC_DEVELOPMENT}
+          fallback={Loader}
+          schema={[ChannelModel, CollectionModel, ConfigItemModel, DurationModel, FileModel, SongModel, ViewsModel]}
+          schemaVersion={SCHEMA_VERSION}
+        >
+          <QueryClientProvider client={queryClient}>
             <NavigationContainer>
               <ConfirmDialogProvider>
                 <App />
               </ConfirmDialogProvider>
             </NavigationContainer>
-          </PaperProvider>
-        </QueryClientProvider>
-      </RealmProvider>
+          </QueryClientProvider>
+        </RealmProvider>
+      </PaperProvider>
     </SafeAreaProvider>
   </NativeBaseProvider>
 );

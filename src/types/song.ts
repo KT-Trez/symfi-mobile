@@ -1,34 +1,24 @@
-import type { BaseItem, CollectionId } from '@types';
-
 export type SongId = string;
 
-export type SongType = {
-  channel: Channel;
-  collections: CollectionId[];
-  cover?: Cover;
-  duration: Duration;
+export type SongType = SongTypeApi & {
+  cover?: string;
   file?: File;
+};
+
+export type SongTypeApi = {
+  channel: Channel;
+  duration: Duration;
   id: SongId;
   name: string;
   published: string;
   thumbnail: string;
-  version: number;
   views: Views;
 };
-
-export type SongTypeApi = Omit<SongType, 'collections' | 'cover' | 'file'>;
-
-export type SongListItem = SongType & BaseItem;
 
 // helper types
 export type Channel = {
   name: string;
   url: string;
-};
-
-export type Cover = {
-  name: string;
-  uri: string;
 };
 
 export type Duration = {
@@ -37,8 +27,7 @@ export type Duration = {
 };
 
 export type File = {
-  downloadedAt: Date;
-  id: string;
+  modifiedDate: Date;
   uri: string;
   size: number;
 };

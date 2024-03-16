@@ -1,7 +1,16 @@
-import { HStack, Spinner } from 'native-base';
+import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 
 export const Loader = () => (
-  <HStack alignItems="center" mt={4}>
-    <Spinner size="lg" />
-  </HStack>
+  <View style={styles.view}>
+    <ActivityIndicator size="large" />
+  </View>
 );
+
+const styles = StyleSheet.create({
+  view: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
