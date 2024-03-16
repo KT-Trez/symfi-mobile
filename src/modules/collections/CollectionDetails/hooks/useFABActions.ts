@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useTheme } from 'react-native-paper';
 
 export const useFABActions = (): FABAction[] => {
-  const { navigate } = useNavigation<CollectionNavigatorProps>();
+  const { navigate, setParams } = useNavigation<CollectionNavigatorProps>();
   const { colors } = useTheme();
 
   return useMemo<FABAction[]>(
@@ -20,10 +20,10 @@ export const useFABActions = (): FABAction[] => {
         color: colors.onSecondary,
         icon: 'playlist-plus',
         label: 'Add to playlist',
-        onPress: () => console.log('test'),
+        onPress: () => setParams({ mode: 'picker' }),
         style: { backgroundColor: colors.secondary },
       },
     ],
-    [colors.onSecondary, colors.secondary, navigate],
+    [colors.onSecondary, colors.secondary, navigate, setParams],
   );
 };

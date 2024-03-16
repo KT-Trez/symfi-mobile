@@ -1,68 +1,82 @@
-import { Box, FormControl, Switch } from 'native-base';
-import React, { useCallback, useEffect, useState } from 'react';
-import { SavedSongMetadata } from '../../../types/interfaces';
-import SongsController from '../../datastore/SongsController';
-import { SongAdapter } from '../../models/Song';
-import { SongType } from '../../types';
+import { CollectionModel, SongModel } from '@models';
+import { type NavigationProp, useNavigation } from '@react-navigation/native';
+import { Realm, useRealm } from '@realm/react';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Modal, Portal, Surface } from 'react-native-paper';
 import { List } from '../List';
-import { Song } from './Song';
+import { SongCard } from '../SongCard';
 
 type SongPickerProps = {
   collectionId?: string;
-  collectionSongs?: string[];
+  isVisible?: boolean;
 };
 
-export const SongPicker = ({ collectionId, collectionSongs }: SongPickerProps) => {
-  const [songChoice, setSongChoice] = useState<SongType[]>([]);
-  const [songs, setSongs] = useState<SongType[]>([]);
+export const SongPicker = memo(
+  ({ collectionId, isVisible = true }: SongPickerProps) => {
+    const { setParams } = useNavigation<NavigationProp<{ '*': { mode: undefined } }>>();
+    const realm = useRealm();
+    const [selectedSongs, setSelectedSongs] = useState<string[]>([]);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+    const songs = useMemo(
+      () =>
+        realm
+          .objects<SongModel>(SongModel.schema.name)
+          .filtered(`NOT $0 IN collections.id`, new Realm.BSON.ObjectId(collectionId)),
+      [collectionId, realm],
+    );
 
-  const onAdd = useCallback(
-    async (isSwitched: boolean) => {
-      if (isSwitched) {
-        setSongChoice(songs.filter(song => !collectionSongs?.includes(song.id)));
-      } else {
-        setSongChoice(songs);
+    const handleDismiss = useCallback(() => {
+      // find collection
+      const id = new Realm.BSON.ObjectId(collectionId);
+      const collection = realm.objectForPrimaryKey<CollectionModel>(CollectionModel.schema.name, id);
+      if (!collection) {
+        return console.error(collection); // todo: add toast
       }
-    },
-    [collectionSongs, songs],
-  );
 
-  const getSongs = useCallback(async () => {
-    setIsLoading(true);
+      // find selected songs
+      const filteredSongs = songs.filtered(`id IN $0`, selectedSongs);
 
-    const fetchedSongs = (await SongsController.store.findAsync({})) as SavedSongMetadata[];
-    const mappedSongs = fetchedSongs.map(song => new SongAdapter(song));
-    setSongs(mappedSongs);
-    setSongChoice(mappedSongs);
+      // add songs to the collection
+      realm.write(() => {
+        filteredSongs.forEach(song => {
+          song.collections.push(collection);
+        });
+      });
 
-    setIsLoading(false);
-  }, []);
+      setParams({ mode: undefined });
+    }, [collectionId, realm, selectedSongs, setParams, songs]);
 
-  useEffect(() => {
-    getSongs();
-  }, [getSongs]);
+    const handlePress = useCallback((id: string) => {
+      setSelectedSongs(prevState => {
+        if (prevState.includes(id)) {
+          return prevState.filter(songId => songId !== id);
+        }
 
-  // todo: add search
-  // todo: sort by date
+        prevState.push(id);
 
-  return (
-    <Box>
-      <FormControl m={1} p={2}>
-        <FormControl.Label>Hide already added</FormControl.Label>
-        <Switch onValueChange={onAdd} />
-      </FormControl>
+        return prevState;
+      });
+    }, []);
 
-      <List
-        data={songChoice}
-        emptyText='No songs found. Try to add some from "Songs" tab.'
-        isLoading={isLoading}
-        onRefresh={getSongs}
-        renderItem={({ item }) => (
-          <Song collectionId={collectionId} item={item} isOnList={collectionSongs?.includes(item.id) ?? false} />
-        )}
-      />
-    </Box>
-  );
-};
+    return (
+      <Portal>
+        <Modal onDismiss={handleDismiss} visible={isVisible}>
+          <Surface style={[styles.view]}>
+            <List
+              data={songs}
+              renderItem={({ item }) => <SongCard bottomLabel="N/A" item={item} onPress={handlePress} />}
+            />
+          </Surface>
+        </Modal>
+      </Portal>
+    );
+  },
+  (prevProps, nextProps) => prevProps.isVisible === nextProps.isVisible,
+);
+
+const styles = StyleSheet.create({
+  view: {
+    margin: 32,
+  },
+});

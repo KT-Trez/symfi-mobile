@@ -1,11 +1,12 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Realm } from '@realm/react';
 import type { BaseItem } from '@types';
 import { FlatList, HStack, Icon, Text } from 'native-base';
 import { useCallback } from 'react';
 import { type FlatListProps, StyleSheet } from 'react-native';
 
 type ListProps<T extends BaseItem> = {
-  data: T[];
+  data: T[] | Realm.OrderedCollection<T>;
   emptyText?: string;
   Header?: FlatListProps<T>['ListHeaderComponent'];
   isLoading?: boolean;

@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 export type CollectionNavigatorProps = NativeStackNavigationProp<CollectionNavigatorParams>;
 
 export type CollectionNavigatorParams = {
-  CollectionDetails: { id: string };
+  CollectionDetails: { id: string; mode?: 'fab' | 'picker' };
   CollectionEdit: { id: string };
   CollectionForm: undefined;
   CollectionPage: undefined;

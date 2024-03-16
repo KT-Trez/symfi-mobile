@@ -2,7 +2,7 @@ import { AudioPlayer, List, PageHeader, SongPicker } from '@components';
 import { usePluralFormV3 } from '@hooks';
 import { CollectionModel, SongModel } from '@models';
 import { type RouteProp, useRoute } from '@react-navigation/native';
-import { Realm, useObject, useQuery } from '@realm/react';
+import { Realm, useObject } from '@realm/react';
 import type { CollectionNavigatorParams } from '@types';
 import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
@@ -14,27 +14,29 @@ type CollectionDetailsRouteProp = RouteProp<CollectionNavigatorParams, 'Collecti
 
 export const CollectionDetails = () => {
   const {
-    params: { id },
+    params: { id, mode },
   } = useRoute<CollectionDetailsRouteProp>();
 
   const fabActions = useFABActions();
   const collection = useObject(CollectionModel, new Realm.BSON.ObjectId(id));
-  // const actions = usePageHeaderActions();
-  const songs = useQuery(SongModel);
   const [isFabOpen, setIsFabOpen] = useState<boolean>(false);
   const { colors } = useTheme();
 
   const handleFabToggle = useCallback(() => setIsFabOpen(prevState => !prevState), []);
 
-  const filteredSongs = useMemo(() => songs.filtered(`$0 in collections`, new Realm.BSON.ObjectId(id)), [id, songs]);
+  const songs = useMemo(
+    () => collection!.linkingObjects<SongModel>(SongModel.schema.name, 'collections'),
+    [collection],
+  );
   const s = usePluralFormV3(songs.length);
 
   return (
     <PageHeader subtitle={`${songs.length} item${s}`} title={`Collection: ${collection?.name}`}>
-      {/*{currentSong && <AudioPlayer />}*/}
-      {/* @ts-ignore */}
-      <List data={filteredSongs} isLoading={false} renderItem={({ item }) => <Song item={item} />} />
       <AudioPlayer />
+
+      <List data={songs} isLoading={false} renderItem={({ item }) => <Song item={item} />} />
+
+      {mode === 'picker' && <SongPicker collectionId={id} />}
 
       <FAB.Group
         actions={fabActions}

@@ -1,9 +1,10 @@
 import { List, PageHeader, SongCard } from '@components';
 import { useState } from 'react';
-import { useSongFetch } from './hooks';
+import { useSongDownload, useSongFetch } from './hooks';
 import { SongSearchBar } from './SongSearchBar';
 
 export const SongsSearchPage = () => {
+  const downloadSong = useSongDownload();
   const [searchQuery, setSearchQuery] = useState('');
   const { isLoading, songs } = useSongFetch(searchQuery);
 
@@ -16,7 +17,14 @@ export const SongsSearchPage = () => {
         data={songs}
         Header={<SongSearchBar onSearch={setSearchQuery} />}
         isLoading={isLoading}
-        renderItem={({ item }) => <SongCard bottomLabel={item.views.label} item={item} imageUri={item.thumbnail} />}
+        renderItem={({ item }) => (
+          <SongCard
+            bottomLabel={item.views.label}
+            item={item}
+            imageUri={item.thumbnail}
+            onPress={() => downloadSong(item)}
+          />
+        )}
       />
     </PageHeader>
   );

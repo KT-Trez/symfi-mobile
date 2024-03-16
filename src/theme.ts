@@ -15,7 +15,7 @@ export const theme: ThemeProp = {
     secondary: '#ffebe2',
     onSecondary: '#000',
     secondaryContainer: '#d5b2a9',
-    onSecondaryContainer: '#000',
+    onSecondaryContainer: '#ffebe2',
     // tertiary: '#5D5B7D',
     // onTertiary: '#FFFFFF',
     // tertiaryContainer: '#E3DFFF',
