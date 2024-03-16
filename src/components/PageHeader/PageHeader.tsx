@@ -14,7 +14,7 @@ type PageHeaderProps = {
 
 export const PageHeader = ({ actions, children, subtitle, title }: PageHeaderProps) => (
   <>
-    <Appbar elevated style={styles.appbar}>
+    <Appbar style={[styles.appbar]}>
       {actions ? actions : <PageHeaderContent subtitle={subtitle} title={title} />}
     </Appbar>
     {children}

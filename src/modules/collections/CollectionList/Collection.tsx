@@ -39,9 +39,9 @@ export const Collection = memo(
         <View>
           {item.isSelected ? (
             <Avatar.Icon
-              color={colors.secondary}
+              color={colors.secondaryContainer}
               icon="check"
-              style={[{ borderColor: colors.secondary }, styles.icon]}
+              style={[{ borderColor: colors.secondaryContainer }, styles.icon]}
             />
           ) : item.coverUri ? (
             <Avatar.Image source={{ uri: item.coverUri }} />

@@ -5,38 +5,38 @@ export const theme: ThemeProp = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: '#F6FAFD',
-    onBackground: '#171C1F',
-    primary: '#106682',
-    inversePrimary: '#8AD0EF',
-    onPrimary: '#FFFFFF',
-    primaryContainer: '#BDE9FF',
-    onPrimaryContainer: '#001F2A',
-    secondary: '#4D616B',
-    onSecondary: '#FFFFFF',
-    secondaryContainer: '#D0E6F2',
-    onSecondaryContainer: '#081E27',
-    tertiary: '#5D5B7D',
-    onTertiary: '#FFFFFF',
-    tertiaryContainer: '#E3DFFF',
-    onTertiaryContainer: '#191836',
-    surface: '#F6FAFD',
-    inverseSurface: '#2C3134',
-    inverseOnSurface: '#EDF1F5',
-    onSurface: '#171C1F',
-    surfaceVariant: '#DCE4E9',
-    onSurfaceVariant: '#40484C',
-    surfaceDisabled: '#D6DBDE',
-    onSurfaceDisabled: '#F6FAFD',
-    error: '#BA1A1A',
-    onError: '#FFFFFF',
-    errorContainer: '#FFDAD6',
-    onErrorContainer: '#410002',
-    // backdrop: string;
-    outline: '#70787D',
-    outlineVariant: '#C0C8CD',
-    shadow: '#000000',
-    scrim: '#000000',
+    background: '#fff',
+    onBackground: '#000',
+    primary: '#A9CCD5',
+    onPrimary: '#000',
+    primaryContainer: '#5b93a0',
+    onPrimaryContainer: '#fff',
+    inversePrimary: '#406d78',
+    secondary: '#ffebe2',
+    onSecondary: '#000',
+    secondaryContainer: '#d5b2a9',
+    onSecondaryContainer: '#000',
+    // tertiary: '#5D5B7D',
+    // onTertiary: '#FFFFFF',
+    // tertiaryContainer: '#E3DFFF',
+    // onTertiaryContainer: '#191836',
+    surface: '#5b93a0',
+    onSurface: '#fff',
+    // surfaceVariant: '#DCE4E9',
+    // onSurfaceVariant: '#40484C',
+    // inverseSurface: '#2C3134',
+    // inverseOnSurface: '#EDF1F5',
+    surfaceDisabled: '#07405f',
+    onSurfaceDisabled: '#cccccc',
+    error: '#b00020',
+    onError: '#fff',
+    // errorContainer: '#FFDAD6',
+    // onErrorContainer: '#410002',
+    backdrop: 'rgba(0, 0, 0, 0.5)',
+    // outline: '#70787D',
+    // outlineVariant: '#C0C8CD',
+    // shadow: '#000000',
+    // scrim: '#000000',
     elevation: {
       level0: 'transparent',
       // Note: Color values with transparency cause RN to transfer shadows to children nodes
@@ -49,4 +49,21 @@ export const theme: ThemeProp = {
       level5: '#DFE3E7', // palette.primary40, alpha 0.14
     },
   },
+  dark: true,
 };
+
+// background, surface #fff
+// error #b00020
+
+// primary #00d35f (appbar, fab)
+// primaryVariant #00bf75 (statusbar)
+
+// secondary #d30074
+// secondaryVariant #970067
+
+// secondary:
+// * fab
+// * controls, ex.: sliders, switches
+// * highlighting text
+// * progress bars
+// * links, headlines

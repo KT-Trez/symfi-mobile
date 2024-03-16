@@ -1,31 +1,42 @@
 import type { MainNavigatorParams } from '@types';
-import { Icon } from 'react-native-paper';
+import { Icon, useTheme } from 'react-native-paper';
 import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
 import { CollectionNavigator } from './collections';
 import { SettingsNavigator } from './settings';
 
 const Tab = createMaterialBottomTabNavigator<MainNavigatorParams>();
 
-export const MainNavigator = () => (
-  <Tab.Navigator initialRouteName="CollectionNavigator">
-    <Tab.Screen
-      component={CollectionNavigator}
-      name="CollectionNavigator"
-      options={{
-        tabBarIcon: props => <Icon {...props} size={24} source="playlist-play" />,
-        tabBarLabel: 'Collections',
-      }}
-    />
-    <Tab.Screen
-      component={SettingsNavigator}
-      name="SettingsNavigator"
-      options={{
-        tabBarIcon: props => <Icon {...props} size={24} source="cog" />,
-        tabBarLabel: 'Settings',
-      }}
-    />
-  </Tab.Navigator>
-);
+export const MainNavigator = () => {
+  const { colors } = useTheme();
+
+  return (
+    <Tab.Navigator
+      compact
+      activeColor={colors.onSurface}
+      activeIndicatorStyle={{ backgroundColor: colors.primary }}
+      barStyle={{ backgroundColor: colors.surface }}
+      inactiveColor={colors.onSurfaceDisabled}
+      initialRouteName="CollectionNavigator"
+    >
+      <Tab.Screen
+        component={CollectionNavigator}
+        name="CollectionNavigator"
+        options={{
+          tabBarIcon: props => <Icon {...props} size={24} source="playlist-play" />,
+          tabBarLabel: 'Collections',
+        }}
+      />
+      <Tab.Screen
+        component={SettingsNavigator}
+        name="SettingsNavigator"
+        options={{
+          tabBarIcon: props => <Icon {...props} size={24} source="cog" />,
+          tabBarLabel: 'Settings',
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 // {/*<Screen*/}
 // {/*  component={SongsSearch}*/}

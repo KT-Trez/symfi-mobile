@@ -18,9 +18,7 @@ import { NativeBaseProvider } from 'native-base';
 import { useEffect } from 'react';
 import { PaperProvider, useTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import useSchemaUpdate, { useSchemaUpdate2 } from './hooks/useSchemaUpdate';
 import { MainNavigator } from './modules';
-import ApiService from './services/api.service';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,15 +62,7 @@ export const AppWrapper = () => (
 );
 
 const App = () => {
-  const { getMigratedSchemas } = useSchemaUpdate2();
   const { colors, dark } = useTheme();
-
-  useEffect(() => {
-    ApiService.loadRemote();
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useSchemaUpdate();
-    getMigratedSchemas().then(r => console.log(r));
-  }, [getMigratedSchemas]);
 
   useEffect(() => {
     console.log('re-rendered');
@@ -80,7 +70,7 @@ const App = () => {
 
   return (
     <AudioPlayerProvider>
-      <StatusBar backgroundColor={colors.background} style={dark ? 'light' : 'dark'} translucent={false} />
+      <StatusBar backgroundColor={colors.inversePrimary} style={dark ? 'light' : 'dark'} translucent={false} />
       <MainNavigator />
     </AudioPlayerProvider>
   );
