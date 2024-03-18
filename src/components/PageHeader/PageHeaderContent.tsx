@@ -1,17 +1,21 @@
 import { StyleSheet, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 
 type PageHeaderContentProps = {
   subtitle?: string;
   title: string;
 };
 
-export const PageHeaderContent = ({ subtitle, title }: PageHeaderContentProps) => (
-  <View style={styles.view}>
-    <Text style={styles.title}>{title}</Text>
-    {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-  </View>
-);
+export const PageHeaderContent = ({ subtitle, title }: PageHeaderContentProps) => {
+  const { colors } = useTheme();
+
+  return (
+    <View style={styles.view}>
+      <Text style={[{ color: colors.onPrimary }, styles.title]}>{title}</Text>
+      {subtitle && <Text style={[{ color: colors.onPrimary }, styles.subtitle]}>{subtitle}</Text>}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   subtitle: {

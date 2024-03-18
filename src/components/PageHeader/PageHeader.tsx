@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
-import { Appbar } from 'react-native-paper';
+import { Appbar, useTheme } from 'react-native-paper';
 import { PageHeaderContent } from './PageHeaderContent';
 
 const APPBAR_HEIGHT = 70;
@@ -12,14 +12,18 @@ type PageHeaderProps = {
   title: string;
 };
 
-export const PageHeader = ({ actions, children, subtitle, title }: PageHeaderProps) => (
-  <>
-    <Appbar style={[styles.appbar]}>
-      {actions ? actions : <PageHeaderContent subtitle={subtitle} title={title} />}
-    </Appbar>
-    {children}
-  </>
-);
+export const PageHeader = ({ actions, children, subtitle, title }: PageHeaderProps) => {
+  const { colors } = useTheme();
+
+  return (
+    <>
+      <Appbar style={[{ backgroundColor: colors.primary }, styles.appbar]}>
+        {actions ? actions : <PageHeaderContent subtitle={subtitle} title={title} />}
+      </Appbar>
+      {children}
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   appbar: {

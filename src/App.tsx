@@ -14,8 +14,7 @@ import { RealmProvider } from '@realm/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { NativeBaseProvider } from 'native-base';
-import { useEffect } from 'react';
-import { PaperProvider, useTheme } from 'react-native-paper';
+import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MainNavigator } from './modules';
 
@@ -27,7 +26,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export const AppWrapper = () => (
+export const App = () => (
   <NativeBaseProvider>
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
@@ -43,7 +42,8 @@ export const AppWrapper = () => (
             <NavigationContainer>
               <AudioPlayerProvider>
                 <ConfirmDialogProvider>
-                  <App />
+                  <StatusBar backgroundColor="#004e5b" style="light" translucent={false} />
+                  <MainNavigator />
                 </ConfirmDialogProvider>
               </AudioPlayerProvider>
             </NavigationContainer>
@@ -53,18 +53,3 @@ export const AppWrapper = () => (
     </SafeAreaProvider>
   </NativeBaseProvider>
 );
-
-const App = () => {
-  const { colors, dark } = useTheme();
-
-  useEffect(() => {
-    console.log('re-rendered');
-  });
-
-  return (
-    <>
-      <StatusBar backgroundColor={colors.inversePrimary} style={dark ? 'light' : 'dark'} translucent={false} />
-      <MainNavigator />
-    </>
-  );
-};

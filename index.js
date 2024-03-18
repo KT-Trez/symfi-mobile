@@ -1,5 +1,5 @@
 import 'react-native-get-random-values';
 import { registerRootComponent } from 'expo';
-import { AppWrapper } from './src/App';
+import { App } from './src/App';
 
-registerRootComponent(AppWrapper);
+registerRootComponent(App);

@@ -6,7 +6,7 @@ import { Realm, useObject } from '@realm/react';
 import type { CollectionNavigatorParams } from '@types';
 import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { FAB, useTheme } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import { useFABActions } from './hooks';
 import { Song } from './Song';
 
@@ -20,7 +20,6 @@ export const CollectionDetails = () => {
   const fabActions = useFABActions();
   const collection = useObject(CollectionModel, new Realm.BSON.ObjectId(id));
   const [isFabOpen, setIsFabOpen] = useState<boolean>(false);
-  const { colors } = useTheme();
 
   const handleFabToggle = useCallback(() => setIsFabOpen(prevState => !prevState), []);
 
@@ -40,7 +39,6 @@ export const CollectionDetails = () => {
 
       <FAB.Group
         actions={fabActions}
-        backdropColor={colors.backdrop}
         icon="playlist-music"
         open={isFabOpen}
         onStateChange={handleFabToggle}

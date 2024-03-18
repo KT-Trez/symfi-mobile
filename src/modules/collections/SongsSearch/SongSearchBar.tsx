@@ -1,4 +1,5 @@
 import { memo, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { Menu, Searchbar } from 'react-native-paper';
 import { useSuggestionFetch } from './hooks';
 
@@ -23,6 +24,7 @@ export const SongSearchBar = memo(
             onChangeText={setSearch}
             onSubmitEditing={event => onSearch(event.nativeEvent.text)}
             placeholder="Search for songs"
+            style={[styles.searchbar]}
             value={search}
           />
         }
@@ -37,3 +39,9 @@ export const SongSearchBar = memo(
   },
   () => false,
 );
+
+const styles = StyleSheet.create({
+  searchbar: {
+    borderRadius: 8,
+  },
+});
