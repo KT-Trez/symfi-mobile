@@ -3,9 +3,10 @@ import { ConfigItemModel, FileModel, SongModel } from '@models';
 import { useObject, useRealm } from '@realm/react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ApiSuccess, File, SongTypeApi } from '@types';
-import { API_ORIGIN, QueryKeys } from '@utils';
+import { API_ORIGIN, ensureDir, QueryKeys } from '@utils';
 import * as FileSystem from 'expo-file-system';
 import { useCallback } from 'react';
+import { ToastAndroid } from 'react-native';
 
 export const useSongDownload = () => {
   const customOrigin = useObject(ConfigItemModel, API_ORIGIN);
@@ -19,7 +20,7 @@ export const useSongDownload = () => {
       // check if song already exists
       const songIndex = realm.objects(SongModel.schema.name).findIndex(({ id }) => id === song.id);
       if (songIndex !== -1) {
-        return;
+        return ToastAndroid.showWithGravity('Song already downloaded.', ToastAndroid.SHORT, ToastAndroid.CENTER);
       }
 
       //get download url
@@ -28,12 +29,15 @@ export const useSongDownload = () => {
         queryKey: [QueryKeys.DOWNLOAD_URL, song.id],
       });
 
+      // ensure directory
+      const dirUri = `${FileSystem.documentDirectory}music`;
+      await ensureDir(dirUri);
+
       // download song
-      const { uri } = await FileSystem.downloadAsync(meta, `${FileSystem.documentDirectory}${song.id}.webm`);
+      const { uri } = await FileSystem.downloadAsync(meta, `${dirUri}/${song.id}.webm`);
       const fileInfo = await FileSystem.getInfoAsync(uri, { size: true });
       if (!fileInfo.exists) {
-        // todo: add toast
-        return;
+        return ToastAndroid.showWithGravity('Failed to download a song.', ToastAndroid.SHORT, ToastAndroid.CENTER);
       }
 
       // todo: download cover image if selected
@@ -50,7 +54,7 @@ export const useSongDownload = () => {
         realm.create(SongModel.schema.name, songToSave);
       });
 
-      console.log('downloaded song!', uri);
+      ToastAndroid.showWithGravity('Song downloaded!', ToastAndroid.SHORT, ToastAndroid.CENTER);
     },
     [origin, queryClient, realm],
   );
