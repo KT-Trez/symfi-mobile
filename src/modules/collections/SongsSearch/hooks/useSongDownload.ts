@@ -1,19 +1,19 @@
-import { DEFAULT_API_ORIGIN } from '@config';
+import { ConfigItemsKeys, DEFAULT_API_ORIGIN } from '@config';
 import { ConfigItemModel, FileModel, SongModel } from '@models';
 import { useObject, useRealm } from '@realm/react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ApiSuccess, File, SongTypeApi } from '@types';
-import { API_ORIGIN, ensureDir, QueryKeys } from '@utils';
+import { ensureDir, QueryKeys } from '@utils';
 import * as FileSystem from 'expo-file-system';
 import { useCallback } from 'react';
 import { ToastAndroid } from 'react-native';
 
 export const useSongDownload = () => {
-  const customOrigin = useObject(ConfigItemModel, API_ORIGIN);
+  const apiOrigin = useObject(ConfigItemModel, ConfigItemsKeys.API_ORIGIN);
   const realm = useRealm();
   const queryClient = useQueryClient();
 
-  const origin = customOrigin?.value || DEFAULT_API_ORIGIN;
+  const origin = apiOrigin?.value || DEFAULT_API_ORIGIN;
 
   return useCallback(
     async (song: SongTypeApi) => {

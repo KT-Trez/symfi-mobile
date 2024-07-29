@@ -10,3 +10,7 @@ export const DEFAULT_API_ORIGIN = process.env.EXPO_PUBLIC_API_ORIGIN || 'https:/
 export const SCHEMA_VERSION = config.current_schema_version;
 
 export default config;
+
+export const ConfigItemsKeys = {
+  API_ORIGIN: '@CONFIG/API_ORIGIN',
+} as const;
