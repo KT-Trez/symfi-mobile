@@ -1,1 +1,1 @@
-export * from './useResourceCount';
+export * from './useResources';

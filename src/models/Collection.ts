@@ -35,7 +35,7 @@ export class CollectionModel extends Realm.Object<CollectionType, Exclude<keyof 
   static generate({
     coverUri,
     name,
-  }: PartialByAndOmit<CollectionType, 'coverUri', 'id' | 'order' | 'songs'>): GeneratedCollectionType {
+  }: PartialByAndOmit<CollectionType, 'coverUri', 'id' | 'order'>): GeneratedCollectionType {
     return {
       coverUri,
       name,

@@ -1,7 +1,7 @@
-import { ConfigItemsKeys } from '@config';
+import { ConfigItemsKeys, DEFAULT_API_ORIGIN } from '@config';
 import { ConfigItemModel } from '@models';
 import { useObject, useRealm } from '@realm/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ToastAndroid } from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
 import { Section } from '../components';
@@ -9,23 +9,19 @@ import { Section } from '../components';
 export const ServerSection = () => {
   const apiOrigin = useObject(ConfigItemModel, ConfigItemsKeys.API_ORIGIN);
   const realm = useRealm();
-  const [hasTriedInitialConnect, setHasTriedInitialConnect] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [origin, setOrigin] = useState<string>(apiOrigin?.value || '');
   const { colors } = useTheme();
 
-  const connectedErrorIcon = isError ? 'alert-circle-outline' : 'check-circle-outline';
+  const connectedErrorIcon = isError ? 'alert-circle-outline' : 'progress-question';
   const connectedIcon = isConnected ? 'check-circle-outline' : connectedErrorIcon;
-  const connectingIcon = isConnecting ? 'progress-question' : connectedIcon;
+  const connectingIcon = isConnecting ? 'progress-clock' : connectedIcon;
 
   const connect = useCallback(async () => {
     setIsConnected(false);
     setIsConnecting(true);
-
-    const originUrl = new URL(origin);
-    originUrl.pathname = '/v2/ping';
 
     try {
       realm.write(() => {
@@ -39,9 +35,10 @@ export const ServerSection = () => {
         }
       });
 
-      const res = await fetch(originUrl.toString());
+      const res = await fetch(`${new URL(origin).toString()}v3/ping`);
 
       if (res.ok) {
+        setIsError(false);
         setIsConnected(true);
       } else {
         setIsError(true);
@@ -54,12 +51,6 @@ export const ServerSection = () => {
     }
   }, [apiOrigin, origin, realm]);
 
-  useEffect(() => {
-    if (!hasTriedInitialConnect) {
-      connect().then(() => setHasTriedInitialConnect(true));
-    }
-  }, [connect, hasTriedInitialConnect]);
-
   return (
     <Section hasDivider={false} title="Server">
       <TextInput
@@ -71,7 +62,7 @@ export const ServerSection = () => {
         mode="outlined"
         onChangeText={setOrigin}
         onSubmitEditing={connect}
-        placeholder="https://api-musicly.onrender.com"
+        placeholder={DEFAULT_API_ORIGIN}
         value={origin}
       />
     </Section>

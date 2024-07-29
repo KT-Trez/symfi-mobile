@@ -1,9 +1,10 @@
 import { PageHeader } from '@components';
-import { ServerSection } from './sections';
+import { MusicSection, ServerSection } from './sections';
 
 export const SettingsPage = () => {
   return (
     <PageHeader title="Settings">
+      <MusicSection />
       <ServerSection />
     </PageHeader>
   );
