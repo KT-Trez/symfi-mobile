@@ -8,7 +8,7 @@ type SectionProps = {
   title: string;
 };
 
-export const Section = ({ children, hasDivider = true, title }: SectionProps) => {
+export const Section = ({ children, hasDivider = false, title }: SectionProps) => {
   return (
     <View>
       {hasDivider && <Divider />}

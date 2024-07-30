@@ -35,7 +35,8 @@ export const useResources = () => {
       collectionsMap.set(playlist.id, collection);
     }
 
-    const output: string[] = [];
+    const songsMap = new Map<string, SongType>();
+    const songCollectionsMap = new Map<string, CollectionType[]>();
 
     for (const song of songs) {
       const updatedSong: SongType = {
@@ -44,13 +45,13 @@ export const useResources = () => {
           url: song.channel.url,
         },
         duration: {
-          label: song.metadata.duration.accessibility_label,
+          label: song.metadata.duration.simple_text,
           seconds: song.metadata.duration.seconds,
         },
         id: song.id,
         name: song.title,
         published: song.metadata.published,
-        thumbnail: song.metadata.thumbnails.at(-1)?.url || 'https://placehold.co/1920x1080',
+        thumbnail: song.metadata.thumbnails.at(0)?.url || 'https://placehold.co/1920x1080',
         views: {
           count: Number.isNaN(Number(song.metadata.view_count.toLowerCase())) ? 0 : Number(song.metadata.view_count),
           label: song.metadata.short_view_count_text.simple_text,
@@ -63,19 +64,17 @@ export const useResources = () => {
         },
       };
 
-      output.push(
-        JSON.stringify(
-          {
-            song: updatedSong,
-            collections: song.musicly.playlists.map(playlist => collectionsMap.get(playlist.id)),
-          },
-          null,
-          2,
-        ),
-      );
+      const collections = song.musicly.playlists.map(playlist => collectionsMap.get(playlist.id)!);
+      songCollectionsMap.set(song.id, collections);
+
+      songsMap.set(song.id, updatedSong);
     }
 
-    return output;
+    return {
+      migratedCollections: collectionsMap.values(),
+      migratedSongs: songsMap.values(),
+      songCollectionsMap,
+    };
   }, []);
 
   useEffect(() => {

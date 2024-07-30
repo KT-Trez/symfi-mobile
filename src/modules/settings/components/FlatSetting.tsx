@@ -3,16 +3,17 @@ import { ActivityIndicator, ButtonProps, Icon, Text, useTheme } from 'react-nati
 
 type FlatSettingProps = {
   description: string;
+  isDisabled?: boolean;
   isLoading?: boolean;
   onPress?: ButtonProps['onPress'];
   title: string;
 };
 
-export const FlatSetting = ({ description, isLoading, onPress, title }: FlatSettingProps) => {
+export const FlatSetting = ({ description, isDisabled, isLoading, onPress, title }: FlatSettingProps) => {
   const { colors } = useTheme();
 
   return (
-    <TouchableOpacity disabled={isLoading} onPress={onPress}>
+    <TouchableOpacity disabled={isDisabled || isLoading} onPress={onPress}>
       <View style={styles.container}>
         <View>
           <Text style={styles.title} variant="bodyMedium">
