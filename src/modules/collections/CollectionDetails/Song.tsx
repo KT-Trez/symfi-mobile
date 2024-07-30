@@ -1,12 +1,15 @@
 import { SongCard, useAudioPlayer } from '@components';
 import type { SongType } from '@types';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 type SongProps = {
+  isInSelectionMode: boolean;
+  isSelected: boolean;
   item: SongType;
+  toggleSelect: (id: string, item: SongType) => void;
 };
 
-export const Song = ({ item }: SongProps) => {
+export const Song = ({ isInSelectionMode, isSelected, item, toggleSelect }: SongProps) => {
   const { currentSong, play } = useAudioPlayer();
 
   const size = useMemo<string>(
@@ -14,7 +17,22 @@ export const Song = ({ item }: SongProps) => {
     [item.file?.size],
   );
 
+  const handleLongPress = useCallback(() => {
+    toggleSelect(item.id, item);
+  }, [item, toggleSelect]);
+
+  const handlePress = useCallback(() => {
+    isInSelectionMode ? toggleSelect(item.id, item) : play(item);
+  }, [isInSelectionMode, item, play, toggleSelect]);
+
   return (
-    <SongCard bottomLabel={size} item={item} isHighlighted={currentSong?.id === item.id} onPress={() => play(item)} />
+    <SongCard
+      bottomLabel={size}
+      isHighlighted={currentSong?.id === item.id}
+      isSelected={isSelected}
+      item={item}
+      onLongPress={handleLongPress}
+      onPress={handlePress}
+    />
   );
 };

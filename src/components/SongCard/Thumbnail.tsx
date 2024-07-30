@@ -10,7 +10,7 @@ type ThumbnailProps = {
 };
 
 export const Thumbnail = ({ id, loadPlaceholder, timestamp, uri }: ThumbnailProps) => (
-  <Box w={'40%'}>
+  <Box>
     <Cover alt={`${id}'s cover`} uri={loadPlaceholder ? undefined : uri} />
     <Overlay bottom={1} right={1} size={'xs'} text={timestamp} />
   </Box>

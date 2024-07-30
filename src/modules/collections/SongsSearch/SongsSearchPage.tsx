@@ -26,7 +26,7 @@ export const SongsSearchPage = () => {
 
   return (
     <PageHeader subtitle="Powered by YouTube" title="Songs Downloader">
-      <List
+      <List.Content
         data={songs}
         emptyIcon="music-note"
         emptyText="Search online for music"

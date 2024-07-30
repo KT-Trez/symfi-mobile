@@ -63,7 +63,7 @@ export const SongPicker = memo(
       <Portal>
         <Modal onDismiss={handleDismiss} visible={isVisible}>
           <Surface style={[styles.view]}>
-            <List
+            <List.Content
               data={songs}
               renderItem={({ item }) => <SongCard bottomLabel="N/A" item={item} onPress={handlePress} />}
             />

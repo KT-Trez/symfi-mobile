@@ -1,9 +1,9 @@
 import { AudioPlayer, List, PageHeader, SongPicker } from '@components';
-import { usePluralFormV3 } from '@hooks';
-import { CollectionModel, SongModel } from '@models';
+import { usePluralFormV3, useSelected, useSongsManager } from '@hooks';
+import { CollectionModel } from '@models';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import { Realm, useObject } from '@realm/react';
-import type { CollectionNavigatorParams } from '@types';
+import type { CollectionNavigatorParams, SongType } from '@types';
 import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { FAB } from 'react-native-paper';
@@ -17,23 +17,35 @@ export const CollectionDetails = () => {
     params: { id, mode },
   } = useRoute<CollectionDetailsRouteProp>();
 
+  const collectionId = useMemo(() => new Realm.BSON.ObjectId(id), [id]);
+
   const fabActions = useFABActions();
-  const collection = useObject(CollectionModel, new Realm.BSON.ObjectId(id));
+  const collection = useObject(CollectionModel, collectionId);
+  const { isAnythingSelected, selected, toggleSelect } = useSelected<SongType>();
+  const { searchPhrase, songs, setSearchPhrase } = useSongsManager(collectionId);
   const [isFabOpen, setIsFabOpen] = useState<boolean>(false);
 
   const handleFabToggle = useCallback(() => setIsFabOpen(prevState => !prevState), []);
 
-  const songs = useMemo(
-    () => collection!.linkingObjects<SongModel>(SongModel.schema.name, 'collections'),
-    [collection],
-  );
   const s = usePluralFormV3(songs.length);
 
   return (
     <PageHeader subtitle={`${songs.length} item${s}`} title={`Collection: ${collection?.name}`}>
       <AudioPlayer />
 
-      <List data={songs} isLoading={false} renderItem={({ item }) => <Song item={item} />} />
+      <List.Content
+        data={songs}
+        Header={<List.SearchBar searchPhrase={searchPhrase} setSearchPhrase={setSearchPhrase} />}
+        isLoading={false}
+        renderItem={({ item }) => (
+          <Song
+            isInSelectionMode={isAnythingSelected}
+            isSelected={!!selected[item.id]}
+            item={item}
+            toggleSelect={toggleSelect}
+          />
+        )}
+      />
 
       {mode === 'picker' && <SongPicker collectionId={id} />}
 
