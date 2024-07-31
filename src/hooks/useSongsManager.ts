@@ -18,7 +18,7 @@ export const useSongsManager = (collectionId: CollectionId) => {
 
   const songs = useQuery(
     SongModel,
-    songs => songs.filtered('collections.id == $0 AND name CONTAINS[c] $1', collectionId, searchPhrase),
+    songs => songs.filtered('collections.id == $0 AND name CONTAINS[c] $1', collectionId, searchPhrase).sorted('name'),
     [collectionId, searchPhrase],
   );
 

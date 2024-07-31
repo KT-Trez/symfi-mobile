@@ -5,5 +5,5 @@ import { Collection } from './Collection';
 export const CollectionList = () => {
   const { items } = useList();
 
-  return <List.Content data={items} isLoading={false} renderItem={({ item }) => <Collection item={item} />} />;
+  return <List.Content data={items} renderItem={({ item }) => <Collection item={item} />} />;
 };

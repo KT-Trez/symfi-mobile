@@ -1,5 +1,4 @@
-import { useCallback, useState } from 'react';
-import { Appbar, Menu, useTheme } from 'react-native-paper';
+import { Appbar, useTheme } from 'react-native-paper';
 import type { ActionType } from './types';
 
 type ActionProps = {
@@ -8,39 +7,11 @@ type ActionProps = {
 
 export const Action = ({ item }: ActionProps) => {
   const { colors } = useTheme();
+  const { color, icon, isHidden, onPress } = item;
 
-  if (item.isMenu) return <MenuAction item={item} />;
+  if (isHidden) {
+    return null;
+  }
 
-  return <Appbar.Action color={item.color || colors.onSurface} icon={item.icon} onPress={item.onPress} />;
-};
-
-type MenuActionProps = {
-  item: ActionType & { isMenu: true };
-};
-
-const MenuAction = ({ item }: MenuActionProps) => {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const { colors } = useTheme();
-
-  const onDismiss = useCallback(() => setIsVisible(false), []);
-
-  const openMenu = useCallback(() => setIsVisible(true), []);
-
-  return (
-    <Menu
-      anchor={<Appbar.Action color={item.color || colors.onSurface} icon={item.icon} onPress={openMenu} />}
-      onDismiss={onDismiss}
-      visible={isVisible}
-    >
-      {item.options.map((option, index) => (
-        <Menu.Item
-          key={index}
-          leadingIcon={option.icon}
-          onPress={option.onPress}
-          title={option.name}
-          titleStyle={{ color: colors.onBackground }}
-        />
-      ))}
-    </Menu>
-  );
+  return <Appbar.Action color={color || colors.onPrimary} icon={icon} onPress={onPress} />;
 };

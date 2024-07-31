@@ -28,6 +28,18 @@ export const useSelected = <T>() => {
     });
   }, []);
 
+  const toggleSelectAll = useCallback((items: Record<string, T>) => {
+    setSelected(prev => {
+      const isAnySelected = Object.keys(prev).length !== 0;
+
+      if (isAnySelected) {
+        return items;
+      } else {
+        return {};
+      }
+    });
+  }, []);
+
   const unselect = useCallback((id: string) => {
     setSelected(prev => {
       const copy = { ...prev };
@@ -47,6 +59,7 @@ export const useSelected = <T>() => {
     selectAll,
     selected,
     toggleSelect,
+    toggleSelectAll,
     unselect,
     unselectAll,
   };

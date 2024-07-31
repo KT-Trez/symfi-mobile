@@ -8,17 +8,18 @@ const APPBAR_HEIGHT = 70;
 type PageHeaderProps = {
   actions?: ReactNode;
   children?: ReactNode;
+  showActions?: boolean;
   subtitle?: string;
   title: string;
 };
 
-export const PageHeader = ({ actions, children, subtitle, title }: PageHeaderProps) => {
+export const PageHeader = ({ actions, children, showActions, subtitle, title }: PageHeaderProps) => {
   const { colors } = useTheme();
 
   return (
     <>
       <Appbar style={[{ backgroundColor: colors.primary }, styles.appbar]}>
-        {actions ? actions : <PageHeaderContent subtitle={subtitle} title={title} />}
+        {showActions ? actions : <PageHeaderContent subtitle={subtitle} title={title} />}
       </Appbar>
       {children}
     </>

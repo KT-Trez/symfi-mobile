@@ -40,7 +40,7 @@ export const ConfirmDialogProvider = ({ children }: ConfirmDialogProviderProps) 
               data={confirmDialog?.items}
               keyExtractor={(_, index) => index.toString()}
               renderItem={({ item }) => (
-                <Text numberOfLines={2} style={[{ color: colors.onBackground }, styles.itemText]}>
+                <Text numberOfLines={1} style={[{ color: colors.onBackground }, styles.itemText]}>
                   • {item}
                 </Text>
               )}

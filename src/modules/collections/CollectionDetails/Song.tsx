@@ -1,12 +1,12 @@
 import { SongCard, useAudioPlayer } from '@components';
-import type { SongType } from '@types';
+import { SongModel } from '@models';
 import { useCallback, useMemo } from 'react';
 
 type SongProps = {
   isInSelectionMode: boolean;
   isSelected: boolean;
-  item: SongType;
-  toggleSelect: (id: string, item: SongType) => void;
+  item: SongModel;
+  toggleSelect: (id: string, item: SongModel) => void;
 };
 
 export const Song = ({ isInSelectionMode, isSelected, item, toggleSelect }: SongProps) => {

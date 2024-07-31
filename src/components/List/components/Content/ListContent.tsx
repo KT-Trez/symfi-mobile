@@ -1,10 +1,13 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+// noinspection ES6PreferShortImport
+
 import { Realm } from '@realm/react';
 import type { BaseItem } from '@types';
-import { FlatList, HStack, Icon, Text } from 'native-base';
 import { useCallback } from 'react';
-import { type FlatListProps, StyleSheet } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
+import { FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
+import { Icon, Text, useTheme } from 'react-native-paper';
+import { Loader } from '../../../Loader';
+
+// const STICKY_HEADER_INDICES: number[] = [0];
 
 type ListContentProps<T extends BaseItem> = {
   data: T[] | Realm.OrderedCollection<T>;
@@ -25,6 +28,8 @@ export const ListContent = <T extends BaseItem>({
   onRefresh,
   renderItem,
 }: ListContentProps<T>) => {
+  const { colors } = useTheme();
+
   const keyExtractor = useCallback((item: T) => (typeof item.id === 'string' ? item.id : item.id.toHexString()), []);
 
   return (
@@ -32,32 +37,22 @@ export const ListContent = <T extends BaseItem>({
       contentContainerStyle={styles.content}
       data={data}
       keyExtractor={keyExtractor}
-      h={'100%'}
       ListEmptyComponent={
         isLoading ? (
-          <ActivityIndicator />
+          <Loader />
         ) : (
-          <HStack alignItems="center" m={'auto'} mt={'5'}>
-            <Text color="text.600" fontSize="sm" key={0}>
+          <View style={styles.emptyContent}>
+            <Text style={{ color: colors.outline }} variant="bodyMedium">
               {emptyText || 'No items found'}
             </Text>
-            <Icon
-              as={MaterialCommunityIcons}
-              color="text.600"
-              key={1}
-              ml={1}
-              name={emptyIcon || 'emoticon-sad-outline'}
-              size="sm"
-            />
-          </HStack>
+            <Icon color={colors.outline} source={emptyIcon || 'emoticon-sad-outline'} size={20} />
+          </View>
         )
       }
       ListHeaderComponent={Header}
       onRefresh={onRefresh}
-      pl={2}
-      pr={2}
       renderItem={renderItem}
-      // stickyHeaderIndices={[0]}
+      // stickyHeaderIndices={STICKY_HEADER_INDICES}
     />
   );
 };
@@ -65,6 +60,13 @@ export const ListContent = <T extends BaseItem>({
 const styles = StyleSheet.create({
   content: {
     gap: 8,
-    paddingVertical: 8,
+    margin: 8,
+  },
+  emptyContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+    justifyContent: 'center',
+    marginTop: 24,
   },
 });

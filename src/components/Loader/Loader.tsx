@@ -9,8 +9,9 @@ export const Loader = () => (
 
 const styles = StyleSheet.create({
   view: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: 24,
   },
 });
