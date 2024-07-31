@@ -2,8 +2,12 @@ import { useNavigation } from '@react-navigation/native';
 import type { CollectionNavigatorProps, FABAction } from '@types';
 import { useMemo } from 'react';
 
-export const useFABActions = (): FABAction[] => {
-  const { navigate, setParams } = useNavigation<CollectionNavigatorProps>();
+type UseFABActionsArgs = {
+  collectionId: string;
+};
+
+export const useFABActions = ({ collectionId }: UseFABActionsArgs): FABAction[] => {
+  const { navigate } = useNavigation<CollectionNavigatorProps>();
 
   return useMemo<FABAction[]>(
     () => [
@@ -15,9 +19,9 @@ export const useFABActions = (): FABAction[] => {
       {
         icon: 'playlist-plus',
         label: 'Add to playlist',
-        onPress: () => setParams({ mode: 'picker' }),
+        onPress: () => navigate('SongPicker', { collectionId }),
       },
     ],
-    [navigate, setParams],
+    [collectionId, navigate],
   );
 };

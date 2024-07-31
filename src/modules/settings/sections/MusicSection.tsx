@@ -49,20 +49,24 @@ export const MusicSection = () => {
         'application/json',
       );
 
+      const migratedCollections = Array.from(resources.migratedCollections);
+      const migratedSongs = Array.from(resources.migratedSongs);
+
       await Promise.all([
         writeAsStringAsync(backupCollectionsUri, JSON.stringify(playlists, null, 2)),
         writeAsStringAsync(backupSongsUri, JSON.stringify(songs, null, 2)),
-        writeAsStringAsync(migratedCollectionsUri, JSON.stringify(Array.from(resources.migratedCollections), null, 2)),
+        writeAsStringAsync(migratedCollectionsUri, JSON.stringify(migratedCollections, null, 2)),
         writeAsStringAsync(migratedSongsUri, JSON.stringify(Array.from(resources.migratedSongs), null, 2)),
       ]);
 
       realm.write(() => {
-        for (const collection of Array.from(resources.migratedCollections)) {
+        realm.deleteAll();
+
+        for (const collection of migratedCollections) {
           realm.create(CollectionModel.schema.name, collection, true);
         }
-        for (const song of Array.from(resources.migratedSongs)) {
+        for (const song of migratedSongs) {
           realm.create(SongModel.schema.name, song, true);
-          // createdSong.collections = resources.songCollectionsMap.get(song.id) || [];
         }
       });
 

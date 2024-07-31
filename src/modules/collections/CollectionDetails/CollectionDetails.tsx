@@ -1,4 +1,4 @@
-import { Actions, AudioPlayer, List, PageHeader, SongPicker } from '@components';
+import { Actions, AudioPlayer, List, PageHeader } from '@components';
 import { usePluralFormV3, useSelected, useSongsManager } from '@hooks';
 import { CollectionModel, SongModel } from '@models';
 import { type RouteProp, useRoute } from '@react-navigation/native';
@@ -14,18 +14,18 @@ type CollectionDetailsRouteProp = RouteProp<CollectionNavigatorParams, 'Collecti
 
 export const CollectionDetails = () => {
   const {
-    params: { id, mode },
+    params: { id },
   } = useRoute<CollectionDetailsRouteProp>();
 
-  const collectionId = useMemo(() => new Realm.BSON.ObjectId(id), [id]);
+  const collectionObjectId = useMemo(() => new Realm.BSON.ObjectId(id), [id]);
 
-  const collection = useObject(CollectionModel, collectionId);
+  const collection = useObject(CollectionModel, collectionObjectId);
   const { isAnythingSelected, selected, toggleSelect, unselectAll } = useSelected<SongModel>();
-  const { searchPhrase, songs, setSearchPhrase } = useSongsManager(collectionId);
+  const { searchPhrase, songs, setSearchPhrase } = useSongsManager(collectionObjectId);
   const [isFabOpen, setIsFabOpen] = useState<boolean>(false);
 
   const pageHeaderActions = usePageHeaderActions({ selected, unselectAll });
-  const fabActions = useFABActions();
+  const fabActions = useFABActions({ collectionId: id });
 
   const handleFabToggle = useCallback(() => setIsFabOpen(prevState => !prevState), []);
 
@@ -52,8 +52,6 @@ export const CollectionDetails = () => {
           />
         )}
       />
-
-      {mode === 'picker' && <SongPicker collectionId={id} />}
 
       <FAB.Group
         actions={fabActions}

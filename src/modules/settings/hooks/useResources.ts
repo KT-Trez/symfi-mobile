@@ -23,7 +23,6 @@ export const useResources = () => {
 
   const updateResources = useCallback(async (playlists: PlaylistMetadata[], songs: SavedSongMetadata[]) => {
     const collectionsMap = new Map<string, CollectionType>();
-
     for (const playlist of playlists) {
       const collection: CollectionType = {
         coverUri: playlist.cover.uri,
@@ -36,8 +35,6 @@ export const useResources = () => {
     }
 
     const songsMap = new Map<string, SongType>();
-    const songCollectionsMap = new Map<string, CollectionType[]>();
-
     for (const song of songs) {
       const updatedSong: SongType = {
         channel: {
@@ -64,16 +61,12 @@ export const useResources = () => {
         },
       };
 
-      const collections = song.musicly.playlists.map(playlist => collectionsMap.get(playlist.id)!);
-      songCollectionsMap.set(song.id, collections);
-
       songsMap.set(song.id, updatedSong);
     }
 
     return {
       migratedCollections: collectionsMap.values(),
       migratedSongs: songsMap.values(),
-      songCollectionsMap,
     };
   }, []);
 

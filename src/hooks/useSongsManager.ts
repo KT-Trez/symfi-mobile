@@ -3,9 +3,11 @@ import { useQuery, useRealm } from '@realm/react';
 import type { CollectionId } from '@types';
 import { useCallback, useState } from 'react';
 
-export const useSongsManager = (collectionId: CollectionId) => {
+export const useSongsManager = (collectionId?: CollectionId) => {
   const realm = useRealm();
   const [searchPhrase, setSearchPhrase] = useState<string>('');
+
+  const queryString = collectionId ? 'collections.id == $0 AND name CONTAINS[c] $1' : 'name CONTAINS[c] $1';
 
   const deleteSong = useCallback(
     (song: SongModel) => {
@@ -16,11 +18,10 @@ export const useSongsManager = (collectionId: CollectionId) => {
     [realm],
   );
 
-  const songs = useQuery(
-    SongModel,
-    songs => songs.filtered('collections.id == $0 AND name CONTAINS[c] $1', collectionId, searchPhrase).sorted('name'),
-    [collectionId, searchPhrase],
-  );
+  const songs = useQuery(SongModel, songs => songs.filtered(queryString, collectionId, searchPhrase).sorted('name'), [
+    collectionId,
+    searchPhrase,
+  ]);
 
   return {
     deleteSong,

@@ -1,3 +1,4 @@
+import { SongPicker } from '@components';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import type { CollectionNavigatorParams } from '@types';
 import { CollectionDetails } from './CollectionDetails';
@@ -18,6 +19,7 @@ export const CollectionNavigator = () => (
     <Screen component={CollectionEdit} name="CollectionEdit" />
     <Screen component={CollectionForm} name="CollectionForm" />
     <Screen component={CollectionList} name="CollectionPage" />
+    <Screen component={SongPicker} name="SongPicker" />
     <Screen component={SongsSearchPage} name="SongsSearch" />
   </Navigator>
 );

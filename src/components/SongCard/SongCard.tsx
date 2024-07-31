@@ -20,9 +20,8 @@ export const SongCard = memo(
 
     const highlightedStyle: StyleProp<ViewStyle> = isHighlighted
       ? {
-          backgroundColor: colors.surface,
           borderRadius: roundness,
-          elevation: 1,
+          opacity: 0.3,
         }
       : { borderRadius: roundness };
 

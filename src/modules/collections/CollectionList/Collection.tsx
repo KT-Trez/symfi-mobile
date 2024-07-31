@@ -25,13 +25,13 @@ export const Collection = memo(
 
     const onLongPress = useCallback(() => {
       toggleSelect(item.id.toHexString(), item);
-    }, [item]);
+    }, [item, toggleSelect]);
 
     const onPress = useCallback(() => {
       isInSelectionMode
         ? toggleSelect(item.id.toHexString(), item)
         : navigate('CollectionDetails', { id: item.id.toHexString() });
-    }, [isInSelectionMode, item, navigate]);
+    }, [isInSelectionMode, item, navigate, toggleSelect]);
 
     return (
       <TouchableOpacity
@@ -61,11 +61,11 @@ export const Collection = memo(
     );
   },
   (itemA, itemB) => {
-    const hasTheSameId = itemA.item.id.toHexString() === itemB.item.id.toHexString();
     const hasTheSameIsInSelectionModeState = itemA.isInSelectionMode === itemB.isInSelectionMode;
+    const hasTheSameItem = itemA.item === itemB.item;
     const hasTheSameSelectedState = itemA.isSelected === itemB.isSelected;
 
-    return hasTheSameIsInSelectionModeState && hasTheSameSelectedState && hasTheSameId;
+    return hasTheSameIsInSelectionModeState && hasTheSameSelectedState && hasTheSameItem;
   },
 );
 
