@@ -42,7 +42,7 @@ export const App = () => (
             <NavigationContainer>
               <AudioPlayerProvider>
                 <ConfirmDialogProvider>
-                  <StatusBar backgroundColor="#004e5b" style="light" translucent={false} />
+                  <StatusBar backgroundColor="#004e5b" hidden={false} style="light" translucent={false} />
                   <MainNavigator />
                 </ConfirmDialogProvider>
               </AudioPlayerProvider>

@@ -1,83 +1,93 @@
+import { Cover } from '@components';
 import { usePluralFormV3 } from '@hooks';
+import { CollectionModel, SongModel } from '@models';
 import { useNavigation } from '@react-navigation/native';
-import type { CollectionListItem, CollectionNavigatorProps } from '@types';
+import type { CollectionNavigatorProps } from '@types';
 import { Text } from 'native-base';
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Avatar, useTheme } from 'react-native-paper';
-import { useList } from '../context';
+import { Icon, useTheme } from 'react-native-paper';
 
 type CollectionProps = {
-  item: CollectionListItem;
+  isInSelectionMode: boolean;
+  isSelected: boolean;
+  item: CollectionModel;
+  toggleSelect: (id: string, item: CollectionModel) => void;
 };
 
 export const Collection = memo(
-  ({ item }: CollectionProps) => {
+  ({ isInSelectionMode, isSelected, item, toggleSelect }: CollectionProps) => {
     const { navigate } = useNavigation<CollectionNavigatorProps>();
-    const { isInSelectionMode, items, selectItem, unselectItem } = useList();
-    const s = usePluralFormV3(items.length);
-    const { colors } = useTheme();
+    const { roundness } = useTheme();
+
+    const songsCount = useMemo<number>(() => item.linkingObjects(SongModel.schema.name, 'collections').length, [item]);
+    const s = usePluralFormV3(songsCount);
 
     const onLongPress = useCallback(() => {
-      selectItem(item);
-    }, [item, selectItem]);
+      toggleSelect(item.id.toHexString(), item);
+    }, [item]);
 
     const onPress = useCallback(() => {
-      if (!isInSelectionMode) {
-        navigate('CollectionDetails', { id: item.id.toHexString() });
-      } else {
-        item.isSelected ? unselectItem(item) : selectItem(item);
-      }
-    }, [isInSelectionMode, item, navigate, selectItem, unselectItem]);
-
-    useEffect(() => {
-      console.log(new Date(), 'collection render', item.id, item.isSelected);
-    });
+      isInSelectionMode
+        ? toggleSelect(item.id.toHexString(), item)
+        : navigate('CollectionDetails', { id: item.id.toHexString() });
+    }, [isInSelectionMode, item, navigate]);
 
     return (
-      <TouchableOpacity onLongPress={onLongPress} onPress={onPress} style={styles.touchableOpacity}>
-        <View>
-          {item.isSelected ? (
-            <Avatar.Icon
-              color={colors.secondaryContainer}
-              icon="check"
-              style={[{ borderColor: colors.secondaryContainer }, styles.icon]}
-            />
-          ) : item.coverUri ? (
-            <Avatar.Image source={{ uri: item.coverUri }} />
-          ) : (
-            <Avatar.Text label={item.name[0].toUpperCase()} />
+      <TouchableOpacity
+        onLongPress={onLongPress}
+        onPress={onPress}
+        style={[styles.container, { borderRadius: roundness }]}
+      >
+        <View style={styles.imageContainer}>
+          <Cover alt={`${item.name}'s cover`} uri={item.coverUri || undefined} />
+
+          {isSelected && (
+            <View style={[styles.icon, { borderRadius: roundness }]}>
+              <Icon color="rgba(255, 255, 255, 0.9)" source="check-circle-outline" size={50} />
+            </View>
           )}
         </View>
 
-        <View style={styles.descriptionView}>
+        <View style={styles.textContainer}>
           <Text bold color={'text.900'} fontSize={'md'} isTruncated numberOfLines={2}>
             {item.name}
           </Text>
           <Text color={'text.700'} fontSize={'xs'}>
-            {`${0} song${s}`}
+            {`${songsCount} song${s}`}
           </Text>
         </View>
       </TouchableOpacity>
     );
   },
-  ({ item: itemA }, { item: itemB }) =>
-    itemA.id.toHexString() === itemB.id.toHexString() && itemA.isSelected === itemB.isSelected,
+  (itemA, itemB) => {
+    const hasTheSameId = itemA.item.id.toHexString() === itemB.item.id.toHexString();
+    const hasTheSameIsInSelectionModeState = itemA.isInSelectionMode === itemB.isInSelectionMode;
+    const hasTheSameSelectedState = itemA.isSelected === itemB.isSelected;
+
+    return hasTheSameIsInSelectionModeState && hasTheSameSelectedState && hasTheSameId;
+  },
 );
 
 const styles = StyleSheet.create({
-  descriptionView: {
-    marginLeft: 8,
+  container: {
+    flexDirection: 'row',
   },
   icon: {
-    backgroundColor: 'transparent',
-    borderStyle: 'dashed',
-    borderWidth: 1,
-  },
-  touchableOpacity: {
     alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
     width: '100%',
+  },
+  imageContainer: {
+    position: 'relative',
+    width: '40%',
+  },
+  textContainer: {
+    justifyContent: 'center',
+    maxWidth: '60%',
+    paddingHorizontal: 8,
   },
 });

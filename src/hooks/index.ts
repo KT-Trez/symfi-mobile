@@ -1,3 +1,4 @@
+export * from './useCollectionsManager';
 export * from './useDebounce';
 export * from './useImagePicker';
 export * from './useListContextProps';

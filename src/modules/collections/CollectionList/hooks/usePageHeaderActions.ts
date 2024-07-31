@@ -1,63 +1,48 @@
 import { ActionType, useConfirmDialog } from '@components';
 import { CollectionModel } from '@models';
-import { useNavigation } from '@react-navigation/native';
-import { useQuery, useRealm } from '@realm/react';
-import type { CollectionId, CollectionNavigatorProps } from '@types';
+import { useRealm } from '@realm/react';
 import { useCallback, useMemo } from 'react';
 import { useTheme } from 'react-native-paper';
-import { useList } from '../../context';
 
-export const usePageHeaderActions = (): ActionType[] => {
+type UsePageHeaderActionsArgs = {
+  selected: Record<string, CollectionModel>;
+  unselectAll: () => void;
+};
+
+export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderActionsArgs): ActionType[] => {
   const { close, open } = useConfirmDialog();
-  const { isInSelectionMode, items } = useList();
-  const { navigate } = useNavigation<CollectionNavigatorProps>();
-  const collections = useQuery(CollectionModel);
   const realm = useRealm();
   const { colors } = useTheme();
 
-  const id = useMemo(() => {
-    if (!isInSelectionMode) {
-      return '';
-    }
-
-    return items.find(item => item.isSelected)?.id.toHexString() || '';
-  }, [isInSelectionMode, items]);
-
-  const deleteCollection = useCallback(() => {
-    const selectedIds = items.reduce<CollectionId[]>((acc, item) => {
-      if (item.isSelected) acc.push(item.id);
-
-      return acc;
-    }, []);
-    const filteredCollections = collections.filtered('id IN $0', selectedIds);
-
-    const s = filteredCollections.length !== 1 ? 's' : '';
-
+  const handleDelete = useCallback(() => {
     open({
-      items: filteredCollections.map(collection => collection.name),
+      items: Object.values(selected).map(collection => collection.name),
       itemText: 'collection',
       onConfirm: () => {
-        close();
         realm.write(() => {
-          realm.delete(filteredCollections);
+          for (const collectionId in selected) {
+            realm.delete(selected[collectionId]);
+          }
         });
+        close();
+        unselectAll();
       },
-      title: `Delete collection${s}`,
+      title: 'Delete',
     });
-  }, [close, collections, items, open, realm]);
+  }, [close, open, realm, selected, unselectAll]);
 
   return useMemo<ActionType[]>(
     () => [
       {
         color: colors.error,
         icon: 'delete',
-        onPress: deleteCollection,
+        onPress: handleDelete,
       },
       {
-        icon: 'pencil',
-        onPress: () => navigate('CollectionEdit', { id }),
+        icon: 'close',
+        onPress: unselectAll,
       },
     ],
-    [colors.error, deleteCollection, id, navigate],
+    [colors.error, handleDelete, unselectAll],
   );
 };

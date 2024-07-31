@@ -16,14 +16,15 @@ interface SongCardProps {
 
 export const SongCard = memo(
   ({ bottomLabel, imageUri, item, isHighlighted, isSelected, onLongPress, onPress }: SongCardProps) => {
-    const { colors } = useTheme();
+    const { colors, roundness } = useTheme();
 
     const highlightedStyle: StyleProp<ViewStyle> = isHighlighted
       ? {
           backgroundColor: colors.surface,
+          borderRadius: roundness,
           elevation: 1,
         }
-      : {};
+      : { borderRadius: roundness };
 
     return (
       <TouchableOpacity
@@ -35,7 +36,7 @@ export const SongCard = memo(
           <Thumbnail id={item.id} loadPlaceholder={!imageUri} timestamp={item.duration.label} uri={imageUri} />
 
           {isSelected && (
-            <View style={styles.icon}>
+            <View style={[styles.icon, { borderRadius: roundness }]}>
               <Icon color="rgba(255, 255, 255, 0.9)" source="check-circle-outline" size={50} />
             </View>
           )}
@@ -70,7 +71,6 @@ export const SongCard = memo(
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    borderRadius: 5,
   },
   icon: {
     alignItems: 'center',
@@ -90,6 +90,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 });
-
-// bg={'rgba(0, 0, 0, 0.75)'}
-// borderColor={'rgba(230, 230, 230, 0.4)'}

@@ -9,6 +9,14 @@ export const theme: ThemeProp = {
     onPrimary: '#ffffff',
     primaryContainer: '#a6eeff',
     onPrimaryContainer: '#001f25',
+    /**
+     * Secondary color is used for:
+     * - FAB
+     * - Controls, ex.: sliders, switches
+     * - Highlighting text
+     * - Progress bars
+     * - Links, headlines
+     */
     secondary: '#974811',
     onSecondary: '#ffffff',
     secondaryContainer: '#ffdbca',
@@ -50,7 +58,8 @@ export const theme: ThemeProp = {
       level5: '#dee3e5', // palette.primary40, alpha 0.14
     },
   },
-  dark: true,
+  dark: false,
+  roundness: 5,
 };
 
 // background, surface #fff
@@ -61,10 +70,3 @@ export const theme: ThemeProp = {
 
 // secondary #d30074
 // secondaryVariant #970067
-
-// secondary:
-// * fab
-// * controls, ex.: sliders, switches
-// * highlighting text
-// * progress bars
-// * links, headlines
