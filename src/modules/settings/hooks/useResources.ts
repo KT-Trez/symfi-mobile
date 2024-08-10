@@ -1,6 +1,9 @@
 import { Realm } from '@realm/react';
 import type { CollectionType, SongType } from '@types';
 import { useCallback, useEffect, useState } from 'react';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import type { SongPlayList } from '../../../../types';
 import type { PlaylistData, PlaylistMetadata, SavedSongMetadata } from '../../../../types/interfaces';
 import PlayListController from '../../../datastore/PlayListController';
 import SongsController from '../../../datastore/SongsController';
@@ -21,22 +24,23 @@ export const useResources = () => {
     setSongs(songs);
   }, []);
 
-  const updateResources = useCallback(async (playlists: PlaylistMetadata[], songs: SavedSongMetadata[]) => {
+  const migrateResources = useCallback(async (playlists: PlaylistMetadata[], songs: SavedSongMetadata[]) => {
     const collectionsMap = new Map<string, CollectionType>();
     for (const playlist of playlists) {
-      const collection: CollectionType = {
+      const migratedCollection: CollectionType = {
         coverUri: playlist.cover.uri,
         id: new Realm.BSON.ObjectId(),
         name: playlist.name,
         order: 0,
       };
 
-      collectionsMap.set(playlist.id, collection);
+      collectionsMap.set(playlist.id, migratedCollection);
     }
 
+    const collectionsPerSongMap = new Map<string, Set<string>>();
     const songsMap = new Map<string, SongType>();
     for (const song of songs) {
-      const updatedSong: SongType = {
+      const migratedSong: SongType = {
         channel: {
           name: song.channel.name,
           url: song.channel.url,
@@ -61,10 +65,25 @@ export const useResources = () => {
         },
       };
 
-      songsMap.set(song.id, updatedSong);
+      const iteratedCollections = new Set<string>();
+      for (const data of song.musicly.playlists as (PlaylistData | SongPlayList)[]) {
+        const id = 'playlistID' in data ? data.playlistID : data.id;
+        const collectionExists = collectionsMap.has(id);
+
+        if (iteratedCollections.has(id) || !collectionExists) {
+          continue;
+        }
+
+        iteratedCollections.add(id);
+      }
+
+      collectionsPerSongMap.set(song.id, iteratedCollections);
+      songsMap.set(song.id, migratedSong);
     }
 
     return {
+      collectionsMap,
+      collectionsPerSongMap,
       migratedCollections: collectionsMap.values(),
       migratedSongs: songsMap.values(),
     };
@@ -77,6 +96,6 @@ export const useResources = () => {
   return {
     playlists,
     songs,
-    updateResources,
+    migrateResources,
   };
 };

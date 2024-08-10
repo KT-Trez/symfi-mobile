@@ -23,6 +23,7 @@ export const Section = ({ children, hasDivider = false, title }: SectionProps) =
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    gap: 8,
   },
   title: {
     paddingHorizontal: 8,
