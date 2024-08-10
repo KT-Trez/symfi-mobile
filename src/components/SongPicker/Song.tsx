@@ -1,7 +1,7 @@
-import { SongCard } from '@components';
 import { CollectionModel, SongModel } from '@models';
 import { useRealm } from '@realm/react';
 import { useCallback, useMemo } from 'react';
+import { SongCard } from '../SongCard';
 
 type SongProps = {
   collection: CollectionModel;

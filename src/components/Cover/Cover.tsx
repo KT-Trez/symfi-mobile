@@ -1,35 +1,46 @@
 import { useRandom } from '@hooks';
-import { AspectRatio, Image, Skeleton } from 'native-base';
-import { ResponsiveValue } from 'native-base/lib/typescript/components/types';
-import { useState } from 'react';
+import { memo, useMemo } from 'react';
+import { type DimensionValue, Image, type ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { useTheme } from 'react-native-paper';
+import { Overlay } from '../Overlay';
 
 type CoverProps = {
-  alt?: string;
+  text?: string;
   uri?: false | string | undefined;
-  width?: ResponsiveValue<'px' | '0' | 'sm' | 'md' | 'lg' | 'xl' | string | number>;
+  width?: DimensionValue;
 };
 
-export const Cover = ({ alt, uri, width }: CoverProps) => {
-  const { randomImage } = useRandom();
-  const [imageLoadingError, setImageLoadingError] = useState(false);
+export const Cover = memo(
+  ({ uri, text, width }: CoverProps) => {
+    const { randomImage } = useRandom();
+    const { roundness } = useTheme();
 
-  // todo: select color based on color mode
-  return (
-    <AspectRatio ratio={16 / 9} w={width}>
-      {imageLoadingError ? (
-        <Skeleton endColor={'light.700'} h={'100%'} rounded={'md'} startColor={'light.600'} />
-      ) : (
+    const source = useMemo<ImageSourcePropType>(() => (uri ? { uri } : randomImage()), [uri, randomImage]);
+
+    return (
+      <View style={[styles.container, { borderRadius: roundness, width }]}>
         <Image
-          alt={alt ?? 'Cover'}
-          h={'100%'}
-          onError={() => setImageLoadingError(true)}
-          resizeMethod={'resize'}
-          resizeMode={'contain'}
-          rounded={'md'}
-          source={uri ? { uri } : randomImage()}
-          w={'100%'}
+          resizeMethod="resize"
+          resizeMode="cover"
+          source={source}
+          style={[styles.image, { borderRadius: roundness }]}
         />
-      )}
-    </AspectRatio>
-  );
-};
+
+        {text && <Overlay bottom={4} right={4} text={text} />}
+      </View>
+    );
+  },
+  (prevProps, newProps) => {
+    return prevProps.uri === newProps.uri;
+  },
+);
+
+const styles = StyleSheet.create({
+  container: {
+    aspectRatio: 16 / 9,
+  },
+  image: {
+    height: '100%',
+    width: '100%',
+  },
+});

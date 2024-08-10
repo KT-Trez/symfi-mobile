@@ -2,7 +2,7 @@ import type { BaseItem, SongType, SongTypeApi } from '@types';
 import { memo } from 'react';
 import { type StyleProp, StyleSheet, TouchableOpacity, View, type ViewStyle } from 'react-native';
 import { Icon, Text, useTheme } from 'react-native-paper';
-import { Thumbnail } from './Thumbnail';
+import { Cover } from '../Cover';
 
 interface SongCardProps {
   bottomLabel: string;
@@ -32,7 +32,7 @@ export const SongCard = memo(
         style={[styles.container, highlightedStyle]}
       >
         <View style={styles.imageContainer}>
-          <Thumbnail id={item.id} loadPlaceholder={!imageUri} timestamp={item.duration.label} uri={imageUri} />
+          <Cover text={item.duration.label} uri={imageUri} />
 
           {isSelected && (
             <View style={[styles.icon, { borderRadius: roundness }]}>

@@ -40,7 +40,7 @@ export const Collection = memo(
         style={[styles.container, { borderRadius: roundness }]}
       >
         <View style={styles.imageContainer}>
-          <Cover alt={`${item.name}'s cover`} uri={item.coverUri || undefined} />
+          <Cover uri={item.coverUri || undefined} />
 
           {isSelected && (
             <View style={[styles.icon, { borderRadius: roundness }]}>

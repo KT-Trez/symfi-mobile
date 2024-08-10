@@ -43,8 +43,10 @@ export const useImagePickerV2 = () => {
 
   const ensurePermissions = useCallback(async () => {
     const { status } = await requestMediaLibraryPermissionsAsync();
-    if (status !== PermissionStatus.GRANTED)
+    if (status !== PermissionStatus.GRANTED) {
       ToastAndroid.showWithGravity('No permission to select photo.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
+    }
+
     return status === PermissionStatus.GRANTED;
   }, []);
 

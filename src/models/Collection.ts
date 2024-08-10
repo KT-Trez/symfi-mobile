@@ -1,17 +1,15 @@
 import { Realm } from '@realm/react';
-import type { CollectionId, CollectionType, PartialByAndOmit } from '@types';
+import type { CollectionId, CollectionType } from '@types';
 import { SongModel } from './Song';
 
-type GeneratedCollectionType = Pick<CollectionType, 'coverUri' | 'name'>;
-
-export class CollectionModel extends Realm.Object<CollectionType, Exclude<keyof CollectionType, 'coverUri'>> {
+export class CollectionModel extends Realm.Object<CollectionType> {
   static schema: Realm.ObjectSchema = {
     name: 'Collection',
     primaryKey: 'id',
     properties: {
       coverUri: 'string?',
       id: {
-        default: new Realm.BSON.ObjectId(),
+        default: () => new Realm.BSON.ObjectId(),
         type: 'objectId',
       },
       name: 'string',
@@ -19,6 +17,7 @@ export class CollectionModel extends Realm.Object<CollectionType, Exclude<keyof 
         default: 0,
         type: 'int',
       },
+      // todo: reverse relationship
       songs: {
         objectType: SongModel.schema.name,
         property: 'collections',
@@ -31,14 +30,4 @@ export class CollectionModel extends Realm.Object<CollectionType, Exclude<keyof 
   id!: CollectionId;
   name!: string;
   order!: number;
-
-  static generate({
-    coverUri,
-    name,
-  }: PartialByAndOmit<CollectionType, 'coverUri', 'id' | 'order'>): GeneratedCollectionType {
-    return {
-      coverUri,
-      name,
-    };
-  }
 }

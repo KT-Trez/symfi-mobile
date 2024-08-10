@@ -1,4 +1,5 @@
 import { ActionType, useConfirmDialog } from '@components';
+import { useImagePickerV2 } from '@hooks';
 import { CollectionModel } from '@models';
 import { useRealm } from '@realm/react';
 import { useCallback, useMemo } from 'react';
@@ -11,6 +12,7 @@ type UsePageHeaderActionsArgs = {
 
 export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderActionsArgs): ActionType[] => {
   const { close, open } = useConfirmDialog();
+  const { removeImage } = useImagePickerV2();
   const realm = useRealm();
   const { colors } = useTheme();
 
@@ -19,11 +21,17 @@ export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderAct
       items: Object.values(selected).map(collection => collection.name),
       itemText: 'collection',
       onConfirm: () => {
+        for (const collectionId in selected) {
+          const { coverUri } = selected[collectionId];
+          coverUri && removeImage(coverUri);
+        }
+
         realm.write(() => {
           for (const collectionId in selected) {
             realm.delete(selected[collectionId]);
           }
         });
+
         close();
         unselectAll();
       },

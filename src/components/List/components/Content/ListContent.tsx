@@ -60,7 +60,7 @@ export const ListContent = <T extends BaseItem>({
 const styles = StyleSheet.create({
   content: {
     gap: 8,
-    padding: 8,
+    margin: 8,
   },
   emptyContent: {
     alignItems: 'center',

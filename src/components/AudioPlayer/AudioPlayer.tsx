@@ -8,7 +8,6 @@ export const AudioPlayer = () => {
   const { colors, roundness } = useTheme();
   const {
     currentSong,
-    isBuffering,
     isLooping,
     isPaused,
     isShuffled,
@@ -30,10 +29,6 @@ export const AudioPlayer = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.primary, borderRadius: roundness }]}>
-      <Text style={{ color: colors.onPrimary }} variant="labelSmall">
-        {isBuffering ? 'Buffering ...' : 'Now playing'}
-      </Text>
-
       <View style={styles.infoContainer}>
         <Cover uri={currentSong.cover} width="30%" />
 
@@ -107,6 +102,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     marginTop: 8,
     padding: 8,
+    paddingVertical: 16,
   },
   horizontalStack: {
     alignItems: 'center',

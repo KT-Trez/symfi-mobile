@@ -1,3 +1,4 @@
+import { CoverInput } from '@components';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Button, Divider, FormControl, Icon, Input, VStack } from 'native-base';
@@ -5,7 +6,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { PlaylistMetadata } from '../../../../types/interfaces';
 import { RootPlayListsStackParamList } from '../../../../types/navigation';
 import { AppBar } from '../../../components/AppBar';
-import { CoverSelector } from '../../../components/Settings';
 import PlayListController from '../../../datastore/PlayListController';
 import useImagePicker from '../../../hooks/useImagePicker';
 import PlayListService from '../../../services/playlist.service';
@@ -69,7 +69,7 @@ function PlayListEdit() {
       <AppBar subtitle={playList?.name ?? ''} title={'Edit Playlist'} />
 
       <VStack bg={'primary.100'} h={'full'}>
-        <CoverSelector coverUri={playList?.cover.uri} onEdit={editCover} onDelete={deleteCover} />
+        <CoverInput coverUri={playList?.cover.uri} onEdit={editCover} onDelete={deleteCover} />
 
         <Divider />
 

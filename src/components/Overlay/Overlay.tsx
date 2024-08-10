@@ -1,34 +1,31 @@
-import { Text } from 'native-base';
+import { type DimensionValue, StyleSheet } from 'react-native';
+import { Text } from 'react-native-paper';
 
 type OverlayProps = {
-  bottom?: number | string;
-  left?: number | string;
-  right?: number | string;
-  size?: number | string;
+  bottom?: DimensionValue;
+  left?: DimensionValue;
+  right?: DimensionValue;
   text: string;
-  top?: number | string;
+  top?: DimensionValue;
 };
 
-export const Overlay = ({ bottom, left, right, size, text, top }: OverlayProps) => {
-  return (
-    <Text
-      bold
-      bg={'rgba(0, 0, 0, 0.75)'}
-      borderColor={'rgba(230, 230, 230, 0.4)'}
-      borderRadius={'xs'}
-      borderStyle={'solid'}
-      borderWidth={1}
-      bottom={bottom}
-      color={'#fff'}
-      fontSize={size}
-      left={left}
-      p={1}
-      position={'absolute'}
-      right={right}
-      textAlign={'center'}
-      top={top}
-    >
-      {text}
-    </Text>
-  );
-};
+export const Overlay = ({ bottom, left, right, text, top }: OverlayProps) => (
+  <Text style={[styles.overlay, { bottom, left, right, top }]} variant="labelSmall">
+    {text}
+  </Text>
+);
+
+const styles = StyleSheet.create({
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    borderColor: 'rgba(230, 230, 230, 0.4)',
+    borderRadius: 4,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    color: '#fff',
+    fontWeight: 'bold',
+    padding: 4,
+    position: 'absolute',
+    textAlign: 'center',
+  },
+});
