@@ -30,6 +30,7 @@ export const Song = ({ isInSelectionMode, isSelected, item, toggleSelect }: Song
       bottomLabel={size}
       isHighlighted={currentSong?.id === item.id}
       isSelected={isSelected}
+      imageUri={item.cover}
       item={item}
       onLongPress={handleLongPress}
       onPress={handlePress}

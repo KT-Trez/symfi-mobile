@@ -1,88 +1,124 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Box, Heading, HStack, Icon, IconButton, Text, VStack } from 'native-base';
+import Slider from '@react-native-community/slider';
+import { StyleSheet, View } from 'react-native';
+import { IconButton, Text, useTheme } from 'react-native-paper';
 import { Cover } from '../Cover';
 import { useAudioPlayer } from './context';
 
 export const AudioPlayer = () => {
-  const { currentSong, isPaused, playNext, playPrevious, stop, togglePause } = useAudioPlayer();
+  const { colors, roundness } = useTheme();
+  const {
+    currentSong,
+    isBuffering,
+    isLooping,
+    isPaused,
+    isShuffled,
+    moveTo,
+    playNext,
+    playPrevious,
+    progress,
+    stop,
+    toggleLooping,
+    togglePause,
+    toggleShuffle,
+  } = useAudioPlayer();
 
-  if (!currentSong) return null;
+  if (!currentSong) {
+    return null;
+  }
+
+  const isOverOneHourLong = currentSong.duration.seconds > 3600;
 
   return (
-    <Box bg={'primary.900'} m={'1'} p={4} rounded={'md'}>
-      <Heading color={'text.100'} fontSize={'lg'} mb={2}>
-        Music Controls
-      </Heading>
+    <View style={[styles.container, { backgroundColor: colors.primary, borderRadius: roundness }]}>
+      <Text style={{ color: colors.onPrimary }} variant="labelSmall">
+        {isBuffering ? 'Buffering ...' : 'Now playing'}
+      </Text>
 
-      <HStack>
-        <Cover uri={currentSong?.cover} width={'30%'} />
+      <View style={styles.infoContainer}>
+        <Cover uri={currentSong.cover} width="30%" />
 
-        <VStack alignItems={'flex-start'} maxW={'70%'} ml={2} pr={2}>
-          <Text bold color={'text.200'} fontSize={'md'} isTruncated lineHeight={20} maxW={'100%'} numberOfLines={2}>
-            {currentSong?.name ?? 'Title'}
+        <View style={styles.infoTextContainer}>
+          <Text style={{ color: colors.onPrimary }} numberOfLines={2} variant="titleSmall">
+            {currentSong?.name ?? 'N/A'}
           </Text>
-          <Text color={'text.300'} fontSize={'xs'} isTruncated maxW={'100%'} numberOfLines={1}>
+          <Text numberOfLines={1} style={{ color: colors.onPrimary }} variant="bodySmall">
             {currentSong?.channel.name ?? 'Author'}
           </Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
 
-      <HStack alignItems={'center'} justifyContent={'center'} mt={2}>
+      <View style={styles.horizontalStack}>
         <IconButton
-          icon={<Icon as={MaterialCommunityIcons} name={'motion-play-outline'} size={'3xl'} />}
-          // iconColor={autoplay ? '#03a9f4' : undefined}
-          // onPress={toggleAutoplay}
-          size={'lg'}
+          icon="motion-play-outline"
+          iconColor={isLooping ? colors.primaryContainer : colors.onPrimary}
+          onPress={toggleLooping}
+          size={30}
         />
 
-        <HStack alignItems={'center'} justifyContent={'center'} ml={2} mr={2}>
+        <View style={styles.horizontalStack}>
           <IconButton
-            icon={<Icon as={MaterialCommunityIcons} name={'skip-previous-circle-outline'} size={'4xl'} />}
+            icon="skip-previous-circle-outline"
+            iconColor={colors.onPrimary}
             onPress={playPrevious}
-            size={'xs'}
+            size={35}
           />
           <IconButton
-            icon={
-              isPaused ? (
-                <Icon as={MaterialCommunityIcons} name={'play-circle-outline'} size={'5xl'} />
-              ) : (
-                <Icon as={MaterialCommunityIcons} name={'pause-circle-outline'} size={'5xl'} />
-              )
-            }
+            icon={isPaused ? 'play-circle-outline' : 'pause-circle-outline'}
+            iconColor={colors.onPrimary}
             onLongPress={stop}
             onPress={togglePause}
-            size={'xs'}
+            size={45}
           />
-          <IconButton
-            icon={<Icon as={MaterialCommunityIcons} name={'skip-next-circle-outline'} size={'4xl'} />}
-            onPress={playNext}
-            size={'xs'}
-          />
-        </HStack>
+          <IconButton icon="skip-next-circle-outline" iconColor={colors.onPrimary} onPress={playNext} size={35} />
+        </View>
 
         <IconButton
-          icon={<Icon as={MaterialCommunityIcons} name={'shuffle'} size={'3xl'} />}
-          // iconColor={shuffle ? '#03a9f4' : undefined}
-          // onPress={toggleShuffle}
-          size={'xs'}
+          icon="shuffle"
+          iconColor={isShuffled ? colors.primaryContainer : colors.onPrimary}
+          onPress={toggleShuffle}
+          size={30}
         />
-      </HStack>
+      </View>
 
-      {/* todo: implement progress */}
-      {/*	<View style={css.containerProgress}>*/}
-      {/*		<TextSetting style={css.progressText}>{progressSimpleText ?? '00:00'}</TextSetting>*/}
-      {/*		<View style={css.progressBar}>*/}
-      {/*			<Slider maximumValue={duration ?? 1}*/}
-      {/*			        maximumTrackTintColor={colors.primary}*/}
-      {/*			        minimumValue={0}*/}
-      {/*			        minimumTrackTintColor={colors.primary}*/}
-      {/*			        onSlidingComplete={moveTo}*/}
-      {/*			        style={{width: '100%'}}*/}
-      {/*			        thumbTintColor={colors.primary}*/}
-      {/*			        value={progress ?? 0}/>*/}
-      {/*		</View>*/}
-      {/*		<TextSetting style={css.progressText}>{song?.metadata.duration.simple_text ?? '00:00'}</TextSetting>*/}
-      {/*	</View>*/}
-    </Box>
+      <View style={styles.horizontalStack}>
+        <Text style={{ color: colors.onPrimary }} variant="labelMedium">
+          {new Date(progress * 1000).toISOString().substring(isOverOneHourLong ? 11 : 14, 19)}
+        </Text>
+        <Slider
+          maximumValue={currentSong.duration.seconds}
+          maximumTrackTintColor={colors.secondaryContainer}
+          minimumValue={0}
+          minimumTrackTintColor={colors.secondaryContainer}
+          onSlidingComplete={moveTo}
+          style={{ width: isOverOneHourLong ? '70%' : '75%' }}
+          thumbTintColor={colors.secondaryContainer}
+          value={progress}
+        />
+        <Text style={{ color: colors.onPrimary }} variant="labelMedium">
+          {currentSong.duration.label}
+        </Text>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 8,
+    marginTop: 8,
+    padding: 8,
+  },
+  horizontalStack: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    marginTop: 8,
+    gap: 8,
+  },
+  infoTextContainer: {
+    width: '70%',
+  },
+});

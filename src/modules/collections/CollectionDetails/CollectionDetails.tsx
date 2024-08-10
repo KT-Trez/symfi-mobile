@@ -1,10 +1,10 @@
-import { Actions, AudioPlayer, List, PageHeader } from '@components';
+import { Actions, AudioPlayer, List, PageHeader, useAudioPlayer } from '@components';
 import { usePluralFormV3, useSelected, useSongsManager } from '@hooks';
 import { CollectionModel, SongModel } from '@models';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import { Realm, useObject } from '@realm/react';
 import type { CollectionNavigatorParams } from '@types';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { FAB } from 'react-native-paper';
 import { useFABActions, usePageHeaderActions } from './hooks';
@@ -19,17 +19,26 @@ export const CollectionDetails = () => {
 
   const collectionObjectId = useMemo(() => new Realm.BSON.ObjectId(id), [id]);
 
+  const { stop, updateQueue } = useAudioPlayer();
   const collection = useObject(CollectionModel, collectionObjectId);
   const { isAnythingSelected, selected, toggleSelect, unselectAll } = useSelected<SongModel>();
   const { searchPhrase, songs, setSearchPhrase } = useSongsManager(collectionObjectId);
   const [isFabOpen, setIsFabOpen] = useState<boolean>(false);
 
-  const pageHeaderActions = usePageHeaderActions({ selected, unselectAll });
+  const pageHeaderActions = usePageHeaderActions({ collectionId: id, selected, unselectAll });
   const fabActions = useFABActions({ collectionId: id });
 
   const handleFabToggle = useCallback(() => setIsFabOpen(prevState => !prevState), []);
 
   const s = usePluralFormV3(songs.length);
+
+  useEffect(() => {
+    updateQueue(Array.from(songs));
+
+    return () => {
+      stop();
+    };
+  }, [songs, stop, updateQueue]);
 
   return (
     <PageHeader
@@ -55,7 +64,7 @@ export const CollectionDetails = () => {
 
       <FAB.Group
         actions={fabActions}
-        icon="playlist-music"
+        icon="playlist-edit"
         open={isFabOpen}
         onStateChange={handleFabToggle}
         style={styles.fab}

@@ -4,7 +4,7 @@ import { PermissionStatus, requestMediaLibraryPermissionsAsync } from 'expo-imag
 import * as MediaLibrary from 'expo-media-library';
 import { useCallback } from 'react';
 import { ToastAndroid } from 'react-native';
-import { useRandomV2 } from './useRandomId';
+import { useRandom } from './useRandom';
 
 type ImagePicker = [string, false];
 type ImagePickerCanceled = [undefined, true];
@@ -39,7 +39,7 @@ export default async function useImagePicker(
 }
 
 export const useImagePickerV2 = () => {
-  const { randomId } = useRandomV2();
+  const { randomId } = useRandom();
 
   const ensurePermissions = useCallback(async () => {
     const { status } = await requestMediaLibraryPermissionsAsync();

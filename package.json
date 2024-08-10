@@ -59,9 +59,7 @@
     "url": "https://github.com/KT-Trez/symfi-mobile"
   },
   "scripts": {
-    "android": "npx expo run:android",
     "start": "npx expo start",
-    "ios": "expo run:ios",
     "ts:check": "tsc"
   },
   "version": "2.0.0-2"

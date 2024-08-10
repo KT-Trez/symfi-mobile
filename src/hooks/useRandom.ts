@@ -27,7 +27,7 @@ const RANDOM_IMAGE_PATHS = [
   require('../../assets/cover-placeholders/cover-19.jpg'),
 ];
 
-export const useRandomV2 = () => {
+export const useRandom = () => {
   const randomId = useCallback(() => {
     return new Date().getTime() + Math.round(Math.random() * 1000).toString();
   }, []);

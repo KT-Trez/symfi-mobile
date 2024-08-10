@@ -13,12 +13,12 @@ export const useFABActions = ({ collectionId }: UseFABActionsArgs): FABAction[] 
     () => [
       {
         icon: 'download',
-        label: 'Download',
+        label: 'Download songs',
         onPress: () => navigate('SongsSearch'),
       },
       {
-        icon: 'playlist-plus',
-        label: 'Add to playlist',
+        icon: 'playlist-music',
+        label: 'Manage songs',
         onPress: () => navigate('SongPicker', { collectionId }),
       },
     ],

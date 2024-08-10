@@ -29,7 +29,7 @@ export const useConstDebounce = <T>(variable: T, delay: number) => {
 
     clear();
     reset();
-  }, [variable]);
+  }, [clear, reset, variable]);
 
   return debouncedVariable;
 };

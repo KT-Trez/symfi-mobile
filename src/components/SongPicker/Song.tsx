@@ -34,6 +34,6 @@ export const Song = ({ collection, item }: SongProps) => {
   }, [collection, collectionIndex, isAdded, item.collections, realm]);
 
   return (
-    <SongCard bottomLabel={size} isHighlighted={isAdded} imageUri={item.thumbnail} item={item} onPress={handlePress} />
+    <SongCard bottomLabel={size} isHighlighted={isAdded} imageUri={item.cover} item={item} onPress={handlePress} />
   );
 };

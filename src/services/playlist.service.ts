@@ -2,11 +2,11 @@ import { Musicly } from '../../types';
 import PlayListController from '../datastore/PlayListController';
 import SongsController from '../datastore/SongsController';
 import useAssetRemoval from '../hooks/useAssetRemoval';
-import useRandomId from '../hooks/useRandomId';
+import useRandom from '../hooks/useRandom';
 
 export default class PlayListService {
   static async create(name: string) {
-    const id = useRandomId();
+    const id = useRandom();
     await PlayListController.store.insertAsync({
       id: id,
       cover: {

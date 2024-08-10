@@ -1,7 +1,7 @@
+import { useRandom } from '@hooks';
 import { AspectRatio, Image, Skeleton } from 'native-base';
 import { ResponsiveValue } from 'native-base/lib/typescript/components/types';
 import { useState } from 'react';
-import { useRandomV2 } from '../../hooks';
 
 type CoverProps = {
   alt?: string;
@@ -10,7 +10,7 @@ type CoverProps = {
 };
 
 export const Cover = ({ alt, uri, width }: CoverProps) => {
-  const { randomImage } = useRandomV2();
+  const { randomImage } = useRandom();
   const [imageLoadingError, setImageLoadingError] = useState(false);
 
   // todo: select color based on color mode
@@ -33,5 +33,3 @@ export const Cover = ({ alt, uri, width }: CoverProps) => {
     </AspectRatio>
   );
 };
-
-export default Cover;
