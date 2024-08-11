@@ -1,5 +1,4 @@
-import { CoverInput, PageHeader } from '@components';
-import { useImagePickerV2 } from '@hooks';
+import { CoverInput, PageHeader, useCoverInput } from '@components';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, TextInput, useTheme } from 'react-native-paper';
@@ -19,22 +18,11 @@ export const CollectionFormFields = ({
   isEdit,
   onSubmit,
 }: CollectionFormFieldsProps) => {
-  const { pickImage, removeImage } = useImagePickerV2();
   const [coverUri, setCoverUri] = useState<string>(initialCoverUri || '');
   const [name, setName] = useState<string>(initialName || '');
   const { roundness } = useTheme();
 
-  const editCover = useCallback(async () => {
-    const imageUri = await pickImage([16, 9]);
-    if (imageUri) {
-      setCoverUri(imageUri);
-    }
-  }, [pickImage, setCoverUri]);
-
-  const removeCover = useCallback(async () => {
-    await removeImage(coverUri);
-    setCoverUri('');
-  }, [coverUri, removeImage, setCoverUri]);
+  const { editCover, removeCover } = useCoverInput(coverUri, setCoverUri);
 
   const submit = useCallback(() => {
     onSubmit(coverUri, name);
@@ -43,11 +31,23 @@ export const CollectionFormFields = ({
   return (
     <PageHeader subtitle={collectionName} title={isEdit ? 'Edit Collection' : 'Create Collection'}>
       <View style={styles.container}>
-        <TextInput mode="outlined" onChangeText={setName} placeholder="Title" style={styles.input} value={name} />
+        <TextInput
+          label="Title"
+          mode="outlined"
+          onChangeText={setName}
+          placeholder="Enter Title"
+          style={styles.input}
+          value={name}
+        />
 
         <CoverInput coverUri={coverUri} gutterBottom onEdit={editCover} onRemove={removeCover} />
 
-        <Button icon="music-note-plus" mode="outlined" onPress={submit} style={{ borderRadius: roundness }}>
+        <Button
+          icon={isEdit ? 'content-save' : 'music-note-plus'}
+          mode="outlined"
+          onPress={submit}
+          style={{ borderRadius: roundness }}
+        >
           {isEdit ? 'Save' : 'Create'}
         </Button>
       </View>

@@ -7,6 +7,7 @@ export type CollectionNavigatorParams = {
   CollectionDetails: { id: string };
   CollectionEditForm: { id: string };
   CollectionPage: undefined;
+  SongEditForm: { collectionId: string; songId: string };
   SongsSearch: undefined;
   SongPicker: { collectionId: string };
 };

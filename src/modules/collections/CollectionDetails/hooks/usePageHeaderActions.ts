@@ -1,6 +1,8 @@
 import { ActionType, useConfirmDialog } from '@components';
 import { SongModel } from '@models';
+import { useNavigation } from '@react-navigation/native';
 import { useRealm } from '@realm/react';
+import type { CollectionNavigatorProps } from '@types';
 import { useCallback, useMemo } from 'react';
 import { useTheme } from 'react-native-paper';
 
@@ -16,9 +18,12 @@ export const usePageHeaderActions = ({
   unselectAll,
 }: UsePageHeaderActionsArgs): ActionType[] => {
   const { close, open } = useConfirmDialog();
+  const { navigate } = useNavigation<CollectionNavigatorProps>();
   const realm = useRealm();
   // todo: add delete option
   const { colors } = useTheme();
+
+  const selectedIds = useMemo<string[]>(() => Object.keys(selected), [selected]);
 
   const handleDelete = useCallback(() => {
     open({
@@ -37,15 +42,16 @@ export const usePageHeaderActions = ({
     });
   }, [close, open, realm, selected, unselectAll]);
 
-  const handleRemove = useCallback(() => {
-    realm.write(() => {
-      for (const songId in selected) {
-        const song = selected[songId];
-        song.collections = song.collections.filter(({ id }) => id.toHexString() !== collectionId);
-      }
-    });
+  const handleEdit = useCallback(() => {
+    if (selectedIds.length !== 1) {
+      return;
+    }
+
+    const songId = selectedIds.at(0)!;
+
+    navigate('SongEditForm', { collectionId, songId });
     unselectAll();
-  }, [collectionId, realm, selected, unselectAll]);
+  }, [collectionId, navigate, selectedIds, unselectAll]);
 
   return useMemo(
     () => [
@@ -55,14 +61,15 @@ export const usePageHeaderActions = ({
       //   onPress: handleDelete,
       // },
       {
-        icon: 'playlist-minus',
-        onPress: handleRemove,
+        isHidden: selectedIds.length !== 1,
+        icon: 'pencil',
+        onPress: handleEdit,
       },
       {
         icon: 'close',
         onPress: unselectAll,
       },
     ],
-    [handleRemove, unselectAll],
+    [handleEdit, selectedIds.length, unselectAll],
   );
 };
