@@ -3,10 +3,9 @@ import { usePluralFormV3 } from '@hooks';
 import { CollectionModel, SongModel } from '@models';
 import { useNavigation } from '@react-navigation/native';
 import type { CollectionNavigatorProps } from '@types';
-import { Text } from 'native-base';
 import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Icon, useTheme } from 'react-native-paper';
+import { Icon, Text, useTheme } from 'react-native-paper';
 
 type CollectionProps = {
   isInSelectionMode: boolean;
@@ -50,12 +49,10 @@ export const Collection = memo(
         </View>
 
         <View style={styles.textContainer}>
-          <Text bold color={'text.900'} fontSize={'md'} isTruncated numberOfLines={2}>
+          <Text ellipsizeMode="tail" numberOfLines={2} variant="titleSmall">
             {item.name}
           </Text>
-          <Text color={'text.700'} fontSize={'xs'}>
-            {`${songsCount} song${s}`}
-          </Text>
+          <Text variant="bodySmall">{`${songsCount} song${s}`}</Text>
         </View>
       </TouchableOpacity>
     );

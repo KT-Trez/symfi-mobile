@@ -1,7 +1,6 @@
 import { usePluralFormV3 } from '@hooks';
-import { FlatList } from 'native-base';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { Button, Dialog, Portal, Text, useTheme } from 'react-native-paper';
 import { ConfirmDialogContext } from './context';
 import type { DialogProps, UseConfirmDialogReturn } from './types';
@@ -38,7 +37,7 @@ export const ConfirmDialogProvider = ({ children }: ConfirmDialogProviderProps) 
 
             <FlatList
               data={confirmDialog?.items}
-              keyExtractor={(_, index) => index.toString()}
+              keyExtractor={(item, index) => `${item}-${index}`}
               renderItem={({ item }) => (
                 <Text numberOfLines={1} style={[{ color: colors.onBackground }, styles.itemText]}>
                   • {item}

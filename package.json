@@ -16,6 +16,7 @@
     "@react-navigation/native-stack": "^6.9.17",
     "@realm/react": "^0.6.2",
     "@tanstack/react-query": "^5.27.5",
+    "@types/react": "~18.2.14",
     "axios": "^1.6.1",
     "expo": "^49.0.18",
     "expo-av": "~13.4.1",
@@ -26,7 +27,6 @@
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "expo-updates": "~0.18.19",
-    "native-base": "^3.4.28",
     "react": "18.2.0",
     "react-native": "0.72.10",
     "react-native-get-random-values": "^1.10.0",
@@ -59,8 +59,13 @@
     "url": "https://github.com/KT-Trez/symfi-mobile"
   },
   "scripts": {
+    "build:beta": "eas build --local --profile beta --platform android",
+    "build:development": "eas build --local --profile development --platform android",
+    "build:production": "eas build --local --profile production --platform android",
     "start": "npx expo start",
-    "ts:check": "tsc"
+    "ts:check": "tsc",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "version": "2.0.0-3"
 }

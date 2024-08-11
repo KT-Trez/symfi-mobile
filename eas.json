@@ -14,7 +14,7 @@
       "extends": "base",
       "developmentClient": true
     },
-    "preview": {
+    "beta": {
       "extends": "base",
       "channel": "nightly"
     },
