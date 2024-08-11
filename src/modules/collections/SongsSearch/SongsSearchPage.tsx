@@ -4,24 +4,24 @@ import { useQuery } from '@realm/react';
 import { useMemo, useState } from 'react';
 import { useSongDownload, useSongFetch } from './hooks';
 import { Song } from './Song';
-import { SongSearchBar } from './SongSearchBar';
 
 export const SongsSearchPage = () => {
   const downloadSong = useSongDownload();
   const [searchQuery, setSearchQuery] = useState('');
-  const { isLoading, songs } = useSongFetch(searchQuery);
+  const { isLoading: areSongsLoading, songs } = useSongFetch(searchQuery);
+  // const { isLoading: areSuggestionsLoading, suggestions } = useSuggestionFetch(searchQuery);
 
   const songsIds = useMemo<string[]>(() => songs.map(({ id }) => id), [songs]);
-  const downloaded = useQuery(SongModel, songs => songs.filtered('id IN $0', songsIds), [songsIds]);
+  const savedSongs = useQuery(SongModel, songs => songs.filtered('id IN $0', songsIds), [songsIds]);
 
-  const downloadedMap = useMemo<Record<string, boolean>>(
+  const savedSongsMap = useMemo<Record<string, boolean>>(
     () =>
-      downloaded.reduce<Record<string, boolean>>((acc, { id }) => {
+      savedSongs.reduce<Record<string, boolean>>((acc, { id }) => {
         acc[id] = true;
 
         return acc;
       }, {}),
-    [downloaded],
+    [savedSongs],
   );
 
   return (
@@ -30,9 +30,9 @@ export const SongsSearchPage = () => {
         data={songs}
         emptyIcon="music-note"
         emptyText="Search online for music"
-        Header={<SongSearchBar onSearch={setSearchQuery} />}
-        isLoading={isLoading}
-        renderItem={({ item }) => <Song download={downloadSong} isDownloaded={downloadedMap[item.id]} item={item} />}
+        Header={<List.SearchBar searchPhrase={searchQuery} setSearchPhrase={setSearchQuery} />}
+        isLoading={areSongsLoading}
+        renderItem={({ item }) => <Song download={downloadSong} isDownloaded={savedSongsMap[item.id]} item={item} />}
       />
     </PageHeader>
   );

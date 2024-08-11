@@ -38,7 +38,9 @@ export const CollectionDetails = () => {
     return () => {
       stop();
     };
-  }, [songs, stop, updateQueue]);
+    // load songs to the queue only on the first render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stop, updateQueue]);
 
   return (
     <PageHeader

@@ -7,15 +7,15 @@ import type { ApiError, CollectionFormat } from '@types';
 import { API_ORIGIN, QueryKeys } from '@utils';
 
 export const useSuggestionFetch = (query: string) => {
-  const customOrigin = useObject(ConfigItemModel, API_ORIGIN);
-  const origin = customOrigin?.value || DEFAULT_API_ORIGIN;
+  const apiOrigin = useObject(ConfigItemModel, API_ORIGIN);
+  const origin = apiOrigin?.value || DEFAULT_API_ORIGIN;
 
-  const debouncedKey = useConstDebounce(query, 700);
+  const debouncedQuery = useConstDebounce(query, 700);
 
   const { data, isLoading } = useQuery<CollectionFormat<string>, ApiError>({
-    enabled: debouncedKey.length >= 3,
-    queryFn: () => fetch(`${origin}/v3/song/suggestion?q=${query}`).then(res => res.json()),
-    queryKey: [QueryKeys.SUGGESTIONS, debouncedKey],
+    enabled: debouncedQuery.length >= 3,
+    queryFn: () => fetch(`${origin}/v3/song/suggestion?q=${debouncedQuery}`).then(res => res.json()),
+    queryKey: [QueryKeys.SUGGESTIONS, debouncedQuery],
   });
 
   return {

@@ -1,8 +1,8 @@
 import { SongCard } from '@components';
 import type { SongTypeApi } from '@types';
 import { memo, useCallback, useRef, useState } from 'react';
-import { Animated, StyleSheet } from 'react-native';
-import { IconButton, Surface } from 'react-native-paper';
+import { Animated, StyleSheet, View } from 'react-native';
+import { IconButton, useTheme } from 'react-native-paper';
 
 type SongProps = {
   download: (item: SongTypeApi) => Promise<void>;
@@ -14,6 +14,7 @@ export const Song = memo(
   ({ isDownloaded, item, download }: SongProps) => {
     const animation = useRef(new Animated.Value(0)).current;
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { colors, roundness } = useTheme();
 
     const downloadSong = useCallback(async () => {
       setIsLoading(true);
@@ -30,7 +31,7 @@ export const Song = memo(
     }, [animation]);
 
     return (
-      <Surface style={styles.surface}>
+      <View style={{ backgroundColor: colors.background, borderRadius: roundness }}>
         <SongCard bottomLabel={item.views.label} item={item} imageUri={item.thumbnail} onPress={open} />
         <Animated.View style={[{ height: animation }, styles.animatedView]}>
           <IconButton icon="play-circle-outline" onPress={() => console.log('Pressed')} size={40} />
@@ -43,7 +44,7 @@ export const Song = memo(
             theme={{ colors: { onSurfaceDisabled: 'green' } }}
           />
         </Animated.View>
-      </Surface>
+      </View>
     );
   },
   (prevProps, nextProps) =>
@@ -54,8 +55,5 @@ const styles = StyleSheet.create({
   animatedView: {
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  surface: {
-    borderRadius: 8,
   },
 });
