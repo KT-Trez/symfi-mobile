@@ -1,4 +1,4 @@
-import type { SongType } from '@types';
+import type { CollectionId, SongType } from '@types';
 
 export type UseAudioPlayer = {
   currentSong: SongType | null;
@@ -11,9 +11,9 @@ export type UseAudioPlayer = {
   playNext: () => void;
   playPrevious: () => void;
   progress: number;
+  setCollectionId: (collectionId: CollectionId | null) => void;
   stop: () => void;
   toggleLooping: () => void;
   togglePause: () => void;
   toggleShuffle: () => void;
-  updateQueue: (songs: SongType[]) => void;
 };

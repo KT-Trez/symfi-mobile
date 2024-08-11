@@ -45,7 +45,7 @@ export const AudioPlayer = () => {
       <View style={styles.horizontalStack}>
         <IconButton
           icon="motion-play-outline"
-          iconColor={isLooping ? colors.primaryContainer : colors.onPrimary}
+          iconColor={isLooping ? colors.secondaryContainer : colors.onPrimary}
           onPress={toggleLooping}
           size={30}
         />
@@ -69,7 +69,7 @@ export const AudioPlayer = () => {
 
         <IconButton
           icon="shuffle"
-          iconColor={isShuffled ? colors.primaryContainer : colors.onPrimary}
+          iconColor={isShuffled ? colors.secondaryContainer : colors.onPrimary}
           onPress={toggleShuffle}
           size={30}
         />

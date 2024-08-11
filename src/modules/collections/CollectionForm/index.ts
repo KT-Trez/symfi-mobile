@@ -1,1 +1,2 @@
-export * from './CollectionForm';
+export * from './CollectionCreateForm';
+export * from './CollectionEditForm';

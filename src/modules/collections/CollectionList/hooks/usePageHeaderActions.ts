@@ -1,7 +1,9 @@
 import { ActionType, useConfirmDialog } from '@components';
 import { useImagePickerV2 } from '@hooks';
 import { CollectionModel } from '@models';
+import { useNavigation } from '@react-navigation/native';
 import { useRealm } from '@realm/react';
+import type { CollectionNavigatorProps } from '@types';
 import { useCallback, useMemo } from 'react';
 import { useTheme } from 'react-native-paper';
 
@@ -13,8 +15,22 @@ type UsePageHeaderActionsArgs = {
 export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderActionsArgs): ActionType[] => {
   const { close, open } = useConfirmDialog();
   const { removeImage } = useImagePickerV2();
+  const { navigate } = useNavigation<CollectionNavigatorProps>();
   const realm = useRealm();
   const { colors } = useTheme();
+
+  const selectedIds = useMemo<string[]>(() => Object.keys(selected), [selected]);
+
+  const handleEdit = useCallback(() => {
+    if (selectedIds.length !== 1) {
+      return;
+    }
+
+    const collectionId = selectedIds.at(0)!;
+
+    navigate('CollectionEditForm', { id: collectionId });
+    unselectAll();
+  }, [navigate, selectedIds, unselectAll]);
 
   const handleDelete = useCallback(() => {
     open({
@@ -37,7 +53,7 @@ export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderAct
       },
       title: 'Delete',
     });
-  }, [close, open, realm, selected, unselectAll]);
+  }, [close, open, realm, removeImage, selected, unselectAll]);
 
   return useMemo<ActionType[]>(
     () => [
@@ -47,10 +63,15 @@ export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderAct
         onPress: handleDelete,
       },
       {
+        isHidden: selectedIds.length !== 1,
+        icon: 'pencil',
+        onPress: handleEdit,
+      },
+      {
         icon: 'close',
         onPress: unselectAll,
       },
     ],
-    [colors.error, handleDelete, unselectAll],
+    [colors.error, handleDelete, handleEdit, selectedIds.length, unselectAll],
   );
 };

@@ -3,8 +3,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 export type CollectionNavigatorProps = NativeStackNavigationProp<CollectionNavigatorParams>;
 
 export type CollectionNavigatorParams = {
+  CollectionCreateForm: undefined;
   CollectionDetails: { id: string };
-  CollectionForm: undefined;
+  CollectionEditForm: { id: string };
   CollectionPage: undefined;
   SongsSearch: undefined;
   SongPicker: { collectionId: string };

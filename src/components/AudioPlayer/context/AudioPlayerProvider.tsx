@@ -1,6 +1,9 @@
+import { SongModel } from '@models';
+import { useQuery } from '@realm/react';
 import { Audio, AVPlaybackStatus, InterruptionModeAndroid } from 'expo-av';
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { SongType } from 'types';
+import { ToastAndroid } from 'react-native';
+import type { CollectionId, SongType } from 'types';
 import { AudioPlayerContext } from './context';
 import type { UseAudioPlayer } from './types';
 
@@ -11,6 +14,7 @@ type AudioPlayerProviderProps = {
 export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
   const currentSound = useRef<null | Audio.SoundObject>(null);
 
+  const [collectionId, setCollectionId] = useState<CollectionId | null>(null);
   const [currentSong, setCurrentSong] = useState<SongType | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const queue = useRef<SongType[]>([]);
@@ -19,6 +23,8 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
   const [isLooping, setIsLooping] = useState<boolean>(true);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isShuffled, setIsShuffled] = useState<boolean>(false);
+
+  const songs = useQuery(SongModel, songs => songs.filtered('collections.id == $0 ', collectionId), [collectionId]);
 
   // queue handlers
   const moveTo = useCallback(async (position: number) => {
@@ -67,20 +73,13 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
 
   const toggleShuffle = useCallback(() => setIsShuffled(prevState => !prevState), []);
 
-  const updateQueue = useCallback(
-    (songs: SongType[]) => {
-      stop();
-      queue.current = songs;
-    },
-    [stop],
-  );
-
   // startup
   const mountStatusEvents = useCallback(
     (status: AVPlaybackStatus): void => {
       if (!status.isLoaded) {
         if (status.error) {
-          // todo: report error
+          ToastAndroid.show(status.error, ToastAndroid.SHORT);
+          playNext();
         }
 
         return;
@@ -138,6 +137,10 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
     updateCurrentSound();
   }, [currentSong, updateCurrentSound]);
 
+  useEffect(() => {
+    queue.current = Array.from(songs);
+  }, [songs]);
+
   const providerProps: UseAudioPlayer = useMemo(
     () => ({
       currentSong,
@@ -150,11 +153,11 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
       playNext,
       playPrevious,
       progress,
+      setCollectionId,
       stop,
       toggleLooping,
       togglePause,
       toggleShuffle,
-      updateQueue,
     }),
     [
       currentSong,
@@ -171,7 +174,6 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
       toggleLooping,
       togglePause,
       toggleShuffle,
-      updateQueue,
     ],
   );
 

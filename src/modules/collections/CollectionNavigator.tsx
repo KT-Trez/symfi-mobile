@@ -2,7 +2,7 @@ import { SongPicker } from '@components';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import type { CollectionNavigatorParams } from '@types';
 import { CollectionDetails } from './CollectionDetails';
-import { CollectionForm } from './CollectionForm';
+import { CollectionCreateForm, CollectionEditForm } from './CollectionForm';
 import { CollectionList } from './CollectionList';
 import { SongsSearchPage } from './SongsSearch';
 
@@ -14,8 +14,9 @@ const defaultOptions: NativeStackNavigationOptions = {
 
 export const CollectionNavigator = () => (
   <Navigator initialRouteName={'CollectionPage'} screenOptions={defaultOptions}>
+    <Screen component={CollectionCreateForm} name="CollectionCreateForm" />
     <Screen component={CollectionDetails} name="CollectionDetails" />
-    <Screen component={CollectionForm} name="CollectionForm" />
+    <Screen component={CollectionEditForm} name="CollectionEditForm" />
     <Screen component={CollectionList} name="CollectionPage" />
     <Screen component={SongPicker} name="SongPicker" />
     <Screen component={SongsSearchPage} name="SongsSearch" />

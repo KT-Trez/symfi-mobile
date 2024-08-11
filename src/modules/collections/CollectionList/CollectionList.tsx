@@ -35,7 +35,7 @@ export const CollectionList = () => {
         )}
       />
 
-      <FAB icon="plus" onPress={() => navigate('CollectionForm')} style={styles.fab} variant="secondary" />
+      <FAB icon="plus" onPress={() => navigate('CollectionCreateForm')} style={styles.fab} variant="secondary" />
     </PageHeader>
   );
 };

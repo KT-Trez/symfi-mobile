@@ -19,7 +19,7 @@ export const CollectionDetails = () => {
 
   const collectionObjectId = useMemo(() => new Realm.BSON.ObjectId(id), [id]);
 
-  const { stop, updateQueue } = useAudioPlayer();
+  const { setCollectionId, stop } = useAudioPlayer();
   const collection = useObject(CollectionModel, collectionObjectId);
   const { isAnythingSelected, selected, toggleSelect, unselectAll } = useSelected<SongModel>();
   const { searchPhrase, songs, setSearchPhrase } = useSongsManager(collectionObjectId);
@@ -33,14 +33,13 @@ export const CollectionDetails = () => {
   const s = usePluralFormV3(songs.length);
 
   useEffect(() => {
-    updateQueue(Array.from(songs));
+    setCollectionId(collectionObjectId);
 
     return () => {
+      setCollectionId(null);
       stop();
     };
-    // load songs to the queue only on the first render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stop, updateQueue]);
+  }, [collectionObjectId]);
 
   return (
     <PageHeader

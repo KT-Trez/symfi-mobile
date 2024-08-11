@@ -5,11 +5,11 @@ import { Cover } from '../Cover';
 type CoverInputProps = {
   coverUri: string | undefined;
   gutterBottom?: boolean;
-  onDelete: () => void;
   onEdit: () => void;
+  onRemove: () => void;
 };
 
-export const CoverInput = ({ coverUri, gutterBottom, onDelete, onEdit }: CoverInputProps) => {
+export const CoverInput = ({ coverUri, gutterBottom, onEdit, onRemove }: CoverInputProps) => {
   return (
     <View style={[styles.container, { marginBottom: gutterBottom ? 8 : 0 }]}>
       <Cover text="PLACEHOLDER" uri={coverUri} width="50%" />
@@ -18,7 +18,7 @@ export const CoverInput = ({ coverUri, gutterBottom, onDelete, onEdit }: CoverIn
         <Button icon="pencil" mode="contained" onPress={onEdit} style={styles.button}>
           Edit
         </Button>
-        <Button disabled={!coverUri} icon="delete" mode="contained" onPress={onDelete} style={styles.button}>
+        <Button disabled={!coverUri} icon="delete" mode="contained" onPress={onRemove} style={styles.button}>
           Remove
         </Button>
       </View>
