@@ -1,23 +1,21 @@
-import { ActionType, useConfirmDialog } from '@components';
+import { type ActionsList, useConfirmDialog } from '@components';
 import { useImagePickerV2 } from '@hooks';
 import { CollectionModel } from '@models';
 import { useNavigation } from '@react-navigation/native';
 import { useRealm } from '@realm/react';
 import type { CollectionNavigatorProps } from '@types';
 import { useCallback, useMemo } from 'react';
-import { useTheme } from 'react-native-paper';
 
 type UsePageHeaderActionsArgs = {
   selected: Record<string, CollectionModel>;
   unselectAll: () => void;
 };
 
-export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderActionsArgs): ActionType[] => {
+export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderActionsArgs) => {
   const { close, open } = useConfirmDialog();
   const { removeImage } = useImagePickerV2();
   const { navigate } = useNavigation<CollectionNavigatorProps>();
   const realm = useRealm();
-  const { colors } = useTheme();
 
   const selectedIds = useMemo<string[]>(() => Object.keys(selected), [selected]);
 
@@ -55,23 +53,26 @@ export const usePageHeaderActions = ({ selected, unselectAll }: UsePageHeaderAct
     });
   }, [close, open, realm, removeImage, selected, unselectAll]);
 
-  return useMemo<ActionType[]>(
+  return useMemo<ActionsList>(
     () => [
-      {
-        color: colors.error,
-        icon: 'delete',
-        onPress: handleDelete,
-      },
-      {
-        isHidden: selectedIds.length !== 1,
-        icon: 'pencil',
-        onPress: handleEdit,
-      },
-      {
-        icon: 'close',
-        onPress: unselectAll,
-      },
+      [
+        {
+          icon: 'close',
+          onPress: unselectAll,
+        },
+      ],
+      [
+        {
+          isHidden: selectedIds.length !== 1,
+          icon: 'pencil',
+          onPress: handleEdit,
+        },
+        {
+          icon: 'delete',
+          onPress: handleDelete,
+        },
+      ],
     ],
-    [colors.error, handleDelete, handleEdit, selectedIds.length, unselectAll],
+    [handleDelete, handleEdit, selectedIds.length, unselectAll],
   );
 };

@@ -39,7 +39,7 @@ export const CollectionDetails = () => {
       setCollectionId(null);
       stop();
     };
-  }, [collectionObjectId]);
+  }, [collectionObjectId, setCollectionId, stop]);
 
   return (
     <PageHeader

@@ -1,10 +1,9 @@
-import { ActionType, useConfirmDialog } from '@components';
+import { type ActionsList, useConfirmDialog } from '@components';
 import { SongModel } from '@models';
 import { useNavigation } from '@react-navigation/native';
 import { useRealm } from '@realm/react';
 import type { CollectionNavigatorProps } from '@types';
 import { useCallback, useMemo } from 'react';
-import { useTheme } from 'react-native-paper';
 
 type UsePageHeaderActionsArgs = {
   collectionId: string;
@@ -12,16 +11,10 @@ type UsePageHeaderActionsArgs = {
   unselectAll: () => void;
 };
 
-export const usePageHeaderActions = ({
-  collectionId,
-  selected,
-  unselectAll,
-}: UsePageHeaderActionsArgs): ActionType[] => {
+export const usePageHeaderActions = ({ collectionId, selected, unselectAll }: UsePageHeaderActionsArgs) => {
   const { close, open } = useConfirmDialog();
   const { navigate } = useNavigation<CollectionNavigatorProps>();
   const realm = useRealm();
-  // todo: add delete option
-  const { colors } = useTheme();
 
   const selectedIds = useMemo<string[]>(() => Object.keys(selected), [selected]);
 
@@ -53,22 +46,25 @@ export const usePageHeaderActions = ({
     unselectAll();
   }, [collectionId, navigate, selectedIds, unselectAll]);
 
-  return useMemo(
+  return useMemo<ActionsList>(
     () => [
-      // {
-      //   color: colors.error,
-      //   icon: 'delete',
-      //   onPress: handleDelete,
-      // },
-      {
-        isHidden: selectedIds.length !== 1,
-        icon: 'pencil',
-        onPress: handleEdit,
-      },
-      {
-        icon: 'close',
-        onPress: unselectAll,
-      },
+      [
+        {
+          icon: 'close',
+          onPress: unselectAll,
+        },
+      ],
+      [
+        // {
+        //   icon: 'delete',
+        //   onPress: handleDelete,
+        // },
+        {
+          isHidden: selectedIds.length !== 1,
+          icon: 'pencil',
+          onPress: handleEdit,
+        },
+      ],
     ],
     [handleEdit, selectedIds.length, unselectAll],
   );
