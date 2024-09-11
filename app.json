@@ -40,6 +40,16 @@
     "platforms": [
       "android"
     ],
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
     "primaryColor": "#1c1b1f",
     "privacy": "hidden",
     "runtimeVersion": {
