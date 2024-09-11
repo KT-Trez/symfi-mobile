@@ -14,7 +14,7 @@ export const useSongFetch = (query: string) => {
 
   const { data, isLoading } = useQuery<CollectionFormat<SongTypeApi>, ApiError>({
     enabled: debouncedQuery.length >= 3,
-    queryFn: () => fetch(`${origin}/v3/song/search?q=${debouncedQuery}`).then(res => res.json()),
+    queryFn: () => fetch(new URL(`/v3/song/search?q=${debouncedQuery}`, origin)).then(res => res.json()),
     queryKey: [QueryKeys.SONGS, debouncedQuery],
   });
 

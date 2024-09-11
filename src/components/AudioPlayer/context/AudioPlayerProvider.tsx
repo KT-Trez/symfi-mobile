@@ -24,7 +24,10 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isShuffled, setIsShuffled] = useState<boolean>(false);
 
-  const songs = useQuery(SongModel, songs => songs.filtered('collections.id == $0 ', collectionId), [collectionId]);
+  // todo: sort by order
+  const songs = useQuery(SongModel, songs => songs.filtered('collections.id == $0', collectionId).sorted('name'), [
+    collectionId,
+  ]);
 
   // queue handlers
   const moveTo = useCallback(async (position: number) => {

@@ -25,16 +25,18 @@ export const useSongDownload = () => {
 
       //get download url
       const { meta } = await queryClient.fetchQuery<ApiSuccess<string>>({
-        queryFn: () => fetch(`${origin}/v3/song/download?id=${song.id}`).then(res => res.json()),
+        queryFn: () => fetch(new URL(`/v3/song/download?id=${song.id}`, origin)).then(res => res.json()),
         queryKey: [QueryKeys.DOWNLOAD_URL, song.id],
       });
+
+      console.log(meta);
 
       // ensure directory
       const dirUri = `${FileSystem.documentDirectory}music`;
       await ensureDir(dirUri);
 
       // download song
-      const { uri } = await FileSystem.downloadAsync(meta, `${dirUri}/${song.id}.webm`);
+      const { uri } = await FileSystem.downloadAsync(meta, `${dirUri}/${song.id}.mp3`);
       const fileInfo = await FileSystem.getInfoAsync(uri, { size: true });
       if (!fileInfo.exists) {
         return ToastAndroid.showWithGravity('Failed to download a song.', ToastAndroid.SHORT, ToastAndroid.CENTER);
