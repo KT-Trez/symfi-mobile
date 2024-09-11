@@ -1,6 +1,7 @@
-import { ConfigItemsKeys, DEFAULT_API_ORIGIN } from '@config';
+import { DEFAULT_API_ORIGIN } from '@config';
 import { ConfigItemModel } from '@models';
 import { useObject, useRealm } from '@realm/react';
+import { ConfigItemsKeys } from '@utils';
 import axios from 'axios';
 import { useCallback, useState } from 'react';
 import { ToastAndroid } from 'react-native';

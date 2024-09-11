@@ -1,9 +1,9 @@
-import { ConfigItemsKeys, DEFAULT_API_ORIGIN } from '@config';
+import { DEFAULT_API_ORIGIN } from '@config';
 import { ConfigItemModel, FileModel, SongModel } from '@models';
 import { useObject, useRealm } from '@realm/react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ApiSuccess, File, SongTypeApi } from '@types';
-import { ensureDir, QueryKeys } from '@utils';
+import { ConfigItemsKeys, ensureDirExists, QueryKeys } from '@utils';
 import * as FileSystem from 'expo-file-system';
 import { useCallback } from 'react';
 import { ToastAndroid } from 'react-native';
@@ -33,7 +33,7 @@ export const useSongDownload = () => {
 
       // ensure directory
       const dirUri = `${FileSystem.documentDirectory}music`;
-      await ensureDir(dirUri);
+      await ensureDirExists(dirUri);
 
       // download song
       const { uri } = await FileSystem.downloadAsync(meta, `${dirUri}/${song.id}.mp3`);

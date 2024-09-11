@@ -1,4 +1,4 @@
-import type { BaseItem, SongType, SongTypeApi } from '@types';
+import type { SongType, SongTypeApi } from '@types';
 import { memo } from 'react';
 import { type StyleProp, StyleSheet, TouchableOpacity, View, type ViewStyle } from 'react-native';
 import { Icon, Text, useTheme } from 'react-native-paper';
@@ -9,7 +9,7 @@ interface SongCardProps {
   imageUri?: string;
   isHighlighted?: boolean;
   isSelected?: boolean;
-  item: (SongType | SongTypeApi) & BaseItem;
+  item: (SongType | SongTypeApi) & { id: string };
   onLongPress?: (id: string) => void;
   onPress?: (id: string) => void;
 }

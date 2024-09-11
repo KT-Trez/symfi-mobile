@@ -5,15 +5,15 @@ export type ApiError = {
   success: false;
 };
 
-export type CollectionFormat<T> = {
-  has_more: boolean;
-  objects: T[];
-  page: number;
-};
-
 export type ApiSuccess<T extends string | undefined> = {
   http_code: number;
   message: string;
   meta: T;
   success: true;
+};
+
+export type CollectionFormat<T> = {
+  has_more: boolean;
+  objects: T[];
+  page: number;
 };

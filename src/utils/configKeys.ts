@@ -1,1 +1,3 @@
-export const API_ORIGIN = '@CONFIG/API_ORIGIN';
+export const ConfigItemsKeys = {
+  API_ORIGIN: '@CONFIG/API_ORIGIN',
+} as const;

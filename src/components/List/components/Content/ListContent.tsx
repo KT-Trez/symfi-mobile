@@ -1,7 +1,6 @@
 // noinspection ES6PreferShortImport
 
 import { Realm } from '@realm/react';
-import type { BaseItem } from '@types';
 import { useCallback } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 import { Icon, Text, useTheme } from 'react-native-paper';
@@ -9,7 +8,7 @@ import { Loader } from '../../../Loader';
 
 // const STICKY_HEADER_INDICES: number[] = [0];
 
-type ListContentProps<T extends BaseItem> = {
+type ListContentProps<T> = {
   data: T[] | Realm.OrderedCollection<T>;
   emptyIcon?: string;
   emptyText?: string;
@@ -19,7 +18,7 @@ type ListContentProps<T extends BaseItem> = {
   renderItem: FlatListProps<T>['renderItem'];
 };
 
-export const ListContent = <T extends BaseItem>({
+export const ListContent = <T extends { id: string | Realm.BSON.ObjectId }>({
   data,
   emptyIcon,
   emptyText,

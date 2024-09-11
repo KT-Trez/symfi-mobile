@@ -4,10 +4,10 @@ import { ConfigItemModel } from '@models';
 import { useObject } from '@realm/react';
 import { useQuery } from '@tanstack/react-query';
 import type { ApiError, CollectionFormat } from '@types';
-import { API_ORIGIN, QueryKeys } from '@utils';
+import { ConfigItemsKeys, QueryKeys } from '@utils';
 
 export const useSuggestionFetch = (query: string) => {
-  const apiOrigin = useObject(ConfigItemModel, API_ORIGIN);
+  const apiOrigin = useObject(ConfigItemModel, ConfigItemsKeys.API_ORIGIN);
   const origin = apiOrigin?.value || DEFAULT_API_ORIGIN;
 
   const debouncedQuery = useConstDebounce(query, 700);

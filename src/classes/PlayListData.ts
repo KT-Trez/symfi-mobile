@@ -1,5 +1,5 @@
+import { SCHEMA_VERSION } from '@config';
 import { PlaylistMetadata } from '../../types/interfaces';
-import config from '../config';
 
 interface Cover {
   name: string;
@@ -46,6 +46,6 @@ export default class PlayListData implements PlaylistMetadata {
     this.order = options.order;
     this.songs = options.songs ?? [];
     this.songsCount = options.songsCount ?? 0;
-    this.version = options.version ?? config.current_schema_version;
+    this.version = options.version ?? SCHEMA_VERSION;
   }
 }

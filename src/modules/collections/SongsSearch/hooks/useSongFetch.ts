@@ -4,10 +4,10 @@ import { ConfigItemModel } from '@models';
 import { useObject } from '@realm/react';
 import { useQuery } from '@tanstack/react-query';
 import type { ApiError, CollectionFormat, SongTypeApi } from '@types';
-import { API_ORIGIN, DATA_ARRAY_FALLBACK, QueryKeys } from '@utils';
+import { ConfigItemsKeys, DATA_ARRAY_FALLBACK, QueryKeys } from '@utils';
 
 export const useSongFetch = (query: string) => {
-  const apiOrigin = useObject(ConfigItemModel, API_ORIGIN);
+  const apiOrigin = useObject(ConfigItemModel, ConfigItemsKeys.API_ORIGIN);
   const origin = apiOrigin?.value || DEFAULT_API_ORIGIN;
 
   const debouncedQuery = useConstDebounce(query, 700);

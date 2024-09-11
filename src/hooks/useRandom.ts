@@ -1,9 +1,5 @@
 import { useCallback } from 'react';
 
-export default function useRandomId() {
-  return new Date().getTime() + Math.round(Math.random() * 1000).toString();
-}
-
 const RANDOM_IMAGE_PATHS = [
   require('../../assets/cover-placeholders/cover-0.jpg'),
   require('../../assets/cover-placeholders/cover-1.jpg'),

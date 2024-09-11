@@ -6,53 +6,21 @@ import { useCallback } from 'react';
 import { ToastAndroid } from 'react-native';
 import { useRandom } from './useRandom';
 
-type ImagePicker = [string, false];
-type ImagePickerCanceled = [undefined, true];
-
-export default async function useImagePicker(
-  id: string,
-  aspect: [number, number],
-): Promise<ImagePicker | ImagePickerCanceled> {
+const ensureAppHasPermissions = async () => {
   const { status } = await requestMediaLibraryPermissionsAsync();
   if (status !== PermissionStatus.GRANTED) {
     ToastAndroid.showWithGravity('No permission to select photo.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
-    return [undefined, true];
   }
 
-  const thumbnail = await ImagePicker.launchImageLibraryAsync({
-    allowsEditing: true,
-    aspect: aspect,
-    base64: false,
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    quality: 1,
-  });
-
-  if (thumbnail.canceled) return [undefined, thumbnail.canceled];
-
-  const asset = await MediaLibrary.createAssetAsync(thumbnail.assets[0].uri);
-  const coverUri = FileSystem.documentDirectory + '/assets/' + id + '-thumbnail.png';
-
-  await FileSystem.copyAsync({ from: asset.uri, to: coverUri });
-  await MediaLibrary.deleteAssetsAsync(asset);
-
-  return [coverUri, thumbnail.canceled];
-}
+  return status === PermissionStatus.GRANTED;
+};
 
 export const useImagePickerV2 = () => {
   const { randomId } = useRandom();
 
-  const ensurePermissions = useCallback(async () => {
-    const { status } = await requestMediaLibraryPermissionsAsync();
-    if (status !== PermissionStatus.GRANTED) {
-      ToastAndroid.showWithGravity('No permission to select photo.', ToastAndroid.LONG, ToastAndroid.BOTTOM);
-    }
-
-    return status === PermissionStatus.GRANTED;
-  }, []);
-
   const pickImage = useCallback(
     async (aspect: [number, number]) => {
-      if (!(await ensurePermissions())) {
+      if (!(await ensureAppHasPermissions())) {
         return false;
       }
 
@@ -76,24 +44,21 @@ export const useImagePickerV2 = () => {
 
       return coverUri;
     },
-    [ensurePermissions, randomId],
+    [randomId],
   );
 
-  const removeImage = useCallback(
-    async (imageUri: string) => {
-      if (!(await ensurePermissions())) {
-        return false;
-      }
+  const removeImage = useCallback(async (imageUri: string) => {
+    if (!(await ensureAppHasPermissions())) {
+      return false;
+    }
 
-      try {
-        await FileSystem.deleteAsync(imageUri);
-      } catch (err) {
-        const asset = await MediaLibrary.getAssetInfoAsync(imageUri);
-        await MediaLibrary.deleteAssetsAsync(asset);
-      }
-    },
-    [ensurePermissions],
-  );
+    try {
+      await FileSystem.deleteAsync(imageUri);
+    } catch (err) {
+      const asset = await MediaLibrary.getAssetInfoAsync(imageUri);
+      await MediaLibrary.deleteAssetsAsync(asset);
+    }
+  }, []);
 
   return { pickImage, removeImage };
 };

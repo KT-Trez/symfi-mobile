@@ -1,5 +1,5 @@
+import { SCHEMA_VERSION } from '@config';
 import { Musicly } from '../../types';
-import config from '../config';
 
 interface Channel {
   id: string;
@@ -103,7 +103,7 @@ export default class SongData implements Musicly.Data.Song {
         isFavourite: !!options.musicly.flags?.isFavourite,
       },
       playListsIDs: options.musicly.playListsIDs ?? [],
-      version: options.musicly.version ?? config.current_schema_version,
+      version: options.musicly.version ?? SCHEMA_VERSION,
       wasPlayed: options.musicly.wasPlayed ?? 0,
     };
 
