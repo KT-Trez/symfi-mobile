@@ -21,6 +21,7 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
 
   const [isBuffering, setIsBuffering] = useState<boolean>(false);
   const [isLooping, setIsLooping] = useState<boolean>(true);
+  const isLoopingRef = useRef<boolean>(true);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isShuffled, setIsShuffled] = useState<boolean>(false);
 
@@ -67,7 +68,10 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
     currentSound.current = null;
   }, []);
 
-  const toggleLooping = useCallback(() => setIsLooping(prevState => !prevState), []);
+  const toggleLooping = useCallback(() => {
+    isLoopingRef.current = !isLoopingRef.current;
+    setIsLooping(prevState => !prevState);
+  }, []);
 
   const togglePause = useCallback(async () => {
     isPaused ? await currentSound.current?.sound.playAsync() : await currentSound.current?.sound.pauseAsync();
@@ -80,6 +84,7 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
   const mountStatusEvents = useCallback(
     (status: AVPlaybackStatus): void => {
       if (!status.isLoaded) {
+        console.log(status.error);
         if (status.error) {
           ToastAndroid.show(status.error, ToastAndroid.SHORT);
           playNext();
@@ -94,11 +99,9 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
         setProgress(Math.floor(status.positionMillis / 1000));
       }
 
-      if (status.didJustFinish && !status.isLooping) {
+      if (status.didJustFinish && !isLoopingRef.current) {
         stop();
-      }
-
-      if (status.didJustFinish) {
+      } else if (status.didJustFinish) {
         playNext();
       }
     },
@@ -117,10 +120,7 @@ export const AudioPlayerProvider = ({ children }: AudioPlayerProviderProps) => {
       return playNext();
     }
 
-    currentSound.current = await Audio.Sound.createAsync(
-      { uri: currentSong.file.uri },
-      { isLooping: true, shouldPlay: true },
-    );
+    currentSound.current = await Audio.Sound.createAsync({ uri: currentSong.file.uri }, { shouldPlay: true });
     currentSound.current.sound.setOnPlaybackStatusUpdate(mountStatusEvents);
     await currentSound.current.sound.setProgressUpdateIntervalAsync(800);
 
